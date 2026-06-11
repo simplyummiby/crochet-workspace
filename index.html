@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crochet Workspace Dashboard Mockup</title>
+  <title>Crochet Workspace Dashboard</title>
 
   <style>
     :root {
       --bg: #fff8f6;
       --card: #fffdfb;
       --soft-pink: #fff0f4;
-      --pink: #e94d7f;
-      --pink-dark: #b8325f;
+      --cranberry: #c23a69;
+      --cranberry-2: #df4f7d;
+      --cranberry-dark: #9d2a55;
       --cream: #fffaf4;
-      --line: #f1d7de;
+      --line: #efd4dc;
       --text: #35292d;
       --muted: #7b6b70;
       --green: #64856e;
-      --orange: #d97722;
-      --shadow: 0 14px 30px rgba(160, 75, 95, 0.11);
+      --orange: #c76b1f;
+      --shadow: 0 14px 30px rgba(157, 42, 85, 0.11);
       --radius: 22px;
     }
 
@@ -30,14 +31,12 @@
       font-family: Georgia, "Times New Roman", serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, #ffeef3 0, transparent 34%),
+        radial-gradient(circle at top left, #fff0f4 0, transparent 34%),
         radial-gradient(circle at bottom right, #fff1e4 0, transparent 32%),
         linear-gradient(180deg, var(--cream), var(--bg));
     }
 
-    button, input, textarea {
-      font: inherit;
-    }
+    button, input, textarea { font: inherit; }
 
     button {
       cursor: pointer;
@@ -54,7 +53,7 @@
       gap: 18px;
       align-items: center;
       padding: 0 28px;
-      background: rgba(255, 253, 251, 0.86);
+      background: rgba(255, 253, 251, 0.88);
       border-bottom: 1px solid var(--line);
       position: sticky;
       top: 0;
@@ -66,7 +65,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      color: var(--pink);
+      color: var(--cranberry);
       font-size: 1.7rem;
       font-weight: 800;
       white-space: nowrap;
@@ -102,8 +101,8 @@
     }
 
     .nav a.active {
-      color: var(--pink);
-      border-bottom-color: var(--pink);
+      color: var(--cranberry);
+      border-bottom-color: var(--cranberry);
     }
 
     .top-actions {
@@ -116,7 +115,7 @@
     .library-btn {
       border: 1px solid var(--line);
       background: #fff6f8;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       padding: 12px 18px;
       border-radius: 12px;
       font-weight: 800;
@@ -129,7 +128,7 @@
       display: grid;
       place-items: center;
       background: #ffd2dc;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       font-weight: 800;
       font-family: Arial, sans-serif;
     }
@@ -150,7 +149,7 @@
     }
 
     .card {
-      background: rgba(255, 253, 251, 0.94);
+      background: rgba(255, 253, 251, 0.95);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -175,7 +174,7 @@
     }
 
     .script-name {
-      color: var(--pink);
+      color: var(--cranberry-2);
       font-size: 2.8rem;
       font-style: italic;
       font-weight: 800;
@@ -218,7 +217,7 @@
     .outline-btn {
       margin-top: 12px;
       background: #fff6f8;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       border: 1px solid var(--line);
       padding: 9px 14px;
       border-radius: 10px;
@@ -241,16 +240,14 @@
 
     .section-title {
       margin: 0;
-      color: var(--pink);
+      color: var(--cranberry);
       font-size: 0.92rem;
       font-weight: 900;
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
 
-    .viewer {
-      padding-bottom: 18px;
-    }
+    .viewer { padding-bottom: 18px; }
 
     .tabs {
       display: grid;
@@ -271,7 +268,7 @@
     }
 
     .tab:last-child { border-right: 0; }
-    .tab.active { background: var(--soft-pink); color: var(--pink); }
+    .tab.active { background: var(--soft-pink); color: var(--cranberry); }
 
     .video-frame {
       margin: 0 20px;
@@ -282,7 +279,7 @@
       position: relative;
       background:
         linear-gradient(to top, rgba(0,0,0,.62), transparent 40%),
-        radial-gradient(circle at 24% 24%, #fcb2c2, #d7507c 46%, #a52f59);
+        radial-gradient(circle at 24% 24%, #f7b4c4, #d84b78 46%, #a5345d);
     }
 
     .stitch-texture {
@@ -301,7 +298,7 @@
       width: 58%;
       height: 30px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #e9dddd, #cbc0c2 22%, #e14d79 23%, #c93161);
+      background: linear-gradient(90deg, #e9dddd, #cbc0c2 22%, #df4f7d 23%, #b73563);
       transform: rotate(13deg);
       top: 43%;
       right: -8%;
@@ -341,7 +338,7 @@
       display: block;
       height: 100%;
       width: 36%;
-      background: var(--pink);
+      background: var(--cranberry-2);
     }
 
     .project-strip {
@@ -357,9 +354,7 @@
       min-height: 46px;
     }
 
-    .project-strip .field:last-of-type {
-      border-right: 0;
-    }
+    .project-strip .field:last-of-type { border-right: 0; }
 
     .project-strip small {
       display: block;
@@ -374,9 +369,7 @@
       min-height: 18px;
     }
 
-    .tracker {
-      padding-bottom: 14px;
-    }
+    .tracker { padding-bottom: 14px; }
 
     .tracker-head {
       display: flex;
@@ -389,7 +382,7 @@
     .tracker-actions {
       display: flex;
       gap: 22px;
-      color: var(--pink);
+      color: var(--cranberry);
       font-weight: 800;
       font-size: 0.9rem;
     }
@@ -424,7 +417,7 @@
 
     .active-row {
       background: #fff0f4;
-      color: #8d1640;
+      color: #7f173c;
       font-weight: 900;
     }
 
@@ -440,8 +433,8 @@
     }
 
     .checked {
-      background: var(--pink);
-      border-color: var(--pink);
+      background: var(--cranberry-2);
+      border-color: var(--cranberry-2);
     }
 
     .progress {
@@ -464,12 +457,10 @@
       display: block;
       width: 27%;
       height: 100%;
-      background: var(--pink);
+      background: var(--cranberry-2);
     }
 
-    .row-card {
-      padding: 18px;
-    }
+    .row-card { padding: 18px; }
 
     .tool-title-row {
       display: flex;
@@ -486,7 +477,7 @@
       border: 1px solid var(--line);
       border-radius: 50%;
       background: #fff6f8;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       font-family: Arial, sans-serif;
       font-weight: 800;
       cursor: help;
@@ -538,7 +529,7 @@
       border-radius: 50%;
       background: var(--soft-pink);
       border: 1px solid var(--line);
-      color: var(--pink);
+      color: var(--cranberry-2);
       font-family: Arial, sans-serif;
       font-size: 4.4rem;
       font-weight: 800;
@@ -553,24 +544,22 @@
     }
 
     .primary-btn {
-      background: var(--pink);
+      background: var(--cranberry);
       color: white;
       padding: 13px 12px;
-      box-shadow: 0 8px 18px rgba(233, 77, 127, 0.22);
+      box-shadow: 0 8px 18px rgba(194, 58, 105, 0.22);
       font-size: 1rem;
     }
 
     .soft-btn {
       background: #fff6f8;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       border: 1px solid var(--line);
       padding: 13px 12px;
       font-size: 1rem;
     }
 
-    .management-row {
-      margin-top: 10px;
-    }
+    .management-row { margin-top: 10px; }
 
     .divider {
       height: 1px;
@@ -587,7 +576,7 @@
     }
 
     .voice-title strong {
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       font-size: 0.95rem;
     }
 
@@ -610,8 +599,8 @@
     }
 
     .status-dot.on {
-      background: var(--pink);
-      border-color: var(--pink);
+      background: var(--cranberry-2);
+      border-color: var(--cranberry-2);
     }
 
     .voice-btn {
@@ -619,22 +608,28 @@
       padding: 11px 12px;
       font-size: 0.94rem;
       background: #fff6f8;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       border: 1px solid var(--line);
     }
 
     .voice-btn.on {
-      background: var(--pink);
+      background: var(--cranberry);
       color: white;
-      border-color: var(--pink);
+      border-color: var(--cranberry);
     }
 
-    .voice-hint {
+    .voice-hint, .voice-message {
       margin: 9px 0 0;
       color: var(--muted);
       font-size: 0.78rem;
       line-height: 1.35;
       text-align: center;
+    }
+
+    .voice-message {
+      color: var(--cranberry-dark);
+      font-weight: 700;
+      min-height: 1.1em;
     }
 
     .saved-note {
@@ -644,9 +639,7 @@
       text-align: center;
     }
 
-    .notes, .quick {
-      padding: 18px;
-    }
+    .notes, .quick { padding: 18px; }
 
     .notes .section-title {
       color: var(--green);
@@ -694,7 +687,7 @@
 
     .tool b {
       display: block;
-      color: var(--pink);
+      color: var(--cranberry-2);
       font-size: 1.7rem;
       line-height: 1;
     }
@@ -715,7 +708,7 @@
 
     .dialog-title {
       margin: 0 0 12px;
-      color: var(--pink-dark);
+      color: var(--cranberry-dark);
       font-size: 1.25rem;
     }
 
@@ -875,8 +868,8 @@
         <div class="row-number" id="rowCount" aria-live="polite">0</div>
 
         <div class="button-grid">
-          <button class="primary-btn" id="addRow" type="button">＋ 1 Row</button>
           <button class="soft-btn" id="minusRow" type="button">− 1 Row</button>
+          <button class="primary-btn" id="addRow" type="button">＋ 1 Row</button>
         </div>
 
         <div class="button-grid management-row">
@@ -893,7 +886,7 @@
           </div>
 
           <button class="voice-btn" id="voiceToggle" type="button">Start Voice Counter</button>
-
+          <p class="voice-message" id="voiceMessage"></p>
           <p class="voice-hint">Try: “add row” • “minus row” • “reset rows” • “row 12”</p>
         </section>
 
@@ -941,9 +934,13 @@
     const voiceToggle = document.getElementById("voiceToggle");
     const voiceStatus = document.getElementById("voiceStatus");
     const voiceDot = document.getElementById("voiceDot");
+    const voiceMessage = document.getElementById("voiceMessage");
 
-    const ROW_KEY = "crochetWorkspaceFullMockupRow";
+    const ROW_KEY = "crochetWorkspaceFullMockupRowCranberry";
     let row = Number(localStorage.getItem(ROW_KEY)) || 27;
+
+    let recognition = null;
+    let voiceOn = false;
 
     function saveRow() {
       localStorage.setItem(ROW_KEY, String(row));
@@ -959,6 +956,121 @@
       if (!Number.isFinite(newRow)) return;
       row = newRow;
       renderRow();
+    }
+
+    function showVoiceOff(message) {
+      voiceOn = false;
+      voiceToggle.textContent = "Start Voice Counter";
+      voiceToggle.classList.remove("on");
+      voiceStatus.textContent = "Voice Off";
+      voiceDot.classList.remove("on");
+      if (message) voiceMessage.textContent = message;
+    }
+
+    function showVoiceOn(message) {
+      voiceOn = true;
+      voiceToggle.textContent = "Stop Voice Counter";
+      voiceToggle.classList.add("on");
+      voiceStatus.textContent = "Voice On";
+      voiceDot.classList.add("on");
+      if (message) voiceMessage.textContent = message;
+    }
+
+    function handleVoiceCommand(transcript) {
+      const heard = transcript.toLowerCase().trim();
+
+      const numberMatch =
+        heard.match(/row number (\d+)/) ||
+        heard.match(/row (\d+)/) ||
+        heard.match(/number (\d+)/);
+
+      if (numberMatch) {
+        const spokenRow = Number(numberMatch[1]);
+        setRow(spokenRow);
+        voiceMessage.textContent = `Heard “${transcript}” — set row to ${spokenRow}.`;
+        return;
+      }
+
+      if (
+        heard.includes("add row") ||
+        heard.includes("plus row") ||
+        heard.includes("next row") ||
+        heard.includes("one row")
+      ) {
+        setRow(row + 1);
+        voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
+        return;
+      }
+
+      if (
+        heard.includes("minus row") ||
+        heard.includes("subtract row") ||
+        heard.includes("previous row") ||
+        heard.includes("back row")
+      ) {
+        setRow(row - 1);
+        voiceMessage.textContent = `Heard “${transcript}” — subtracted 1 row.`;
+        return;
+      }
+
+      if (
+        heard.includes("reset row") ||
+        heard.includes("reset rows") ||
+        heard.includes("reset counter")
+      ) {
+        setRow(0);
+        voiceMessage.textContent = `Heard “${transcript}” — reset rows.`;
+        return;
+      }
+
+      voiceMessage.textContent = `Heard “${transcript}”, but I did not recognize that command.`;
+    }
+
+    function setupSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        voiceToggle.disabled = true;
+        voiceToggle.textContent = "Voice unavailable";
+        voiceMessage.textContent = "Voice commands need Chrome or a browser that supports SpeechRecognition.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        showVoiceOn("Voice counter is active.");
+      };
+
+      recognition.onresult = (event) => {
+        const latest = event.results[event.results.length - 1][0].transcript;
+        handleVoiceCommand(latest);
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === "not-allowed") {
+          showVoiceOff("Microphone permission was blocked.");
+        } else if (event.error === "no-speech") {
+          voiceMessage.textContent = "No speech heard. Try again.";
+        } else if (event.error === "aborted") {
+          showVoiceOff("Voice counter stopped.");
+        } else {
+          voiceMessage.textContent = "Voice had trouble listening. Try again.";
+        }
+      };
+
+      recognition.onend = () => {
+        if (voiceOn) {
+          try {
+            recognition.start();
+          } catch (error) {
+            showVoiceOff("Voice counter paused. Press Start Voice Counter again.");
+          }
+        }
+      };
     }
 
     addRow.addEventListener("click", () => setRow(row + 1));
@@ -995,25 +1107,25 @@
       if (event.key === "Escape") jumpDialog.close();
     });
 
-    let voiceOn = false;
-
     voiceToggle.addEventListener("click", () => {
-      voiceOn = !voiceOn;
+      if (!recognition) return;
 
       if (voiceOn) {
-        voiceToggle.textContent = "Stop Voice Counter";
-        voiceToggle.classList.add("on");
-        voiceStatus.textContent = "Voice On";
-        voiceDot.classList.add("on");
-      } else {
-        voiceToggle.textContent = "Start Voice Counter";
-        voiceToggle.classList.remove("on");
-        voiceStatus.textContent = "Voice Off";
-        voiceDot.classList.remove("on");
+        voiceOn = false;
+        recognition.stop();
+        showVoiceOff("Voice counter stopped.");
+        return;
+      }
+
+      try {
+        recognition.start();
+      } catch (error) {
+        voiceMessage.textContent = "Voice is still starting. Try again in a second.";
       }
     });
 
     renderRow();
+    setupSpeechRecognition();
   </script>
 </body>
 </html>
