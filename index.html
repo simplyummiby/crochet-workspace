@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crochet Workspace Dashboard Mockup</title>
+
+  <style>
+    :root {
+      --bg: #fff8f6;
+      --card: #fffdfb;
+      --soft-pink: #fff0f4;
+      --pink: #e94d7f;
+      --pink-dark: #b8325f;
+      --cream: #fffaf4;
+      --line: #f1d7de;
+      --text: #35292d;
+      --muted: #7b6b70;
+      --green: #64856e;
+      --orange: #d97722;
+      --shadow: 0 14px 30px rgba(160, 75, 95, 0.11);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #ffeef3 0, transparent 34%),
+        radial-gradient(circle at bottom right, #fff1e4 0, transparent 32%),
+        linear-gradient(180deg, var(--cream), var(--bg));
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 14px;
+      font-weight: 700;
+      touch-action: manipulation;
+    }
+
+    .topbar {
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: 270px 1fr 260px;
+      gap: 18px;
+      align-items: center;
+      padding: 0 28px;
+      background: rgba(255, 253, 251, 0.86);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--pink);
+      font-size: 1.7rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #fff0f4;
+      border: 1px solid var(--line);
+      font-size: 1.5rem;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      height: 76px;
+    }
+
+    .nav a {
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 3px solid transparent;
+      font-weight: 700;
+      padding: 0 2px;
+    }
+
+    .nav a.active {
+      color: var(--pink);
+      border-bottom-color: var(--pink);
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .library-btn {
+      border: 1px solid var(--line);
+      background: #fff6f8;
+      color: var(--pink-dark);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #ffd2dc;
+      color: var(--pink-dark);
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: minmax(680px, 1fr) 330px;
+      gap: 20px;
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 22px 24px 34px;
+    }
+
+    .main, .side {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: rgba(255, 253, 251, 0.94);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .welcome {
+      min-height: 150px;
+      display: grid;
+      grid-template-columns: 1fr 330px 230px;
+      align-items: center;
+      gap: 22px;
+      padding: 22px 28px;
+      background: linear-gradient(105deg, #fffdfb, #fff2ef);
+    }
+
+    .welcome h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      line-height: 1.12;
+      font-weight: 600;
+    }
+
+    .script-name {
+      color: var(--pink);
+      font-size: 2.8rem;
+      font-style: italic;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .welcome p {
+      margin: 10px 0 0;
+      color: var(--text);
+      line-height: 1.4;
+      max-width: 430px;
+    }
+
+    .welcome-project {
+      border-left: 1px solid var(--line);
+      padding-left: 24px;
+    }
+
+    .small-label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .welcome-project strong {
+      display: block;
+      margin: 7px 0 4px;
+      color: var(--text);
+    }
+
+    .welcome-project span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 0.95rem;
+    }
+
+    .outline-btn {
+      margin-top: 12px;
+      background: #fff6f8;
+      color: var(--pink-dark);
+      border: 1px solid var(--line);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .welcome-art {
+      font-size: 4.4rem;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px 0;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--pink);
+      font-size: 0.92rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .viewer {
+      padding-bottom: 18px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin: 16px 20px 10px;
+      max-width: 700px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      overflow: hidden;
+    }
+
+    .tab {
+      background: #fffdfb;
+      color: var(--text);
+      border-right: 1px solid var(--line);
+      padding: 12px;
+      font-weight: 800;
+    }
+
+    .tab:last-child { border-right: 0; }
+    .tab.active { background: var(--soft-pink); color: var(--pink); }
+
+    .video-frame {
+      margin: 0 20px;
+      min-height: 330px;
+      aspect-ratio: 16 / 7.4;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(to top, rgba(0,0,0,.62), transparent 40%),
+        radial-gradient(circle at 24% 24%, #fcb2c2, #d7507c 46%, #a52f59);
+    }
+
+    .stitch-texture {
+      position: absolute;
+      inset: 0;
+      opacity: .54;
+      background-image:
+        radial-gradient(circle at 14px 14px, rgba(255,255,255,.32) 0 5px, transparent 6px),
+        radial-gradient(circle at 34px 30px, rgba(75,0,28,.21) 0 6px, transparent 7px);
+      background-size: 42px 36px;
+      transform: rotate(-3deg) scale(1.08);
+    }
+
+    .hook {
+      position: absolute;
+      width: 58%;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e9dddd, #cbc0c2 22%, #e14d79 23%, #c93161);
+      transform: rotate(13deg);
+      top: 43%;
+      right: -8%;
+      box-shadow: 0 10px 18px rgba(60, 10, 30, .26);
+    }
+
+    .video-controls {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+    }
+
+    .play {
+      width: 0;
+      height: 0;
+      border-top: 11px solid transparent;
+      border-bottom: 11px solid transparent;
+      border-left: 17px solid white;
+    }
+
+    .bar {
+      height: 5px;
+      flex: 1;
+      border-radius: 999px;
+      background: rgba(255,255,255,.3);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 36%;
+      background: var(--pink);
+    }
+
+    .project-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 16px 20px;
+    }
+
+    .project-strip .field {
+      border-right: 1px solid var(--line);
+      min-height: 46px;
+    }
+
+    .project-strip .field:last-of-type {
+      border-right: 0;
+    }
+
+    .project-strip small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .project-strip strong {
+      display: block;
+      color: var(--text);
+      min-height: 18px;
+    }
+
+    .tracker {
+      padding-bottom: 14px;
+    }
+
+    .tracker-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tracker-actions {
+      display: flex;
+      gap: 22px;
+      color: var(--pink);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid #f5e4e8;
+      padding: 10px 20px;
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.82rem;
+      color: #51464a;
+    }
+
+    .row-col {
+      width: 70px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .done-col {
+      width: 70px;
+      text-align: center;
+    }
+
+    .active-row {
+      background: #fff0f4;
+      color: #8d1640;
+      font-weight: 900;
+    }
+
+    .check {
+      width: 17px;
+      height: 17px;
+      border: 2px solid #ddc5cc;
+      border-radius: 5px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 0.75rem;
+      color: white;
+    }
+
+    .checked {
+      background: var(--pink);
+      border-color: var(--pink);
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 14px 20px 0;
+      font-weight: 800;
+    }
+
+    .progress-line {
+      height: 8px;
+      background: #fde5eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-line span {
+      display: block;
+      width: 27%;
+      height: 100%;
+      background: var(--pink);
+    }
+
+    .row-card {
+      padding: 18px;
+    }
+
+    .tool-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .help-btn {
+      position: relative;
+      width: 27px;
+      height: 27px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #fff6f8;
+      color: var(--pink-dark);
+      font-family: Arial, sans-serif;
+      font-weight: 800;
+      cursor: help;
+      padding: 0;
+    }
+
+    .help-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      right: 0;
+      top: 36px;
+      width: 235px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #3d3035;
+      color: white;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 20;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+      text-align: left;
+    }
+
+    .help-btn::before {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 29px;
+      border: 7px solid transparent;
+      border-bottom-color: #3d3035;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 21;
+    }
+
+    .help-btn:hover::after,
+    .help-btn:hover::before { opacity: 1; }
+
+    .row-number {
+      display: grid;
+      place-items: center;
+      width: 142px;
+      height: 142px;
+      margin: 8px auto 18px;
+      border-radius: 50%;
+      background: var(--soft-pink);
+      border: 1px solid var(--line);
+      color: var(--pink);
+      font-family: Arial, sans-serif;
+      font-size: 4.4rem;
+      font-weight: 800;
+      line-height: 1;
+      box-shadow: inset 0 0 0 10px rgba(255,255,255,0.55);
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .primary-btn {
+      background: var(--pink);
+      color: white;
+      padding: 13px 12px;
+      box-shadow: 0 8px 18px rgba(233, 77, 127, 0.22);
+      font-size: 1rem;
+    }
+
+    .soft-btn {
+      background: #fff6f8;
+      color: var(--pink-dark);
+      border: 1px solid var(--line);
+      padding: 13px 12px;
+      font-size: 1rem;
+    }
+
+    .management-row {
+      margin-top: 10px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 17px 0 14px;
+    }
+
+    .voice-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .voice-title strong {
+      color: var(--pink-dark);
+      font-size: 0.95rem;
+    }
+
+    .voice-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid #cdb5bd;
+      background: white;
+    }
+
+    .status-dot.on {
+      background: var(--pink);
+      border-color: var(--pink);
+    }
+
+    .voice-btn {
+      width: 100%;
+      padding: 11px 12px;
+      font-size: 0.94rem;
+      background: #fff6f8;
+      color: var(--pink-dark);
+      border: 1px solid var(--line);
+    }
+
+    .voice-btn.on {
+      background: var(--pink);
+      color: white;
+      border-color: var(--pink);
+    }
+
+    .voice-hint {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .saved-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    .notes, .quick {
+      padding: 18px;
+    }
+
+    .notes .section-title {
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 12px;
+      background: white;
+    }
+
+    .note-save {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 10px;
+    }
+
+    .quick .section-title {
+      color: var(--orange);
+      margin-bottom: 13px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .tool {
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff7f3;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .tool b {
+      display: block;
+      color: var(--pink);
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 18px 44px rgba(90, 30, 50, 0.22);
+      background: var(--card);
+      padding: 20px;
+      width: min(290px, calc(100vw - 34px));
+    }
+
+    dialog::backdrop {
+      background: rgba(53, 41, 45, 0.22);
+      backdrop-filter: blur(2px);
+    }
+
+    .dialog-title {
+      margin: 0 0 12px;
+      color: var(--pink-dark);
+      font-size: 1.25rem;
+    }
+
+    .jump-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .dialog-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 1100px) {
+      .topbar { grid-template-columns: 1fr auto; }
+      .nav { display: none; }
+      .top-actions { justify-content: end; }
+      .page { grid-template-columns: 1fr; }
+      .side { display: grid; grid-template-columns: 330px 1fr; align-items: start; }
+      .welcome { grid-template-columns: 1fr; }
+      .welcome-project { border-left: 0; padding-left: 0; }
+      .welcome-art { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar { padding: 0 16px; }
+      .brand { font-size: 1.3rem; }
+      .library-btn { display: none; }
+      .page { padding: 14px; }
+      .side { display: flex; }
+      .project-strip { grid-template-columns: 1fr 1fr; }
+      .project-strip .field { border-right: 0; }
+      .tabs { grid-template-columns: 1fr; }
+      .tab { border-right: 0; border-bottom: 1px solid var(--line); }
+      .video-frame { min-height: 250px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">🧶</span> Crochet Workspace</div>
+    <nav class="nav">
+      <a class="active" href="#">⌂ Dashboard</a>
+      <a href="#">▣ Projects</a>
+      <a href="#">📖 Patterns</a>
+      <a href="#">✂ Tools</a>
+      <a href="#">⚙ Settings</a>
+    </nav>
+    <div class="top-actions">
+      <button class="library-btn">📖 View Library</button>
+      <span>☾</span>
+      <div class="avatar">AS</div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="main">
+      <section class="card welcome">
+        <div>
+          <h1>Welcome back, <span class="script-name">Ayesha!</span> ♡</h1>
+          <p>Track your rows, follow patterns, and bring your beautiful projects to life. 💕</p>
+        </div>
+
+        <div class="welcome-project">
+          <div class="small-label">Current Project Optional</div>
+          <strong>No active project</strong>
+          <span>Create a project to save your details, notes, and track your progress.</span>
+          <button class="outline-btn">＋ Create Project</button>
+        </div>
+
+        <div class="welcome-art">🧺🧶🌸</div>
+      </section>
+
+      <section class="card viewer">
+        <div class="section-head">
+          <h2 class="section-title">▻ Pattern / Tutorial Viewer</h2>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active">▻ Video Tutorial</button>
+          <button class="tab">&lt;/&gt; HTML Pattern</button>
+          <button class="tab">▤ PDF Pattern</button>
+        </div>
+
+        <div class="video-frame">
+          <div class="stitch-texture"></div>
+          <div class="hook"></div>
+          <div class="video-controls">
+            <div class="play"></div>
+            <span>🔊</span>
+            <span>04:37 / 18:25</span>
+            <div class="bar"><span></span></div>
+            <span>CC</span>
+            <span>⚙</span>
+            <span>⛶</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card project-strip">
+        <div class="field"><small>Project</small><strong>—</strong></div>
+        <div class="field"><small>Hook Size</small><strong>—</strong></div>
+        <div class="field"><small>Yarn</small><strong>—</strong></div>
+        <div class="field"><small>Color</small><strong>—</strong></div>
+        <div class="field"><small>Started</small><strong>—</strong></div>
+        <div class="field"><small>Progress</small><strong>—</strong></div>
+        <button class="outline-btn">✎ Edit</button>
+      </section>
+
+      <section class="card tracker">
+        <div class="tracker-head">
+          <h2 class="section-title">▤ Pattern Tracker</h2>
+          <div class="tracker-actions"><span>⌁ Collapse All</span><span>▣ Print</span></div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th class="row-col">Row</th><th>Instructions</th><th class="done-col">Done</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-col">24</td><td>(sc, ch 1, sc) in next stitch, sc in next 9 stitches, repeat from *</td><td class="done-col"><span class="check"></span></td></tr>
+            <tr><td class="row-col">25</td><td>Ch 1, turn, sc in each stitch across</td><td class="done-col"><span class="check checked">✓</span></td></tr>
+            <tr><td class="row-col">26</td><td>Ch 1, turn, (sc, ch 1) in next stitch, sc in next 9 stitches, repeat from *</td><td class="done-col"><span class="check checked">✓</span></td></tr>
+            <tr class="active-row"><td class="row-col">→ 27</td><td>Ch 1, turn, sc in each stitch across</td><td class="done-col"><span class="check"></span></td></tr>
+            <tr><td class="row-col">28</td><td>Repeat row 26</td><td class="done-col"><span class="check"></span></td></tr>
+            <tr><td class="row-col">29</td><td>Repeat row 25</td><td class="done-col"><span class="check"></span></td></tr>
+            <tr><td class="row-col">30</td><td>Fasten off and weave in ends</td><td class="done-col"><span class="check"></span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="progress">
+          <span>Progress: Row 27 of 100</span>
+          <div class="progress-line"><span></span></div>
+          <span>27%</span>
+        </div>
+      </section>
+    </section>
+
+    <aside class="side">
+      <article class="card row-card">
+        <div class="tool-title-row">
+          <p class="section-title"># Row Counter</p>
+          <button
+            class="help-btn"
+            type="button"
+            data-tooltip="Use +1 for each completed row. Jump opens a small popup when you need to set a specific row. Saved locally means this browser remembers your count."
+            aria-label="Row counter help">?</button>
+        </div>
+
+        <div class="row-number" id="rowCount" aria-live="polite">0</div>
+
+        <div class="button-grid">
+          <button class="primary-btn" id="addRow" type="button">＋ 1 Row</button>
+          <button class="soft-btn" id="minusRow" type="button">− 1 Row</button>
+        </div>
+
+        <div class="button-grid management-row">
+          <button class="soft-btn" id="openJump" type="button">Jump...</button>
+          <button class="soft-btn" id="resetRows" type="button">↻ Reset</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <section class="voice-section" aria-label="Voice counter controls">
+          <div class="voice-title">
+            <strong>🎙 Voice Counter</strong>
+            <span class="voice-status"><span class="status-dot" id="voiceDot"></span><span id="voiceStatus">Voice Off</span></span>
+          </div>
+
+          <button class="voice-btn" id="voiceToggle" type="button">Start Voice Counter</button>
+
+          <p class="voice-hint">Try: “add row” • “minus row” • “reset rows” • “row 12”</p>
+        </section>
+
+        <p class="saved-note">Saved locally</p>
+      </article>
+
+      <section class="card notes">
+        <h2 class="section-title">☘ Project Notes</h2>
+        <textarea placeholder="Add your notes here..."></textarea>
+        <div class="note-save">Last saved 2 min ago ☁</div>
+      </section>
+
+      <section class="card quick">
+        <h2 class="section-title">✨ Quick Tools</h2>
+        <div class="tool-grid">
+          <div class="tool"><span><b>♯</b>Row Tips</span></div>
+          <div class="tool"><span><b>🧶</b>Yarn Calc</span></div>
+          <div class="tool"><span><b>✂</b>Stitch Guide</span></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <dialog id="jumpDialog">
+    <h2 class="dialog-title">Jump to Row</h2>
+    <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
+    <div class="dialog-actions">
+      <button class="soft-btn" id="cancelJump" type="button">Cancel</button>
+      <button class="primary-btn" id="goJump" type="button">Go</button>
+    </div>
+  </dialog>
+
+  <script>
+    const rowCount = document.getElementById("rowCount");
+    const addRow = document.getElementById("addRow");
+    const minusRow = document.getElementById("minusRow");
+    const resetRows = document.getElementById("resetRows");
+
+    const openJump = document.getElementById("openJump");
+    const jumpDialog = document.getElementById("jumpDialog");
+    const jumpInput = document.getElementById("jumpInput");
+    const cancelJump = document.getElementById("cancelJump");
+    const goJump = document.getElementById("goJump");
+
+    const voiceToggle = document.getElementById("voiceToggle");
+    const voiceStatus = document.getElementById("voiceStatus");
+    const voiceDot = document.getElementById("voiceDot");
+
+    const ROW_KEY = "crochetWorkspaceFullMockupRow";
+    let row = Number(localStorage.getItem(ROW_KEY)) || 27;
+
+    function saveRow() {
+      localStorage.setItem(ROW_KEY, String(row));
+    }
+
+    function renderRow() {
+      rowCount.textContent = row;
+      saveRow();
+    }
+
+    function setRow(value) {
+      const newRow = Math.max(0, Math.floor(Number(value)));
+      if (!Number.isFinite(newRow)) return;
+      row = newRow;
+      renderRow();
+    }
+
+    addRow.addEventListener("click", () => setRow(row + 1));
+    minusRow.addEventListener("click", () => setRow(row - 1));
+
+    resetRows.addEventListener("click", () => {
+      setRow(0);
+    });
+
+    openJump.addEventListener("click", () => {
+      jumpInput.value = "";
+      jumpDialog.showModal();
+      jumpInput.focus();
+    });
+
+    cancelJump.addEventListener("click", () => {
+      jumpDialog.close();
+    });
+
+    function jumpToRow() {
+      const value = Number(jumpInput.value);
+      if (!Number.isFinite(value) || value < 0) {
+        alert("Please enter a row number of 0 or higher.");
+        return;
+      }
+      setRow(value);
+      jumpDialog.close();
+    }
+
+    goJump.addEventListener("click", jumpToRow);
+
+    jumpInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") jumpToRow();
+      if (event.key === "Escape") jumpDialog.close();
+    });
+
+    let voiceOn = false;
+
+    voiceToggle.addEventListener("click", () => {
+      voiceOn = !voiceOn;
+
+      if (voiceOn) {
+        voiceToggle.textContent = "Stop Voice Counter";
+        voiceToggle.classList.add("on");
+        voiceStatus.textContent = "Voice On";
+        voiceDot.classList.add("on");
+      } else {
+        voiceToggle.textContent = "Start Voice Counter";
+        voiceToggle.classList.remove("on");
+        voiceStatus.textContent = "Voice Off";
+        voiceDot.classList.remove("on");
+      }
+    });
+
+    renderRow();
+  </script>
+</body>
+</html>
