@@ -1021,6 +1021,24 @@
       gap: 14px;
     }
 
+
+    .danger-outline-btn {
+      color: #a32635;
+      border-color: #f0c4c9;
+      background: #fff7f7;
+    }
+
+    .danger-outline-btn:hover {
+      background: #ffecef;
+    }
+
+    .tracker-complete-message {
+      margin-top: 9px;
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.92rem;
+    }
+
     .tracker-actions button {
       margin-top: 0;
       white-space: nowrap;
@@ -1117,7 +1135,25 @@
         width: 100%;
       }
 
-      .tracker-actions button {
+  
+    .danger-outline-btn {
+      color: #a32635;
+      border-color: #f0c4c9;
+      background: #fff7f7;
+    }
+
+    .danger-outline-btn:hover {
+      background: #ffecef;
+    }
+
+    .tracker-complete-message {
+      margin-top: 9px;
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.92rem;
+    }
+
+    .tracker-actions button {
         flex: 1 1 100%;
       }
 
@@ -1301,7 +1337,8 @@
 
           <div class="tracker-actions">
             <button class="outline-btn" id="pastePatternBtn" type="button">Paste Pattern</button>
-            <button class="outline-btn" id="clearTrackerBtn" type="button">Clear</button>
+            <button class="outline-btn" id="uncheckRowsBtn" type="button">Uncheck Rows</button>
+            <button class="outline-btn danger-outline-btn" id="deletePatternBtn" type="button">Delete Pattern</button>
           </div>
         </div>
 
@@ -1310,6 +1347,7 @@
           <div class="tracker-progress-bar">
             <span id="trackerProgressBar"></span>
           </div>
+          <div class="tracker-complete-message" id="trackerCompleteMessage" hidden>🎉 Pattern complete!</div>
         </div>
 
         <div class="tracker-empty" id="trackerEmpty">
@@ -1924,13 +1962,15 @@
     const pdfHelp = document.getElementById("pdfHelp");
 
     const pastePatternBtn = document.getElementById("pastePatternBtn");
-    const clearTrackerBtn = document.getElementById("clearTrackerBtn");
+    const uncheckRowsBtn = document.getElementById("uncheckRowsBtn");
+    const deletePatternBtn = document.getElementById("deletePatternBtn");
     const patternImportDialog = document.getElementById("patternImportDialog");
     const patternImportText = document.getElementById("patternImportText");
     const cancelPatternImport = document.getElementById("cancelPatternImport");
     const importPatternRows = document.getElementById("importPatternRows");
     const trackerProgressText = document.getElementById("trackerProgressText");
     const trackerProgressBar = document.getElementById("trackerProgressBar");
+    const trackerCompleteMessage = document.getElementById("trackerCompleteMessage");
     const trackerEmpty = document.getElementById("trackerEmpty");
     const trackerTableWrap = document.getElementById("trackerTableWrap");
     const patternTrackerBody = document.getElementById("patternTrackerBody");
@@ -2467,16 +2507,38 @@
         });
     }
 
+    function findNextUncheckedRowNumber(afterRowNumber) {
+      const laterUnchecked = trackerRows.find(item => !item.done && Number(item.rowNumber) > Number(afterRowNumber));
+
+      if (laterUnchecked) {
+        return Number(laterUnchecked.rowNumber);
+      }
+
+      const anyUnchecked = trackerRows.find(item => !item.done);
+
+      return anyUnchecked ? Number(anyUnchecked.rowNumber) : null;
+    }
+
+    function scrollCurrentTrackerRowIntoView() {
+      const currentRowEl = patternTrackerBody.querySelector(".current-tracker-row");
+
+      if (currentRowEl) {
+        currentRowEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
     function renderPatternTracker() {
       const total = trackerRows.length;
       const done = trackerRows.filter(item => item.done).length;
       const percent = total ? Math.round((done / total) * 100) : 0;
+      const isComplete = total > 0 && done === total;
 
       trackerProgressText.textContent = total
         ? `Progress: ${done} of ${total} rows complete (${percent}%)`
         : "No rows loaded yet.";
 
       trackerProgressBar.style.width = `${percent}%`;
+      trackerCompleteMessage.hidden = !isComplete;
       trackerEmpty.hidden = total > 0;
       trackerTableWrap.hidden = total === 0;
 
@@ -2506,15 +2568,32 @@
           if (event.target === checkbox) return;
           setRow(Number(rowEl.dataset.rowNumber));
           renderPatternTracker();
+          scrollCurrentTrackerRowIntoView();
         });
 
         checkbox.addEventListener("click", event => {
           event.stopPropagation();
+
+          const checkedRowNumber = Number(rowEl.dataset.rowNumber);
+
           trackerRows = trackerRows.map(item => (
             item.id === trackerId ? { ...item, done: checkbox.checked } : item
           ));
+
           saveTrackerRows();
+
+          if (checkbox.checked) {
+            const nextRow = findNextUncheckedRowNumber(checkedRowNumber);
+
+            if (nextRow !== null) {
+              setRow(nextRow);
+            } else {
+              setRow(checkedRowNumber);
+            }
+          }
+
           renderPatternTracker();
+          scrollCurrentTrackerRowIntoView();
         });
       });
     }
@@ -2538,14 +2617,34 @@
 
       trackerRows = parsed;
       saveTrackerRows();
+
+      if (trackerRows.length) {
+        setRow(Number(trackerRows[0].rowNumber) || 1);
+      }
+
       renderPatternTracker();
+      scrollCurrentTrackerRowIntoView();
       patternImportDialog.close();
     }
 
-    function clearPatternTracker() {
-      const shouldClear = confirm("Clear all pattern tracker rows?");
+    function uncheckPatternRows() {
+      if (!trackerRows.length) return;
 
-      if (!shouldClear) return;
+      trackerRows = trackerRows.map(item => ({ ...item, done: false }));
+      saveTrackerRows();
+
+      if (trackerRows.length) {
+        setRow(Number(trackerRows[0].rowNumber) || 1);
+      }
+
+      renderPatternTracker();
+      scrollCurrentTrackerRowIntoView();
+    }
+
+    function deletePatternTracker() {
+      const shouldDelete = confirm("Delete this pattern from the tracker? This removes all rows and checkmarks.");
+
+      if (!shouldDelete) return;
 
       trackerRows = [];
       saveTrackerRows();
@@ -2556,7 +2655,8 @@
     function switchSourcePanel(panelId) {
   
     pastePatternBtn.addEventListener("click", openPatternImport);
-    clearTrackerBtn.addEventListener("click", clearPatternTracker);
+    uncheckRowsBtn.addEventListener("click", uncheckPatternRows);
+    deletePatternBtn.addEventListener("click", deletePatternTracker);
     cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
     importPatternRows.addEventListener("click", importPatternTrackerRows);
 
@@ -2762,7 +2862,8 @@
 
 
     pastePatternBtn.addEventListener("click", openPatternImport);
-    clearTrackerBtn.addEventListener("click", clearPatternTracker);
+    uncheckRowsBtn.addEventListener("click", uncheckPatternRows);
+    deletePatternBtn.addEventListener("click", deletePatternTracker);
     cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
     importPatternRows.addEventListener("click", importPatternTrackerRows);
 
