@@ -933,6 +933,19 @@
     }
 
     .project-form-grid input { width:100%; border:1px solid var(--line); border-radius:13px; padding:11px 12px; background:white; color:var(--text); }
+
+    .danger-btn {
+      background: #fff1f1;
+      color: #a32635;
+      border: 1px solid #f0c4c9;
+      padding: 13px 12px;
+      font-size: 1rem;
+    }
+
+    .danger-btn:hover {
+      background: #ffe7e9;
+    }
+
     .project-dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
     .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
     .project-list button { text-align:left; padding:12px; background:#fff8f9; border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
@@ -1228,9 +1241,9 @@
 
       <label>Status
         <select id="projectStatusSelect">
-          <option value="Not Started">⚪Not Started</option>
-          <option value="🩷In Progress" selected>In Progress</option>
-          <option value="Complete">✅Complete</option>
+          <option value="Not Started">Not Started</option>
+          <option value="In Progress" selected>In Progress</option>
+          <option value="Complete">Complete</option>
         </select>
       </label>
 
@@ -1240,6 +1253,7 @@
     </div>
 
     <div class="project-dialog-actions">
+      <button class="danger-btn" id="deleteProjectBtn" type="button" hidden>Delete Project</button>
       <button class="soft-btn" id="cancelProjectForm" type="button">Cancel</button>
       <button class="primary-btn" id="saveProjectForm" type="button">Save Project</button>
     </div>
@@ -1635,6 +1649,7 @@
     const projectFormTitle = document.getElementById("projectFormTitle");
     const cancelProjectForm = document.getElementById("cancelProjectForm");
     const saveProjectForm = document.getElementById("saveProjectForm");
+    const deleteProjectBtn = document.getElementById("deleteProjectBtn");
 
     const projectNameInput = document.getElementById("projectNameInput");
     const projectHookSelect = document.getElementById("projectHookSelect");
@@ -1756,6 +1771,7 @@
     function openProjectForm(mode, project = null) {
       editingProjectId = project?.id || "";
       projectFormTitle.textContent = mode === "edit" ? "Edit Project" : "Create Project";
+      deleteProjectBtn.hidden = mode !== "edit";
 
       projectNameInput.value = project?.name || "";
       setHookValue(project?.hook || "");
@@ -2020,6 +2036,30 @@
       reader.readAsText(file);
     }
 
+
+    function deleteCurrentProjectFromForm() {
+      const project = getActiveProject();
+
+      if (!project || !editingProjectId) return;
+
+      const shouldDelete = confirm(`Delete project "${project.name || "Untitled Project"}"? This cannot be undone unless you have a backup.`);
+
+      if (!shouldDelete) return;
+
+      projects = projects.filter(projectItem => projectItem.id !== editingProjectId);
+
+      if (activeProjectId === editingProjectId) {
+        activeProjectId = projects[0]?.id || "";
+      }
+
+      editingProjectId = "";
+      saveProjects();
+      renderProjectSnapshot();
+      renderProjectList();
+      projectFormDialog.close();
+    }
+
+
     projectHookSelect.addEventListener("change", updateCustomHookVisibility);
 
     createProjectBtn.addEventListener("click", () => openProjectForm("create"));
@@ -2036,6 +2076,7 @@
 
     cancelProjectForm.addEventListener("click", () => projectFormDialog.close());
     saveProjectForm.addEventListener("click", saveProjectFromForm);
+    deleteProjectBtn.addEventListener("click", deleteCurrentProjectFromForm);
     closeSwitchProject.addEventListener("click", () => switchProjectDialog.close());
 
     newProjectFromSwitch.addEventListener("click", () => {
