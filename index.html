@@ -940,7 +940,7 @@
     let row = Number(localStorage.getItem(ROW_KEY)) || 27;
 
     let recognition = null;
-    let voiceOn = false;
+    let voiceActive = false;
 
     function saveRow() {
       localStorage.setItem(ROW_KEY, String(row));
@@ -956,6 +956,170 @@
       if (!Number.isFinite(newRow)) return;
       row = newRow;
       renderRow();
+    }
+
+    function setVoiceOff(message) {
+      voiceActive = false;
+      voiceToggle.textContent = "Start Voice Counter";
+      voiceToggle.classList.remove("on");
+      voiceStatus.textContent = "Voice Off";
+      voiceDot.classList.remove("on");
+      if (message) voiceMessage.textContent = message;
+    }
+
+    function setVoiceOn(message) {
+      voiceActive = true;
+      voiceToggle.textContent = "Stop Voice Counter";
+      voiceToggle.classList.add("on");
+      voiceStatus.textContent = "Voice On";
+      voiceDot.classList.add("on");
+      if (message) voiceMessage.textContent = message;
+    }
+
+    function handleVoiceCommand(transcript) {
+      const heard = transcript.toLowerCase().trim();
+
+      const numberMatch =
+        heard.match(/row number (\d+)/) ||
+        heard.match(/row (\d+)/) ||
+        heard.match(/number (\d+)/);
+
+      if (numberMatch) {
+        const spokenRow = Number(numberMatch[1]);
+        setRow(spokenRow);
+        voiceMessage.textContent = `Heard “${transcript}” — set row to ${spokenRow}.`;
+        return;
+      }
+
+      if (
+        heard.includes("add row") ||
+        heard.includes("plus row") ||
+        heard.includes("next row")
+      ) {
+        setRow(row + 1);
+        voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
+        return;
+      }
+
+      if (
+        heard.includes("minus row") ||
+        heard.includes("subtract row") ||
+        heard.includes("previous row") ||
+        heard.includes("back row")
+      ) {
+        setRow(row - 1);
+        voiceMessage.textContent = `Heard “${transcript}” — subtracted 1 row.`;
+        return;
+      }
+
+      if (
+        heard.includes("reset row") ||
+        heard.includes("reset rows") ||
+        heard.includes("reset counter")
+      ) {
+        setRow(0);
+        voiceMessage.textContent = `Heard “${transcript}” — reset rows.`;
+        return;
+      }
+
+      voiceMessage.textContent = `Heard “${transcript}”, but I did not recognize that command.`;
+    }
+
+    function setupSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        voiceToggle.disabled = true;
+        voiceToggle.textContent = "Voice unavailable";
+        voiceMessage.textContent = "Voice commands need Chrome on an HTTPS page.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        setVoiceOn("Say one command now.");
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        handleVoiceCommand(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === "not-allowed") {
+          setVoiceOff("Microphone permission was blocked.");
+        } else if (event.error === "no-speech") {
+          setVoiceOff("No speech heard. Press Start Voice Counter and try again.");
+        } else if (event.error === "audio-capture") {
+          setVoiceOff("No microphone was found.");
+        } else {
+          setVoiceOff(`Voice error: ${event.error}`);
+        }
+      };
+
+      recognition.onend = () => {
+        setVoiceOff(voiceMessage.textContent || "Voice stopped.");
+      };
+    }
+
+    addRow.addEventListener("click", () => setRow(row + 1));
+    minusRow.addEventListener("click", () => setRow(row - 1));
+
+    resetRows.addEventListener("click", () => {
+      setRow(0);
+    });
+
+    openJump.addEventListener("click", () => {
+      jumpInput.value = "";
+      jumpDialog.showModal();
+      jumpInput.focus();
+    });
+
+    cancelJump.addEventListener("click", () => {
+      jumpDialog.close();
+    });
+
+    function jumpToRow() {
+      const value = Number(jumpInput.value);
+      if (!Number.isFinite(value) || value < 0) {
+        alert("Please enter a row number of 0 or higher.");
+        return;
+      }
+      setRow(value);
+      jumpDialog.close();
+    }
+
+    goJump.addEventListener("click", jumpToRow);
+
+    jumpInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") jumpToRow();
+      if (event.key === "Escape") jumpDialog.close();
+    });
+
+    voiceToggle.addEventListener("click", () => {
+      if (!recognition) return;
+
+      if (voiceActive) {
+        recognition.stop();
+        setVoiceOff("Voice counter stopped.");
+        return;
+      }
+
+      voiceMessage.textContent = "Starting voice counter...";
+
+      try {
+        recognition.start();
+      } catch (error) {
+        setVoiceOff("Voice is still starting. Try again in a second.");
+      }
+    });
+
+    renderRow();
     }
 
     function showVoiceOff(message) {
