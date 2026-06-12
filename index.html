@@ -675,6 +675,132 @@
       text-align: center;
     }
 
+
+    .timer-card {
+      padding: 18px;
+    }
+
+    .timer-mode-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: -4px 0 14px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff8f9;
+    }
+
+    .timer-mode-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .timer-mode-btn {
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .timer-mode-btn[hidden] {
+      display: none;
+    }
+
+    .timer-block {
+      text-align: center;
+      padding: 8px 0 14px;
+    }
+
+    .timer-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .timer-display {
+      font-family: Arial, sans-serif;
+      color: var(--cranberry-2);
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .timer-total-box {
+      margin-top: 16px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff8f9;
+      text-align: center;
+    }
+
+    .timer-total-box strong {
+      display: block;
+      color: var(--cranberry-dark);
+      font-family: Arial, sans-serif;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .timer-sessions {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 13px;
+    }
+
+    .timer-sessions-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .timer-sessions ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .timer-sessions li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid #f5e4e8;
+      background: #fffdfb;
+      border-radius: 12px;
+      padding: 8px 10px;
+    }
+
+    .timer-clear-btn {
+      background: transparent;
+      color: #a32635;
+      border: 0;
+      padding: 0;
+      font-size: 0.76rem;
+      box-shadow: none;
+      white-space: nowrap;
+    }
+
+
     .notes, .quick { padding: 18px; }
 
     .notes .section-title {
@@ -929,20 +1055,6 @@
 
     .simple-welcome { grid-template-columns: 1fr auto; }
     .project-card { padding: 18px 20px; }
-    .project-title-with-help {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .project-help-btn {
-      width: 24px;
-      height: 24px;
-      font-size: 0.78rem;
-      vertical-align: middle;
-    }
-
-
     .project-card-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
     .project-subtitle { margin:8px 0 0; color:var(--muted); font-size:.94rem; line-height:1.35; }
     .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
@@ -1178,34 +1290,6 @@
     }
 
 
-
-    .project-card {
-      overflow: visible;
-    }
-
-    .project-help-btn::after {
-      left: 0;
-      right: auto;
-      width: 285px;
-    }
-
-    .project-help-btn::before {
-      left: 8px;
-      right: auto;
-    }
-
-    @media (max-width: 520px) {
-      .project-help-btn::after {
-        left: -110px;
-        width: min(285px, calc(100vw - 36px));
-      }
-
-      .project-help-btn::before {
-        left: 8px;
-      }
-    }
-
-
     @media (max-width: 1100px) {
       .topbar { grid-template-columns: 1fr auto; }
       .nav { display: none; }
@@ -1262,14 +1346,7 @@
       <section class="card project-card" id="projectCard">
         <div class="project-card-head">
           <div>
-            <h2 class="section-title project-title-with-help">
-              🧺 Current Project
-              <button
-                class="help-btn project-help-btn"
-                type="button"
-                data-tooltip="Projects can use either the Row Counter for manual tracking or the Pattern Tracker for imported row-by-row patterns. Both are saved with the project."
-                aria-label="Project tracking help">?</button>
-            </h2>
+            <h2 class="section-title">🧺 Current Project</h2>
             <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
           </div>
 
@@ -1463,6 +1540,52 @@
         <p class="saved-note">Saved locally</p>
       </article>
 
+      <article class="card timer-card">
+        <div class="tool-title-row">
+          <p class="section-title">⏱ Project Timer</p>
+          <button
+            class="help-btn"
+            type="button"
+            data-tooltip="Quick Timer tracks general crochet time. Project Timer tracks time spent on the active project."
+            aria-label="Project timer help">?</button>
+        </div>
+
+        <div class="timer-mode-row">
+          <p class="timer-mode-text" id="timerModeText">Quick Timer Mode</p>
+          <button class="timer-mode-btn" id="timerModeToggle" type="button">Use Project Timer</button>
+        </div>
+
+        <div class="timer-block">
+          <span class="timer-label">Current Session</span>
+          <div class="timer-display" id="timerDisplay">00:00:00</div>
+        </div>
+
+        <div class="button-grid">
+          <button class="primary-btn" id="timerStartBtn" type="button">▶ Start</button>
+          <button class="soft-btn" id="timerPauseBtn" type="button">⏸ Pause</button>
+        </div>
+
+        <div class="button-grid management-row">
+          <button class="soft-btn" id="timerEndBtn" type="button">🏁 End Session</button>
+          <button class="soft-btn" id="timerResetSessionBtn" type="button">↺ Reset Session</button>
+        </div>
+
+        <div class="timer-total-box">
+          <span class="timer-label">Total Time</span>
+          <strong id="timerTotalDisplay">00:00:00</strong>
+        </div>
+
+        <div class="timer-sessions">
+          <div class="timer-sessions-head">
+            <span class="timer-label">Recent Sessions</span>
+            <button class="timer-clear-btn" id="timerClearAllBtn" type="button">🗑 Clear All Time</button>
+          </div>
+          <ul id="timerSessionList">
+            <li>No sessions yet.</li>
+          </ul>
+        </div>
+      </article>
+
       <section class="card notes">
         <h2 class="section-title">☘ Project Notes</h2>
         <textarea placeholder="Add your notes here..."></textarea>
@@ -1596,10 +1719,30 @@
     const voiceDot = document.getElementById("voiceDot");
     const voiceMessage = document.getElementById("voiceMessage");
 
+    const timerModeText = document.getElementById("timerModeText");
+    const timerModeToggle = document.getElementById("timerModeToggle");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStartBtn = document.getElementById("timerStartBtn");
+    const timerPauseBtn = document.getElementById("timerPauseBtn");
+    const timerEndBtn = document.getElementById("timerEndBtn");
+    const timerResetSessionBtn = document.getElementById("timerResetSessionBtn");
+    const timerTotalDisplay = document.getElementById("timerTotalDisplay");
+    const timerSessionList = document.getElementById("timerSessionList");
+    const timerClearAllBtn = document.getElementById("timerClearAllBtn");
+
     const QUICK_ROW_KEY = "crochetWorkspaceQuickCounterRow";
     const COUNTER_MODE_KEY = "crochetWorkspaceCounterMode";
     let counterMode = localStorage.getItem(COUNTER_MODE_KEY) || "quick";
     let row = 0;
+
+
+    const QUICK_TIMER_KEY = "crochetWorkspaceQuickTimerData";
+    const TIMER_MODE_KEY = "crochetWorkspaceTimerMode";
+
+    let timerMode = localStorage.getItem(TIMER_MODE_KEY) || "quick";
+    let timerData = getTimerDataForCurrentMode();
+    let timerInterval = null;
+    let timerStartedAt = null;
 
     let recognition = null;
     let voiceActive = false;
@@ -1840,6 +1983,215 @@
       }
     }
 
+
+    function defaultTimerData() {
+      return {
+        currentElapsed: 0,
+        sessions: []
+      };
+    }
+
+    function getTimerDataForCurrentMode() {
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (timerMode === "project" && activeProject) {
+        return activeProject.timerData || defaultTimerData();
+      }
+
+      timerMode = "quick";
+
+      try {
+        return JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || defaultTimerData();
+      } catch (error) {
+        return defaultTimerData();
+      }
+    }
+
+    function saveTimerData() {
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (timerMode === "project" && activeProject) {
+        activeProject.timerData = timerData;
+        saveProjects();
+      } else {
+        localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(timerData));
+      }
+
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+    }
+
+    function formatTimer(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      return [hours, minutes, seconds]
+        .map(value => String(value).padStart(2, "0"))
+        .join(":");
+    }
+
+    function formatDuration(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      if (hours) return `${hours}h ${minutes}m ${seconds}s`;
+      if (minutes) return `${minutes}m ${seconds}s`;
+      return `${seconds}s`;
+    }
+
+    function formatSessionDate(timestamp) {
+      const date = new Date(timestamp);
+
+      return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function getCurrentTimerElapsed() {
+      if (!timerStartedAt) return timerData.currentElapsed || 0;
+
+      return (timerData.currentElapsed || 0) + (Date.now() - timerStartedAt);
+    }
+
+    function getTotalTimerTime() {
+      const savedTotal = timerData.sessions.reduce((sum, session) => sum + Number(session.duration || 0), 0);
+      return savedTotal;
+    }
+
+    function updateTimerModeDisplay() {
+      if (!timerModeText || !timerModeToggle) return;
+
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (!activeProject) {
+        timerMode = "quick";
+        timerModeText.textContent = "Quick Timer Mode";
+        timerModeToggle.hidden = true;
+        return;
+      }
+
+      timerModeToggle.hidden = false;
+
+      if (timerMode === "project") {
+        timerModeText.textContent = `Project Timer: ${activeProject.name || "Untitled Project"}`;
+        timerModeToggle.textContent = "Use Quick Timer";
+      } else {
+        timerModeText.textContent = "Quick Timer Mode";
+        timerModeToggle.textContent = "Use Project Timer";
+      }
+    }
+
+    function renderTimer() {
+      timerDisplay.textContent = formatTimer(getCurrentTimerElapsed());
+      timerTotalDisplay.textContent = formatTimer(getTotalTimerTime());
+      updateTimerModeDisplay();
+
+      const recentSessions = [...timerData.sessions]
+        .sort((a, b) => new Date(b.endedAt) - new Date(a.endedAt))
+        .slice(0, 5);
+
+      if (!recentSessions.length) {
+        timerSessionList.innerHTML = "<li>No sessions yet.</li>";
+        return;
+      }
+
+      timerSessionList.innerHTML = recentSessions.map(session => `
+        <li>
+          <span>${formatSessionDate(session.endedAt)}</span>
+          <strong>${formatDuration(session.duration)}</strong>
+        </li>
+      `).join("");
+    }
+
+    function startTimer() {
+      if (timerStartedAt) return;
+
+      timerStartedAt = Date.now();
+      timerInterval = window.setInterval(renderTimer, 1000);
+      renderTimer();
+    }
+
+    function pauseTimer() {
+      if (!timerStartedAt) return;
+
+      timerData.currentElapsed = getCurrentTimerElapsed();
+      timerStartedAt = null;
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      saveTimerData();
+      renderTimer();
+    }
+
+    function endTimerSession() {
+      const elapsed = getCurrentTimerElapsed();
+
+      if (elapsed < 1000) {
+        alert("Start the timer before ending a session.");
+        return;
+      }
+
+      timerData.sessions.push({
+        id: `session-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        duration: elapsed,
+        startedAt: new Date(Date.now() - elapsed).toISOString(),
+        endedAt: new Date().toISOString(),
+        mode: timerMode,
+        projectId: timerMode === "project" ? activeProjectId : ""
+      });
+
+      timerData.currentElapsed = 0;
+      timerStartedAt = null;
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      saveTimerData();
+      renderTimer();
+    }
+
+    function resetTimerSession() {
+      timerData.currentElapsed = 0;
+      timerStartedAt = null;
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      saveTimerData();
+      renderTimer();
+    }
+
+    function clearAllTimerTime() {
+      const shouldClear = confirm("Clear all saved timer sessions? This removes total time and recent sessions.");
+
+      if (!shouldClear) return;
+
+      timerData = defaultTimerData();
+      timerStartedAt = null;
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      saveTimerData();
+      renderTimer();
+    }
+
+    function switchTimerMode() {
+      pauseTimer();
+
+      const activeProject = getActiveProject();
+
+      if (!activeProject) {
+        timerMode = "quick";
+      } else if (timerMode === "project") {
+        timerMode = "quick";
+      } else {
+        timerMode = "project";
+      }
+
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+      timerData = getTimerDataForCurrentMode();
+      renderTimer();
+    }
+
+
     function setupSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -1957,6 +2309,14 @@
       if (event.key === "Enter") jumpToRow();
       if (event.key === "Escape") jumpDialog.close();
     });
+
+
+    timerStartBtn.addEventListener("click", startTimer);
+    timerPauseBtn.addEventListener("click", pauseTimer);
+    timerEndBtn.addEventListener("click", endTimerSession);
+    timerResetSessionBtn.addEventListener("click", resetTimerSession);
+    timerClearAllBtn.addEventListener("click", clearAllTimerTime);
+    timerModeToggle.addEventListener("click", switchTimerMode);
 
     voiceToggle.addEventListener("click", () => {
       if (!recognition) return;
@@ -2188,6 +2548,7 @@
           id: makeProjectId(),
           createdAt: new Date().toISOString(),
           rowCount: 0,
+          timerData: defaultTimerData(),
           ...projectData
         };
 
@@ -2201,6 +2562,8 @@
       renderProjectSnapshot();
       renderProjectList();
       loadRowForCurrentMode();
+      timerData = getTimerDataForCurrentMode();
+      renderTimer();
       projectFormDialog.close();
     }
 
@@ -2234,6 +2597,8 @@
           renderProjectSnapshot();
           renderProjectList();
           loadRowForCurrentMode();
+          timerData = getTimerDataForCurrentMode();
+          renderTimer();
           switchProjectDialog.close();
         });
       });
@@ -2303,7 +2668,9 @@
           },
           notes: document.querySelector(".notes textarea")?.value || "",
           patternTrackerRows: trackerRows,
-          patternTrackerCurrentRow: trackerCurrentRow
+          patternTrackerCurrentRow: trackerCurrentRow,
+          quickTimerData: JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || defaultTimerData(),
+          timerMode
         }
       };
     }
@@ -2382,6 +2749,13 @@
               trackerCurrentRow = Number(backup.currentDashboardState.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
               saveTrackerRows();
             }
+
+            if (backup.currentDashboardState?.quickTimerData) {
+              localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(backup.currentDashboardState.quickTimerData));
+            }
+
+            timerMode = backup.currentDashboardState?.timerMode || "project";
+            timerData = getTimerDataForCurrentMode();
 
             saveProjects();
             renderProjectSnapshot();
@@ -2472,6 +2846,8 @@
       renderProjectSnapshot();
       renderProjectList();
       loadRowForCurrentMode();
+      timerData = getTimerDataForCurrentMode();
+      renderTimer();
       projectFormDialog.close();
     }
 
@@ -2988,6 +3364,7 @@
     renderProjectList();
     loadRowForCurrentMode();
     renderPatternTracker();
+    renderTimer();
     setupSpeechRecognition();
   </script>
 </body>
