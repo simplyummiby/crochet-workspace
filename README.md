@@ -2,4 +2,4 @@
 
 A dedicated workspace for crocheters.
 
-Keep project notes, pattern resources, row tracking, and other project details together in one place while you crochet.
+Crochet Workspace is a web-based project companion that helps keep notes, pattern resources, tracking tools, and project details organized and accessible while you crochet.
