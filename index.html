@@ -728,6 +728,111 @@
       gap: 10px;
     }
 
+
+    .source-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 16px 20px 12px;
+    }
+
+    .source-tab {
+      background: #fffdfb;
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 11px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      box-shadow: 0 5px 14px rgba(157, 42, 85, 0.06);
+    }
+
+    .source-tab.active {
+      background: var(--soft-pink);
+      color: var(--cranberry);
+      border-color: #e8bdca;
+    }
+
+    .source-panel {
+      margin: 0 20px;
+    }
+
+    .source-panel[hidden] {
+      display: none;
+    }
+
+    .source-controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .source-controls input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+
+    .source-controls input:focus {
+      border-color: var(--cranberry-2);
+      box-shadow: 0 0 0 4px rgba(194, 58, 105, 0.12);
+    }
+
+    .source-frame {
+      min-height: 460px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, #fff0f4 0, transparent 36%),
+        linear-gradient(135deg, #fffdfb, #fff7f0);
+      position: relative;
+    }
+
+    .source-frame iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 460px;
+      border: 0;
+      display: block;
+      background: white;
+    }
+
+    .source-placeholder {
+      min-height: 460px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+    }
+
+    .source-placeholder strong {
+      display: block;
+      color: var(--cranberry-dark);
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .source-help {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .open-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--cranberry-dark);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     @media (max-width: 1100px) {
       .topbar { grid-template-columns: 1fr auto; }
       .nav { display: none; }
@@ -791,28 +896,71 @@
 
       <section class="card viewer">
         <div class="section-head">
-          <h2 class="section-title">▻ Pattern / Tutorial Viewer</h2>
+          <h2 class="section-title">▻ Pattern Source</h2>
         </div>
 
-        <div class="tabs">
-          <button class="tab active">▻ Video Tutorial</button>
-          <button class="tab">&lt;/&gt; HTML Pattern</button>
-          <button class="tab">▤ PDF Pattern</button>
+        <div class="source-tabs" role="tablist" aria-label="Pattern source options">
+          <button class="source-tab active" id="videoTab" type="button" data-panel="videoPanel">▻ Video Tutorial</button>
+          <button class="source-tab" id="webTab" type="button" data-panel="webPanel">◎ Web Pattern</button>
+          <button class="source-tab" id="pdfTab" type="button" data-panel="pdfPanel">▤ PDF Pattern</button>
         </div>
 
-        <div class="video-frame">
-          <div class="stitch-texture"></div>
-          <div class="hook"></div>
-          <div class="video-controls">
-            <div class="play"></div>
-            <span>🔊</span>
-            <span>04:37 / 18:25</span>
-            <div class="bar"><span></span></div>
-            <span>CC</span>
-            <span>⚙</span>
-            <span>⛶</span>
+        <section class="source-panel" id="videoPanel">
+          <div class="source-controls">
+            <input id="videoUrl" type="url" placeholder="Paste a YouTube tutorial URL..." />
+            <button class="primary-btn" id="loadVideo" type="button">Load Video</button>
           </div>
-        </div>
+
+          <div class="source-frame" id="videoFrameBox">
+            <div class="source-placeholder" id="videoPlaceholder">
+              <div>
+                <strong>Video Tutorial</strong>
+                <span>Paste a YouTube link to keep your tutorial close while you stitch.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="source-help">Tip: YouTube links will be converted into an embedded player when possible.</p>
+          <a class="open-link" id="openVideoLink" href="#" target="_blank" rel="noopener" hidden>Open video in a new tab</a>
+        </section>
+
+        <section class="source-panel" id="webPanel" hidden>
+          <div class="source-controls">
+            <input id="webUrl" type="url" placeholder="Paste a web pattern URL..." />
+            <button class="primary-btn" id="loadWeb" type="button">Load Web Pattern</button>
+          </div>
+
+          <div class="source-frame" id="webFrameBox">
+            <div class="source-placeholder" id="webPlaceholder">
+              <div>
+                <strong>Web Pattern</strong>
+                <span>Paste a pattern webpage URL to view it inside your crochet workspace.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="source-help">Some websites block embedding. If that happens, use the “open in a new tab” link.</p>
+          <a class="open-link" id="openWebLink" href="#" target="_blank" rel="noopener" hidden>Open web pattern in a new tab</a>
+        </section>
+
+        <section class="source-panel" id="pdfPanel" hidden>
+          <div class="source-controls">
+            <input id="pdfUrl" type="url" placeholder="Paste a PDF pattern URL..." />
+            <button class="primary-btn" id="loadPdf" type="button">Load PDF</button>
+          </div>
+
+          <div class="source-frame" id="pdfFrameBox">
+            <div class="source-placeholder" id="pdfPlaceholder">
+              <div>
+                <strong>PDF Pattern</strong>
+                <span>Paste a PDF link to preview the pattern here.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="source-help">Later, this could also support uploaded PDF files. For now, it uses a PDF URL.</p>
+          <a class="open-link" id="openPdfLink" href="#" target="_blank" rel="noopener" hidden>Open PDF in a new tab</a>
+        </section>
       </section>
 
       <section class="card project-strip">
@@ -1245,6 +1393,163 @@
         setVoiceOff("Voice is still starting. Try again in a second.");
       }
     });
+
+
+    const sourceTabs = document.querySelectorAll(".source-tab");
+    const sourcePanels = document.querySelectorAll(".source-panel");
+
+    const videoUrl = document.getElementById("videoUrl");
+    const loadVideo = document.getElementById("loadVideo");
+    const videoFrameBox = document.getElementById("videoFrameBox");
+    const openVideoLink = document.getElementById("openVideoLink");
+
+    const webUrl = document.getElementById("webUrl");
+    const loadWeb = document.getElementById("loadWeb");
+    const webFrameBox = document.getElementById("webFrameBox");
+    const openWebLink = document.getElementById("openWebLink");
+
+    const pdfUrl = document.getElementById("pdfUrl");
+    const loadPdf = document.getElementById("loadPdf");
+    const pdfFrameBox = document.getElementById("pdfFrameBox");
+    const openPdfLink = document.getElementById("openPdfLink");
+
+    const SOURCE_KEYS = {
+      video: "crochetWorkspaceVideoUrl",
+      web: "crochetWorkspaceWebPatternUrl",
+      pdf: "crochetWorkspacePdfPatternUrl"
+    };
+
+    function switchSourcePanel(panelId) {
+      sourceTabs.forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.panel === panelId);
+      });
+
+      sourcePanels.forEach(panel => {
+        panel.hidden = panel.id !== panelId;
+      });
+    }
+
+    function getYouTubeEmbedUrl(url) {
+      try {
+        const parsed = new URL(url);
+        let videoId = "";
+
+        if (parsed.hostname.includes("youtu.be")) {
+          videoId = parsed.pathname.replace("/", "");
+        } else if (parsed.hostname.includes("youtube.com")) {
+          videoId = parsed.searchParams.get("v") || "";
+
+          if (!videoId && parsed.pathname.includes("/shorts/")) {
+            videoId = parsed.pathname.split("/shorts/")[1].split("/")[0];
+          }
+
+          if (!videoId && parsed.pathname.includes("/embed/")) {
+            videoId = parsed.pathname.split("/embed/")[1].split("/")[0];
+          }
+        }
+
+        if (!videoId) return "";
+
+        return `https://www.youtube.com/embed/${videoId}`;
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function showFrame(box, url, title) {
+      box.innerHTML = `<iframe src="${url}" title="${title}" allowfullscreen></iframe>`;
+    }
+
+    function loadVideoSource() {
+      const url = videoUrl.value.trim();
+      const embedUrl = getYouTubeEmbedUrl(url);
+
+      if (!embedUrl) {
+        alert("Please paste a valid YouTube URL.");
+        return;
+      }
+
+      showFrame(videoFrameBox, embedUrl, "Video tutorial");
+      openVideoLink.href = url;
+      openVideoLink.hidden = false;
+      localStorage.setItem(SOURCE_KEYS.video, url);
+    }
+
+    function loadWebSource() {
+      const url = webUrl.value.trim();
+
+      if (!url) {
+        alert("Please paste a web pattern URL.");
+        return;
+      }
+
+      showFrame(webFrameBox, url, "Web pattern");
+      openWebLink.href = url;
+      openWebLink.hidden = false;
+      localStorage.setItem(SOURCE_KEYS.web, url);
+    }
+
+    function loadPdfSource() {
+      const url = pdfUrl.value.trim();
+
+      if (!url) {
+        alert("Please paste a PDF URL.");
+        return;
+      }
+
+      showFrame(pdfFrameBox, url, "PDF pattern");
+      openPdfLink.href = url;
+      openPdfLink.hidden = false;
+      localStorage.setItem(SOURCE_KEYS.pdf, url);
+    }
+
+    sourceTabs.forEach(tab => {
+      tab.addEventListener("click", () => switchSourcePanel(tab.dataset.panel));
+    });
+
+    loadVideo.addEventListener("click", loadVideoSource);
+    loadWeb.addEventListener("click", loadWebSource);
+    loadPdf.addEventListener("click", loadPdfSource);
+
+    videoUrl.addEventListener("keydown", event => {
+      if (event.key === "Enter") loadVideoSource();
+    });
+
+    webUrl.addEventListener("keydown", event => {
+      if (event.key === "Enter") loadWebSource();
+    });
+
+    pdfUrl.addEventListener("keydown", event => {
+      if (event.key === "Enter") loadPdfSource();
+    });
+
+    const savedVideoUrl = localStorage.getItem(SOURCE_KEYS.video);
+    if (savedVideoUrl) {
+      videoUrl.value = savedVideoUrl;
+      const savedEmbedUrl = getYouTubeEmbedUrl(savedVideoUrl);
+      if (savedEmbedUrl) {
+        showFrame(videoFrameBox, savedEmbedUrl, "Video tutorial");
+        openVideoLink.href = savedVideoUrl;
+        openVideoLink.hidden = false;
+      }
+    }
+
+    const savedWebUrl = localStorage.getItem(SOURCE_KEYS.web);
+    if (savedWebUrl) {
+      webUrl.value = savedWebUrl;
+      showFrame(webFrameBox, savedWebUrl, "Web pattern");
+      openWebLink.href = savedWebUrl;
+      openWebLink.hidden = false;
+    }
+
+    const savedPdfUrl = localStorage.getItem(SOURCE_KEYS.pdf);
+    if (savedPdfUrl) {
+      pdfUrl.value = savedPdfUrl;
+      showFrame(pdfFrameBox, savedPdfUrl, "PDF pattern");
+      openPdfLink.href = savedPdfUrl;
+      openPdfLink.hidden = false;
+    }
+
 
     renderRow();
     setupSpeechRecognition();
