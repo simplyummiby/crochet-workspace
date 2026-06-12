@@ -1356,6 +1356,11 @@
       color: var(--muted);
     }
 
+    .tracker-table .completed-row td:nth-child(2) {
+      text-decoration: line-through;
+      opacity: 0.65;
+    }
+
     .tracker-row-input {
       width: 17px;
       height: 17px;
@@ -2691,6 +2696,41 @@
       renderTimer();
     }
 
+    function clearProjectWorkspaceDisplay() {
+      // Clears visible project-specific workspace areas after the last project is deleted.
+      suppressWorkspaceSave = true;
+
+      row = Number(localStorage.getItem(QUICK_ROW_KEY)) || 0;
+      counterMode = "quick";
+      timerMode = "quick";
+      timerData = getTimerDataForCurrentMode();
+
+      trackerRows = [];
+      trackerCurrentRow = 0;
+
+      if (projectNotes) {
+        projectNotes.value = "";
+      }
+
+      clearVideoSource();
+      clearWebSource();
+      clearPdfSource();
+
+      suppressWorkspaceSave = false;
+
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+      localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
+      localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
+
+      rowCount.textContent = row;
+      updateCounterModeDisplay();
+      renderProjectSnapshot();
+      renderProjectList();
+      renderPatternTracker();
+      renderTimer();
+    }
+
 
     function renderProjectSnapshot() {
       const project = getActiveProject();
@@ -3023,6 +3063,8 @@
               }));
             }
 
+            localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+            localStorage.setItem(TIMER_MODE_KEY, timerMode);
             saveProjects();
             loadWorkspaceFromActiveProject();
             alert("All-projects backup imported.");
@@ -3056,29 +3098,8 @@
           activeProjectId = importedProject.id;
           counterMode = "project";
           timerMode = "project";
-
-          if (backup.sources?.videoUrl) {
-            localStorage.setItem(SOURCE_KEYS.video, backup.sources.videoUrl);
-          }
-
-          if (backup.sources?.webPatternUrl) {
-            localStorage.setItem(SOURCE_KEYS.web, backup.sources.webPatternUrl);
-          }
-
-          if (backup.sources?.pdfPatternUrl) {
-            localStorage.setItem(SOURCE_KEYS.pdf, backup.sources.pdfPatternUrl);
-          }
-
-          const notesBox = document.querySelector(".notes textarea");
-          if (notesBox && backup.notes) {
-            notesBox.value = backup.notes;
-          }
-
-          if (Array.isArray(backup.patternTrackerRows)) {
-            trackerRows = backup.patternTrackerRows;
-            trackerCurrentRow = Number(backup.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
-            saveTrackerRows();
-          }
+          localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+          localStorage.setItem(TIMER_MODE_KEY, timerMode);
 
           saveProjects();
           loadWorkspaceFromActiveProject();
@@ -3110,16 +3131,21 @@
       }
 
       editingProjectId = "";
-      if (!activeProjectId) counterMode = "quick";
+
+      if (activeProjectId) {
+        counterMode = "project";
+        timerMode = "project";
+      } else {
+        counterMode = "quick";
+        timerMode = "quick";
+      }
+
       saveProjects();
-      renderProjectSnapshot();
-      renderProjectList();
 
       if (activeProjectId) {
         loadWorkspaceFromActiveProject();
       } else {
-        loadRowForCurrentMode();
-        renderTimer();
+        clearProjectWorkspaceDisplay();
       }
 
       projectFormDialog.close();
