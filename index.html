@@ -890,6 +890,39 @@
       text-decoration: none;
     }
 
+
+    .simple-welcome { grid-template-columns: 1fr auto; }
+    .project-card { padding: 18px 20px; }
+    .project-card-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
+    .project-subtitle { margin:8px 0 0; color:var(--muted); font-size:.94rem; line-height:1.35; }
+    .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .project-card-actions { justify-content:flex-end; }
+    .project-snapshot { border:1px solid var(--line); background:#fff8f9; border-radius:16px; padding:15px; }
+    .empty-project strong { display:block; color:var(--cranberry-dark); margin-bottom:5px; }
+    .empty-project span { display:block; color:var(--muted); line-height:1.4; }
+    .snapshot-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+    .snapshot-main { grid-column:span 2; }
+    .snapshot-item { border-right:1px solid var(--line); padding-right:10px; min-height:45px; }
+    .snapshot-item:last-child { border-right:0; }
+    .snapshot-item small { display:block; color:var(--muted); font-weight:800; margin-bottom:6px; font-size:.78rem; }
+    .snapshot-item strong { display:block; color:var(--text); word-break:break-word; }
+    .project-backup-actions { margin-top:12px; }
+    .import-label { display:inline-block; text-align:center; cursor:pointer; }
+    #importBackupInput { display:none; }
+    .project-dialog { border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(90,30,50,.22); background:var(--card); padding:20px; width:min(520px, calc(100vw - 34px)); }
+    .project-dialog::backdrop { background:rgba(53,41,45,.22); backdrop-filter:blur(2px); }
+    .project-dialog h2 { margin:0 0 14px; color:var(--cranberry-dark); }
+    .project-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .project-form-grid label { display:grid; gap:6px; color:var(--cranberry-dark); font-weight:800; font-size:.88rem; }
+    .project-form-grid .full { grid-column:1 / -1; }
+    .project-form-grid input { width:100%; border:1px solid var(--line); border-radius:13px; padding:11px 12px; background:white; color:var(--text); }
+    .project-dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
+    .project-list button { text-align:left; padding:12px; background:#fff8f9; border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .project-list button.active-project { border-color:var(--cranberry-2); background:var(--soft-pink); color:var(--cranberry-dark); }
+    @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} .snapshot-item{border-right:0;} }
+    @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
+
     @media (max-width: 1100px) {
       .topbar { grid-template-columns: 1fr auto; }
       .nav { display: none; }
@@ -920,11 +953,11 @@
   <header class="topbar">
     <div class="brand"><span class="brand-mark">🧶</span> Crochet Workspace</div>
     <nav class="nav">
-      <a class="active" href="#">🏡 Dashboard</a>
-      <a href="#">🎯 Projects</a>
+      <a class="active" href="#">⌂ Dashboard</a>
+      <a href="#">▣ Projects</a>
       <a href="#">📖 Patterns</a>
-      <a href="#">🛠️ Tools</a>
-      <a href="#">⚙️ Settings</a>
+      <a href="#">✂ Tools</a>
+      <a href="#">⚙ Settings</a>
     </nav>
     <div class="top-actions">
       <button class="library-btn">📖 View Library</button>
@@ -935,20 +968,37 @@
 
   <main class="page">
     <section class="main">
-      <section class="card welcome">
+      <section class="card welcome simple-welcome">
         <div>
-          <h1>Welcome back, <span class="script-name">Sherrie!</span> ♡</h1>
-          <p>Track your rows, follow patterns, and bring your beautiful projects to life. 💕</p>
+          <h1>Welcome back, <span class="script-name">Maker!</span> ♡</h1>
+          <p>Track your rows, follow patterns, save project snapshots, and bring your beautiful projects to life. 💕</p>
         </div>
-
-        <div class="welcome-project">
-          <div class="small-label">Current Project Optional</div>
-          <strong>No active project</strong>
-          <span>Create a project to save your details, notes, and track your progress.</span>
-          <button class="outline-btn">＋ Create Project</button>
-        </div>
-
         <div class="welcome-art">🧺🧶🌸</div>
+      </section>
+
+      <section class="card project-card" id="projectCard">
+        <div class="project-card-head">
+          <div>
+            <h2 class="section-title">🧺 Current Project</h2>
+            <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
+          </div>
+          <div class="project-card-actions">
+            <button class="outline-btn" id="createProjectBtn" type="button">＋ Create Project</button>
+            <button class="outline-btn" id="switchProjectBtn" type="button">Switch</button>
+          </div>
+        </div>
+        <div class="project-snapshot" id="projectSnapshot">
+          <div class="empty-project">
+            <strong>No project selected</strong>
+            <span>Create a project to save your hook size, yarn, row count, pattern links, and notes.</span>
+          </div>
+        </div>
+        <div class="project-backup-actions">
+          <button class="soft-btn" id="editProjectBtn" type="button">✎ Edit Project</button>
+          <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Download Backup</button>
+          <label class="soft-btn import-label" for="importBackupInput">⬆ Import Backup</label>
+          <input id="importBackupInput" type="file" accept="application/json,.json" />
+        </div>
       </section>
 
       <section class="card viewer">
@@ -957,9 +1007,9 @@
         </div>
 
         <div class="source-tabs" role="tablist" aria-label="Pattern source options">
-          <button class="source-tab active" id="videoTab" type="button" data-panel="videoPanel">🎥 Video Tutorial</button>
-          <button class="source-tab" id="webTab" type="button" data-panel="webPanel">🌐 Web Pattern</button>
-          <button class="source-tab" id="pdfTab" type="button" data-panel="pdfPanel">📄 PDF Pattern</button>
+          <button class="source-tab active" id="videoTab" type="button" data-panel="videoPanel">▻ Video Tutorial</button>
+          <button class="source-tab" id="webTab" type="button" data-panel="webPanel">◎ Web Pattern</button>
+          <button class="source-tab" id="pdfTab" type="button" data-panel="pdfPanel">▤ PDF Pattern</button>
         </div>
 
         <section class="source-panel" id="videoPanel">
@@ -1029,19 +1079,9 @@
         </section>
       </section>
 
-      <section class="card project-strip">
-        <div class="field"><small>Project</small><strong>—</strong></div>
-        <div class="field"><small>Hook Size</small><strong>—</strong></div>
-        <div class="field"><small>Yarn</small><strong>—</strong></div>
-        <div class="field"><small>Color</small><strong>—</strong></div>
-        <div class="field"><small>Started</small><strong>—</strong></div>
-        <div class="field"><small>Progress</small><strong>—</strong></div>
-        <button class="outline-btn">✎ Edit</button>
-      </section>
-
       <section class="card tracker">
         <div class="tracker-head">
-          <h2 class="section-title">📖 Pattern Tracker</h2>
+          <h2 class="section-title">▤ Pattern Tracker</h2>
           <div class="tracker-actions"><span>⌁ Collapse All</span><span>▣ Print</span></div>
         </div>
 
@@ -1071,7 +1111,7 @@
     <aside class="side">
       <article class="card row-card">
         <div class="tool-title-row">
-          <p class="section-title">🧮 Row Counter</p>
+          <p class="section-title"># Row Counter</p>
           <button
             class="help-btn"
             type="button"
@@ -1108,7 +1148,7 @@
       </article>
 
       <section class="card notes">
-        <h2 class="section-title">✍️ Project Notes</h2>
+        <h2 class="section-title">☘ Project Notes</h2>
         <textarea placeholder="Add your notes here..."></textarea>
         <div class="note-save">Last saved 2 min ago ☁</div>
       </section>
@@ -1123,6 +1163,31 @@
       </section>
     </aside>
   </main>
+
+
+  <dialog class="project-dialog" id="projectFormDialog">
+    <h2 id="projectFormTitle">Create Project</h2>
+    <div class="project-form-grid">
+      <label class="full">Project Name <input id="projectNameInput" type="text" placeholder="Sunflower Market Bag" /></label>
+      <label>Hook Size <input id="projectHookInput" type="text" placeholder="4.5 mm" /></label>
+      <label>Yarn <input id="projectYarnInput" type="text" placeholder="Cotton DK" /></label>
+      <label>Started <input id="projectStartedInput" type="date" /></label>
+      <label>Status <input id="projectStatusInput" type="text" placeholder="In Progress" /></label>
+    </div>
+    <div class="project-dialog-actions">
+      <button class="soft-btn" id="cancelProjectForm" type="button">Cancel</button>
+      <button class="primary-btn" id="saveProjectForm" type="button">Save Project</button>
+    </div>
+  </dialog>
+  <dialog class="project-dialog" id="switchProjectDialog">
+    <h2>Switch Project</h2>
+    <p class="project-subtitle">Choose which project snapshot should be active.</p>
+    <div class="project-list" id="projectList"></div>
+    <div class="project-dialog-actions">
+      <button class="soft-btn" id="closeSwitchProject" type="button">Close</button>
+      <button class="primary-btn" id="newProjectFromSwitch" type="button">＋ New Project</button>
+    </div>
+  </dialog>
 
   <dialog id="jumpDialog">
     <h2 class="dialog-title">Jump to Row</h2>
@@ -1490,6 +1555,109 @@
       pdf: "crochetWorkspacePdfPatternUrl"
     };
 
+
+    const projectSnapshot = document.getElementById("projectSnapshot");
+    const projectSubtitle = document.getElementById("projectSubtitle");
+    const createProjectBtn = document.getElementById("createProjectBtn");
+    const switchProjectBtn = document.getElementById("switchProjectBtn");
+    const editProjectBtn = document.getElementById("editProjectBtn");
+    const downloadBackupBtn = document.getElementById("downloadBackupBtn");
+    const importBackupInput = document.getElementById("importBackupInput");
+    const projectFormDialog = document.getElementById("projectFormDialog");
+    const projectFormTitle = document.getElementById("projectFormTitle");
+    const cancelProjectForm = document.getElementById("cancelProjectForm");
+    const saveProjectForm = document.getElementById("saveProjectForm");
+    const projectNameInput = document.getElementById("projectNameInput");
+    const projectHookInput = document.getElementById("projectHookInput");
+    const projectYarnInput = document.getElementById("projectYarnInput");
+    const projectStartedInput = document.getElementById("projectStartedInput");
+    const projectStatusInput = document.getElementById("projectStatusInput");
+    const switchProjectDialog = document.getElementById("switchProjectDialog");
+    const projectList = document.getElementById("projectList");
+    const closeSwitchProject = document.getElementById("closeSwitchProject");
+    const newProjectFromSwitch = document.getElementById("newProjectFromSwitch");
+
+    const PROJECTS_KEY = "crochetWorkspaceProjects";
+    const ACTIVE_PROJECT_KEY = "crochetWorkspaceActiveProjectId";
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || "[]");
+    let activeProjectId = localStorage.getItem(ACTIVE_PROJECT_KEY) || "";
+    let editingProjectId = "";
+
+    function saveProjects() {
+      localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+      localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
+    }
+    function getActiveProject() { return projects.find(p => p.id === activeProjectId) || null; }
+    function makeProjectId() { return `project-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
+    function renderProjectSnapshot() {
+      const project = getActiveProject();
+      if (!project) {
+        projectSubtitle.textContent = "No active project selected.";
+        projectSnapshot.innerHTML = `<div class="empty-project"><strong>No project selected</strong><span>Create a project to save your hook size, yarn, row count, pattern links, and notes.</span></div>`;
+        editProjectBtn.disabled = true; downloadBackupBtn.disabled = true; return;
+      }
+      projectSubtitle.textContent = "This snapshot can be backed up and restored later.";
+      editProjectBtn.disabled = false; downloadBackupBtn.disabled = false;
+      projectSnapshot.innerHTML = `<div class="snapshot-grid">
+        <div class="snapshot-item snapshot-main"><small>Project</small><strong>${project.name || "Untitled Project"}</strong></div>
+        <div class="snapshot-item"><small>Hook</small><strong>${project.hook || "—"}</strong></div>
+        <div class="snapshot-item"><small>Yarn</small><strong>${project.yarn || "—"}</strong></div>
+        <div class="snapshot-item"><small>Started</small><strong>${project.started || "—"}</strong></div>
+        <div class="snapshot-item"><small>Status</small><strong>${project.status || "In Progress"}</strong></div></div>`;
+    }
+    function openProjectForm(mode, project = null) {
+      editingProjectId = project?.id || "";
+      projectFormTitle.textContent = mode === "edit" ? "Edit Project" : "Create Project";
+      projectNameInput.value = project?.name || ""; projectHookInput.value = project?.hook || "";
+      projectYarnInput.value = project?.yarn || ""; projectStartedInput.value = project?.started || "";
+      projectStatusInput.value = project?.status || "In Progress";
+      projectFormDialog.showModal(); projectNameInput.focus();
+    }
+    function saveProjectFromForm() {
+      const data = { name: projectNameInput.value.trim() || "Untitled Project", hook: projectHookInput.value.trim(), yarn: projectYarnInput.value.trim(), started: projectStartedInput.value, status: projectStatusInput.value.trim() || "In Progress" };
+      if (editingProjectId) projects = projects.map(p => p.id === editingProjectId ? {...p, ...data} : p);
+      else { const p = { id: makeProjectId(), createdAt: new Date().toISOString(), ...data }; projects.push(p); activeProjectId = p.id; }
+      saveProjects(); renderProjectSnapshot(); renderProjectList(); projectFormDialog.close();
+    }
+    function renderProjectList() {
+      if (!projects.length) { projectList.innerHTML = `<div class="empty-project"><strong>No projects yet</strong><span>Create your first project to start saving snapshots.</span></div>`; return; }
+      projectList.innerHTML = projects.map(p => `<button type="button" class="${p.id === activeProjectId ? "active-project" : ""}" data-project-id="${p.id}"><span><strong>${p.name || "Untitled Project"}</strong><br><small>${p.status || "In Progress"} • ${p.hook || "No hook listed"}</small></span><span>${p.id === activeProjectId ? "Active" : "Open"}</span></button>`).join("");
+      projectList.querySelectorAll("button[data-project-id]").forEach(btn => btn.addEventListener("click", () => { activeProjectId = btn.dataset.projectId; saveProjects(); renderProjectSnapshot(); renderProjectList(); switchProjectDialog.close(); }));
+    }
+    function projectBackupPayload(project) {
+      return { ...project, rowCount: row, sources: { videoUrl: localStorage.getItem(SOURCE_KEYS.video) || "", webPatternUrl: localStorage.getItem(SOURCE_KEYS.web) || "", pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || "" }, notes: document.querySelector(".notes textarea")?.value || "", exportedAt: new Date().toISOString(), backupType: "crochet-workspace-project-snapshot", backupVersion: 1 };
+    }
+    function slugify(name) { return (name || "crochet-project").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
+    function downloadProjectBackup() {
+      const p = getActiveProject(); if (!p) { alert("Create or select a project first."); return; }
+      const blob = new Blob([JSON.stringify(projectBackupPayload(p), null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob); const a = document.createElement("a");
+      a.href = url; a.download = `${slugify(p.name)}-backup.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+    function importProjectBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => { try { const b = JSON.parse(reader.result); if (b.backupType !== "crochet-workspace-project-snapshot") { alert("This does not look like a Crochet Workspace project backup."); return; }
+        const p = { id: makeProjectId(), createdAt: b.createdAt || new Date().toISOString(), importedAt: new Date().toISOString(), name: b.name || "Imported Project", hook: b.hook || "", yarn: b.yarn || "", started: b.started || "", status: b.status || "Imported" };
+        projects.push(p); activeProjectId = p.id;
+        if (Number.isFinite(Number(b.rowCount))) setRow(Number(b.rowCount));
+        if (b.sources?.videoUrl) localStorage.setItem(SOURCE_KEYS.video, b.sources.videoUrl);
+        if (b.sources?.webPatternUrl) localStorage.setItem(SOURCE_KEYS.web, b.sources.webPatternUrl);
+        if (b.sources?.pdfPatternUrl) localStorage.setItem(SOURCE_KEYS.pdf, b.sources.pdfPatternUrl);
+        const notesBox = document.querySelector(".notes textarea"); if (notesBox && b.notes) notesBox.value = b.notes;
+        saveProjects(); renderProjectSnapshot(); alert("Project backup imported. Reload the page to show restored source previews.");
+      } catch(e){ alert("Could not import this backup file."); } finally { importBackupInput.value = ""; } };
+      reader.readAsText(file);
+    }
+    createProjectBtn.addEventListener("click", () => openProjectForm("create"));
+    editProjectBtn.addEventListener("click", () => { const p = getActiveProject(); if (p) openProjectForm("edit", p); });
+    switchProjectBtn.addEventListener("click", () => { renderProjectList(); switchProjectDialog.showModal(); });
+    cancelProjectForm.addEventListener("click", () => projectFormDialog.close());
+    saveProjectForm.addEventListener("click", saveProjectFromForm);
+    closeSwitchProject.addEventListener("click", () => switchProjectDialog.close());
+    newProjectFromSwitch.addEventListener("click", () => { switchProjectDialog.close(); openProjectForm("create"); });
+    downloadBackupBtn.addEventListener("click", downloadProjectBackup);
+    importBackupInput.addEventListener("change", () => { const f = importBackupInput.files[0]; if (f) importProjectBackup(f); });
+
     function switchSourcePanel(panelId) {
       sourceTabs.forEach(tab => {
         tab.classList.toggle("active", tab.dataset.panel === panelId);
@@ -1748,6 +1916,8 @@
     }
 
 
+    renderProjectSnapshot();
+    renderProjectList();
     renderRow();
     setupSpeechRecognition();
   </script>
