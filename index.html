@@ -1006,32 +1006,38 @@
         <div class="welcome-art">🧺🧶🌸</div>
       </section>
 
-      <section class="card project-card" id="projectCard">
-        <div class="project-card-head">
-          <div>
-            <h2 class="section-title">🧺 Current Project</h2>
-            <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
-          </div>
-          <div class="project-card-actions">
-            <button class="outline-btn" id="createProjectBtn" type="button">＋ Create Project</button>
-            <button class="outline-btn" id="switchProjectBtn" type="button">Switch</button>
-          </div>
-        </div>
-        <div class="project-snapshot" id="projectSnapshot">
-          <div class="empty-project">
-            <strong>No project selected</strong>
-            <span>Create a project to save your hook size, materials, row count, pattern links, and notes.</span>
-          </div>
-        </div>
-        <div class="project-backup-actions">
-          <button class="soft-btn" id="editProjectBtn" type="button">✎ Edit Project</button>
-          <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Download Current Project</button>
-          <button class="soft-btn" id="downloadAllBackupBtn" type="button">⬇ Download All Projects</button>
-          <label class="soft-btn import-label" for="importBackupInput">⬆ Import Backup</label>
-          <input id="importBackupInput" type="file" accept="application/json,.json" />
-        </div>
-      </section>
+     <section class="card project-card" id="projectCard">
+  <div class="project-card-head">
+    <div>
+      <h2 class="section-title">🧺 Current Project</h2>
+      <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
+    </div>
 
+    <div class="project-card-actions">
+      <button class="outline-btn" id="createProjectBtn" type="button">➕ New</button>
+      <button class="outline-btn" id="editProjectBtn" type="button">✏️ Edit</button>
+      <button class="outline-btn" id="switchProjectBtn" type="button">🔄 Switch</button>
+    </div>
+  </div>
+
+  <div class="project-snapshot" id="projectSnapshot">
+    <div class="empty-project">
+      <strong>No project selected</strong>
+      <span>Create a project to save your hook size, materials, row count, pattern links, and notes.</span>
+    </div>
+  </div>
+
+  <details class="backup-restore">
+    <summary>💾 Backup & Restore</summary>
+
+    <div class="backup-actions">
+      <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Current Project</button>
+      <button class="soft-btn" id="downloadAllBackupBtn" type="button">⬇ All Projects</button>
+      <label class="soft-btn import-label" for="importBackupInput">⬆ Import Backup</label>
+      <input id="importBackupInput" type="file" accept="application/json,.json" />
+    </div>
+  </details>
+</section>
       <section class="card viewer">
         <div class="section-head">
           <h2 class="section-title">▻ Pattern Source</h2>
