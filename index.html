@@ -310,6 +310,156 @@
       line-height: 1;
     }
 
+    .welcome-refined {
+      grid-template-columns: minmax(0, 1fr) 280px;
+      min-height: 145px;
+    }
+
+    .welcome-copy h1 {
+      margin: 0;
+      color: var(--cranberry);
+      font-size: 2rem;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+
+    .welcome-copy p {
+      max-width: 560px;
+      margin-top: 9px;
+      color: var(--text);
+    }
+
+    .getting-started-btn {
+      margin-top: 14px;
+      width: max-content;
+    }
+
+    .welcome-image-placeholder {
+      min-height: 110px;
+      border: 1px dashed #e4bdc8;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at top left, #fff0f4 0, transparent 42%),
+        linear-gradient(135deg, #fffdfb, #fff5ef);
+      display: grid;
+      place-items: center;
+      padding: 12px;
+    }
+
+    .placeholder-card {
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+
+    .placeholder-icon {
+      display: block;
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .placeholder-card strong {
+      display: block;
+      color: var(--cranberry-dark);
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+    }
+
+    .placeholder-card small {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .getting-started-dialog {
+      width: min(720px, calc(100vw - 34px));
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .getting-started-content {
+      padding: 22px;
+    }
+
+    .getting-started-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(105deg, #fffdfb, #fff2ef);
+    }
+
+    .getting-started-header h2 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1.45rem;
+      line-height: 1.15;
+    }
+
+    .getting-started-header p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .close-help-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      font-family: Arial, sans-serif;
+      font-size: 1.1rem;
+      padding: 0;
+      flex: 0 0 auto;
+    }
+
+    .getting-started-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .help-step {
+      border: 1px solid #f1dbe1;
+      background: #fffdfb;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .help-step strong {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 5px;
+      font-size: 0.98rem;
+    }
+
+    .help-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.38;
+    }
+
+    .help-note {
+      margin: 14px 0 0;
+      padding: 12px 14px;
+      border-radius: 15px;
+      background: #fff8f9;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 0.92rem;
+    }
+
+    .help-note strong {
+      color: var(--cranberry-dark);
+    }
+
     .section-head {
       display: flex;
       align-items: center;
@@ -1463,6 +1613,7 @@
       .page { grid-template-columns: 1fr; }
       .side { display: grid; grid-template-columns: 330px 1fr; align-items: start; }
       .welcome { grid-template-columns: 1fr; }
+      .welcome-refined { grid-template-columns: 1fr; }
       .welcome-project { border-left: 0; padding-left: 0; }
       .welcome-art { display: none; }
     }
@@ -1473,6 +1624,8 @@
       .library-btn { display: none; }
       .page { padding: 14px; }
       .side { display: flex; }
+      .getting-started-grid { grid-template-columns: 1fr; }
+      .welcome-image-placeholder { min-height: 95px; }
       .project-strip { grid-template-columns: 1fr 1fr; }
       .project-strip .field { border-right: 0; }
       .tabs { grid-template-columns: 1fr; }
@@ -1501,12 +1654,20 @@
 
   <main class="page">
     <section class="main">
-      <section class="card welcome simple-welcome">
-        <div>
-          <h1>Welcome back, <span class="script-name">Maker!</span> ♡</h1>
-          <p>Track your rows, follow patterns, save project snapshots, and bring your beautiful projects to life. 💕</p>
+      <section class="card welcome simple-welcome welcome-refined">
+        <div class="welcome-copy">
+          <h1>Your Crochet Project Companion</h1>
+          <p>Keep track of projects, patterns, rows, time, and notes—all in one place.</p>
+          <button class="outline-btn getting-started-btn" id="openGettingStarted" type="button">📖 How to Use</button>
         </div>
-        <div class="welcome-art">🧺🧶🌸</div>
+
+        <div class="welcome-image-placeholder" aria-label="Crochet workspace illustration placeholder">
+          <div class="placeholder-card">
+            <span class="placeholder-icon">🧺</span>
+            <strong>Image Placeholder</strong>
+            <small>Cozy yarn basket + hook illustration</small>
+          </div>
+        </div>
       </section>
 
       <section class="card project-card" id="projectCard">
@@ -1857,6 +2018,54 @@
     </div>
   </dialog>
 
+  <dialog class="project-dialog getting-started-dialog" id="gettingStartedDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>🧶 How to Use Crochet Workspace</h2>
+        <p>A quick guide to projects, patterns, rows, time, notes, and backups.</p>
+      </div>
+      <button class="close-help-btn" id="closeGettingStarted" type="button" aria-label="Close help">×</button>
+    </div>
+
+    <div class="getting-started-content">
+      <div class="getting-started-grid">
+        <div class="help-step">
+          <strong>1. Create a project</strong>
+          <p>Save the project name, hook size, materials, status, notes, rows, timer data, and pattern sources.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>2. Add a pattern source</strong>
+          <p>Use 🎥 Video Tutorial, 🌐 Web Pattern, or 📄 PDF Pattern to keep your instructions nearby.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>3. Track your rows</strong>
+          <p>Use the Row Counter for manual tracking, or paste rows into the Pattern Tracker and check them off.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>4. Track your time</strong>
+          <p>Start a Project Timer session when you crochet. End the session to save it to the project history.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>5. Keep notes</strong>
+          <p>Use Project Notes for yarn changes, modifications, reminders, sizing notes, or anything you want to remember.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>6. Back up your work</strong>
+          <p>Use Backup & Restore to download the current project or all projects as a JSON backup file.</p>
+        </div>
+      </div>
+
+      <p class="help-note">
+        <strong>Tip:</strong> Row Counter and Pattern Tracker are independent tools. Use either one—or both—depending on how you like to follow a pattern.
+      </p>
+    </div>
+  </dialog>
+
   <dialog id="jumpDialog">
     <h2 class="dialog-title">Jump to Row</h2>
     <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
@@ -1899,6 +2108,9 @@
     const timerSessionList = document.getElementById("timerSessionList");
     const timerClearAllBtn = document.getElementById("timerClearAllBtn");
     const projectNotes = document.getElementById("projectNotes");
+    const openGettingStarted = document.getElementById("openGettingStarted");
+    const gettingStartedDialog = document.getElementById("gettingStartedDialog");
+    const closeGettingStarted = document.getElementById("closeGettingStarted");
 
     const QUICK_ROW_KEY = "crochetWorkspaceQuickCounterRow";
     const COUNTER_MODE_KEY = "crochetWorkspaceCounterMode";
@@ -2502,6 +2714,20 @@
         }, 250);
       };
     }
+
+    openGettingStarted.addEventListener("click", () => {
+      gettingStartedDialog.showModal();
+    });
+
+    closeGettingStarted.addEventListener("click", () => {
+      gettingStartedDialog.close();
+    });
+
+    gettingStartedDialog.addEventListener("click", event => {
+      if (event.target === gettingStartedDialog) {
+        gettingStartedDialog.close();
+      }
+    });
 
     addRow.addEventListener("click", () => setRow(row + 1));
     minusRow.addEventListener("click", () => setRow(row - 1));
