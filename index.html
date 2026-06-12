@@ -941,6 +941,9 @@
 
     let recognition = null;
     let voiceActive = false;
+    let shouldRestartVoice = false;
+    let lastVoiceCommand = "";
+    let lastVoiceCommandTime = 0;
 
     function saveRow() {
       localStorage.setItem(ROW_KEY, String(row));
@@ -954,29 +957,38 @@
     function setRow(value) {
       const newRow = Math.max(0, Math.floor(Number(value)));
       if (!Number.isFinite(newRow)) return;
+
       row = newRow;
       renderRow();
     }
 
     function setVoiceOff(message) {
       voiceActive = false;
+      shouldRestartVoice = false;
       voiceToggle.textContent = "Start Voice Counter";
       voiceToggle.classList.remove("on");
       voiceStatus.textContent = "Voice Off";
       voiceDot.classList.remove("on");
-      if (message) voiceMessage.textContent = message;
+
+      if (message) {
+        voiceMessage.textContent = message;
+      }
     }
 
     function setVoiceOn(message) {
       voiceActive = true;
+      shouldRestartVoice = true;
       voiceToggle.textContent = "Stop Voice Counter";
       voiceToggle.classList.add("on");
       voiceStatus.textContent = "Voice On";
       voiceDot.classList.add("on");
-      if (message) voiceMessage.textContent = message;
+
+      if (message) {
+        voiceMessage.textContent = message;
+      }
     }
 
-    function handleVoiceCommand(transcript) {
+    function normalizeCommand(transcript) {
       const heard = transcript.toLowerCase().trim();
 
       const numberMatch =
@@ -985,16 +997,19 @@
         heard.match(/number (\d+)/);
 
       if (numberMatch) {
-        const spokenRow = Number(numberMatch[1]);
-        setRow(spokenRow);
-        voiceMessage.textContent = `Heard “${transcript}” — set row to ${spokenRow}.`;
-        return;
+        return {
+          type: "set",
+          value: Number(numberMatch[1]),
+          label: `set-${numberMatch[1]}`
+        };
       }
 
-      if (heard.includes("add row") || heard.includes("plus row") || heard.includes("next row")) {
-        setRow(row + 1);
-        voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
-        return;
+      if (
+        heard.includes("add row") ||
+        heard.includes("plus row") ||
+        heard.includes("next row")
+      ) {
+        return { type: "add", label: "add" };
       }
 
       if (
@@ -1003,9 +1018,7 @@
         heard.includes("previous row") ||
         heard.includes("back row")
       ) {
-        setRow(row - 1);
-        voiceMessage.textContent = `Heard “${transcript}” — subtracted 1 row.`;
-        return;
+        return { type: "minus", label: "minus" };
       }
 
       if (
@@ -1013,12 +1026,57 @@
         heard.includes("reset rows") ||
         heard.includes("reset counter")
       ) {
-        setRow(0);
-        voiceMessage.textContent = `Heard “${transcript}” — reset rows.`;
+        return { type: "reset", label: "reset" };
+      }
+
+      return { type: "unknown", label: heard };
+    }
+
+    function isDuplicateCommand(commandLabel) {
+      const now = Date.now();
+      const isDuplicate = commandLabel === lastVoiceCommand && now - lastVoiceCommandTime < 1400;
+
+      lastVoiceCommand = commandLabel;
+      lastVoiceCommandTime = now;
+
+      return isDuplicate;
+    }
+
+    function handleVoiceCommand(transcript) {
+      const command = normalizeCommand(transcript);
+
+      if (command.type === "unknown") {
+        voiceMessage.textContent = `Heard “${transcript}”, but I did not recognize that command.`;
         return;
       }
 
-      voiceMessage.textContent = `Heard “${transcript}”, but I did not recognize that command.`;
+      if (isDuplicateCommand(command.label)) {
+        voiceMessage.textContent = `Ignored repeat: “${transcript}”.`;
+        return;
+      }
+
+      if (command.type === "set") {
+        setRow(command.value);
+        voiceMessage.textContent = `Heard “${transcript}” — set row to ${command.value}.`;
+        return;
+      }
+
+      if (command.type === "add") {
+        setRow(row + 1);
+        voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
+        return;
+      }
+
+      if (command.type === "minus") {
+        setRow(row - 1);
+        voiceMessage.textContent = `Heard “${transcript}” — subtracted 1 row.`;
+        return;
+      }
+
+      if (command.type === "reset") {
+        setRow(0);
+        voiceMessage.textContent = `Heard “${transcript}” — reset rows.`;
+      }
     }
 
     function setupSpeechRecognition() {
@@ -1038,28 +1096,52 @@
       recognition.lang = "en-US";
 
       recognition.onstart = () => {
-        setVoiceOn("Say one command now.");
+        setVoiceOn("Voice counter is on. Say: add row, minus row, reset rows, or row 12.");
       };
 
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
+        const result = event.results[event.results.length - 1];
+
+        if (!result.isFinal) return;
+
+        const transcript = result[0].transcript;
         handleVoiceCommand(transcript);
       };
 
       recognition.onerror = (event) => {
         if (event.error === "not-allowed") {
           setVoiceOff("Microphone permission was blocked.");
-        } else if (event.error === "no-speech") {
-          setVoiceOff("No speech heard. Press Start Voice Counter and try again.");
-        } else if (event.error === "audio-capture") {
-          setVoiceOff("No microphone was found.");
-        } else {
-          setVoiceOff(`Voice error: ${event.error}`);
+          return;
         }
+
+        if (event.error === "audio-capture") {
+          setVoiceOff("No microphone was found.");
+          return;
+        }
+
+        if (event.error === "no-speech") {
+          voiceMessage.textContent = "Still on. Say a command when ready.";
+          return;
+        }
+
+        voiceMessage.textContent = `Voice error: ${event.error}`;
       };
 
       recognition.onend = () => {
-        setVoiceOff(voiceMessage.textContent || "Voice stopped.");
+        if (!shouldRestartVoice) {
+          setVoiceOff("Voice counter stopped.");
+          return;
+        }
+
+        window.setTimeout(() => {
+          if (!shouldRestartVoice) return;
+
+          try {
+            recognition.start();
+          } catch (error) {
+            setVoiceOff("Voice counter paused. Press Start Voice Counter again.");
+          }
+        }, 450);
       };
     }
 
@@ -1082,10 +1164,12 @@
 
     function jumpToRow() {
       const value = Number(jumpInput.value);
+
       if (!Number.isFinite(value) || value < 0) {
         alert("Please enter a row number of 0 or higher.");
         return;
       }
+
       setRow(value);
       jumpDialog.close();
     }
@@ -1101,6 +1185,7 @@
       if (!recognition) return;
 
       if (voiceActive) {
+        shouldRestartVoice = false;
         recognition.stop();
         setVoiceOff("Voice counter stopped.");
         return;
@@ -1109,6 +1194,7 @@
       voiceMessage.textContent = "Starting voice counter...";
 
       try {
+        shouldRestartVoice = true;
         recognition.start();
       } catch (error) {
         setVoiceOff("Voice is still starting. Try again in a second.");
