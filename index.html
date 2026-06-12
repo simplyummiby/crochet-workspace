@@ -3453,14 +3453,7 @@
 
 
     function switchSourcePanel(panelId) {
-  
-    pastePatternBtn.addEventListener("click", openPatternImport);
-    uncheckRowsBtn.addEventListener("click", uncheckPatternRows);
-    deletePatternBtn.addEventListener("click", deletePatternTracker);
-    cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
-    importPatternRows.addEventListener("click", importPatternTrackerRows);
-
-    sourceTabs.forEach(tab => {
+      sourceTabs.forEach(tab => {
         tab.classList.toggle("active", tab.dataset.panel === panelId);
       });
 
