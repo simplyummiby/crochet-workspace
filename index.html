@@ -936,7 +936,7 @@
     const voiceDot = document.getElementById("voiceDot");
     const voiceMessage = document.getElementById("voiceMessage");
 
-    const ROW_KEY = "crochetWorkspaceFullMockupRowCranberry";
+    const ROW_KEY = "crochetWorkspaceFullMockupRowFixed";
     let row = Number(localStorage.getItem(ROW_KEY)) || 27;
 
     let recognition = null;
@@ -991,11 +991,7 @@
         return;
       }
 
-      if (
-        heard.includes("add row") ||
-        heard.includes("plus row") ||
-        heard.includes("next row")
-      ) {
+      if (heard.includes("add row") || heard.includes("plus row") || heard.includes("next row")) {
         setRow(row + 1);
         voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
         return;
@@ -1116,175 +1112,6 @@
         recognition.start();
       } catch (error) {
         setVoiceOff("Voice is still starting. Try again in a second.");
-      }
-    });
-
-    renderRow();
-    }
-
-    function showVoiceOff(message) {
-      voiceOn = false;
-      voiceToggle.textContent = "Start Voice Counter";
-      voiceToggle.classList.remove("on");
-      voiceStatus.textContent = "Voice Off";
-      voiceDot.classList.remove("on");
-      if (message) voiceMessage.textContent = message;
-    }
-
-    function showVoiceOn(message) {
-      voiceOn = true;
-      voiceToggle.textContent = "Stop Voice Counter";
-      voiceToggle.classList.add("on");
-      voiceStatus.textContent = "Voice On";
-      voiceDot.classList.add("on");
-      if (message) voiceMessage.textContent = message;
-    }
-
-    function handleVoiceCommand(transcript) {
-      const heard = transcript.toLowerCase().trim();
-
-      const numberMatch =
-        heard.match(/row number (\d+)/) ||
-        heard.match(/row (\d+)/) ||
-        heard.match(/number (\d+)/);
-
-      if (numberMatch) {
-        const spokenRow = Number(numberMatch[1]);
-        setRow(spokenRow);
-        voiceMessage.textContent = `Heard “${transcript}” — set row to ${spokenRow}.`;
-        return;
-      }
-
-      if (
-        heard.includes("add row") ||
-        heard.includes("plus row") ||
-        heard.includes("next row") ||
-        heard.includes("one row")
-      ) {
-        setRow(row + 1);
-        voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
-        return;
-      }
-
-      if (
-        heard.includes("minus row") ||
-        heard.includes("subtract row") ||
-        heard.includes("previous row") ||
-        heard.includes("back row")
-      ) {
-        setRow(row - 1);
-        voiceMessage.textContent = `Heard “${transcript}” — subtracted 1 row.`;
-        return;
-      }
-
-      if (
-        heard.includes("reset row") ||
-        heard.includes("reset rows") ||
-        heard.includes("reset counter")
-      ) {
-        setRow(0);
-        voiceMessage.textContent = `Heard “${transcript}” — reset rows.`;
-        return;
-      }
-
-      voiceMessage.textContent = `Heard “${transcript}”, but I did not recognize that command.`;
-    }
-
-    function setupSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        voiceToggle.disabled = true;
-        voiceToggle.textContent = "Voice unavailable";
-        voiceMessage.textContent = "Voice commands need Chrome or a browser that supports SpeechRecognition.";
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = false;
-      recognition.lang = "en-US";
-
-      recognition.onstart = () => {
-        showVoiceOn("Voice counter is active.");
-      };
-
-      recognition.onresult = (event) => {
-        const latest = event.results[event.results.length - 1][0].transcript;
-        handleVoiceCommand(latest);
-      };
-
-      recognition.onerror = (event) => {
-        if (event.error === "not-allowed") {
-          showVoiceOff("Microphone permission was blocked.");
-        } else if (event.error === "no-speech") {
-          voiceMessage.textContent = "No speech heard. Try again.";
-        } else if (event.error === "aborted") {
-          showVoiceOff("Voice counter stopped.");
-        } else {
-          voiceMessage.textContent = "Voice had trouble listening. Try again.";
-        }
-      };
-
-      recognition.onend = () => {
-        if (voiceOn) {
-          try {
-            recognition.start();
-          } catch (error) {
-            showVoiceOff("Voice counter paused. Press Start Voice Counter again.");
-          }
-        }
-      };
-    }
-
-    addRow.addEventListener("click", () => setRow(row + 1));
-    minusRow.addEventListener("click", () => setRow(row - 1));
-
-    resetRows.addEventListener("click", () => {
-      setRow(0);
-    });
-
-    openJump.addEventListener("click", () => {
-      jumpInput.value = "";
-      jumpDialog.showModal();
-      jumpInput.focus();
-    });
-
-    cancelJump.addEventListener("click", () => {
-      jumpDialog.close();
-    });
-
-    function jumpToRow() {
-      const value = Number(jumpInput.value);
-      if (!Number.isFinite(value) || value < 0) {
-        alert("Please enter a row number of 0 or higher.");
-        return;
-      }
-      setRow(value);
-      jumpDialog.close();
-    }
-
-    goJump.addEventListener("click", jumpToRow);
-
-    jumpInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") jumpToRow();
-      if (event.key === "Escape") jumpDialog.close();
-    });
-
-    voiceToggle.addEventListener("click", () => {
-      if (!recognition) return;
-
-      if (voiceOn) {
-        voiceOn = false;
-        recognition.stop();
-        showVoiceOff("Voice counter stopped.");
-        return;
-      }
-
-      try {
-        recognition.start();
-      } catch (error) {
-        voiceMessage.textContent = "Voice is still starting. Try again in a second.";
       }
     });
 
