@@ -1009,6 +1009,125 @@
       background: #ffe7e9;
     }
 
+
+    .tracker-subtitle {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .tracker-head {
+      gap: 14px;
+    }
+
+    .tracker-actions button {
+      margin-top: 0;
+      white-space: nowrap;
+    }
+
+    .tracker-progress-wrap {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tracker-progress-text {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 9px;
+    }
+
+    .tracker-progress-bar {
+      height: 9px;
+      background: #fde5eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .tracker-progress-bar span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: var(--cranberry-2);
+      transition: width 0.2s ease;
+    }
+
+    .tracker-empty {
+      padding: 24px 20px 26px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .tracker-empty strong {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 6px;
+    }
+
+    .tracker-table-wrap {
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .tracker-table tbody tr {
+      cursor: pointer;
+    }
+
+    .tracker-table tbody tr:hover {
+      background: #fff8f9;
+    }
+
+    .tracker-table .current-tracker-row {
+      background: #fff0f4;
+      color: #7f173c;
+      font-weight: 900;
+    }
+
+    .tracker-table .completed-row td {
+      color: var(--muted);
+    }
+
+    .tracker-row-input {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--cranberry-2);
+      cursor: pointer;
+    }
+
+    .pattern-import-textarea {
+      width: 100%;
+      min-height: 230px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      resize: vertical;
+      background: white;
+      color: var(--text);
+      font: inherit;
+    }
+
+    @media (max-width: 720px) {
+      .tracker-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .tracker-actions {
+        width: 100%;
+      }
+
+      .tracker-actions button {
+        flex: 1 1 100%;
+      }
+
+      .tracker-table th,
+      .tracker-table td {
+        padding: 9px 10px;
+      }
+    }
+
+
     @media (max-width: 1100px) {
       .topbar { grid-template-columns: 1fr auto; }
       .nav { display: none; }
@@ -1175,29 +1294,40 @@
 
       <section class="card tracker">
         <div class="tracker-head">
-          <h2 class="section-title">▤ Pattern Tracker</h2>
-          <div class="tracker-actions"><span>⌁ Collapse All</span><span>▣ Print</span></div>
+          <div>
+            <h2 class="section-title">▤ Pattern Tracker</h2>
+            <p class="tracker-subtitle">Paste pattern rows, check them off, and keep your place with the row counter.</p>
+          </div>
+
+          <div class="tracker-actions">
+            <button class="outline-btn" id="pastePatternBtn" type="button">Paste Pattern</button>
+            <button class="outline-btn" id="clearTrackerBtn" type="button">Clear</button>
+          </div>
         </div>
 
-        <table>
-          <thead>
-            <tr><th class="row-col">Row</th><th>Instructions</th><th class="done-col">Done</th></tr>
-          </thead>
-          <tbody>
-            <tr><td class="row-col">24</td><td>(sc, ch 1, sc) in next stitch, sc in next 9 stitches, repeat from *</td><td class="done-col"><span class="check"></span></td></tr>
-            <tr><td class="row-col">25</td><td>Ch 1, turn, sc in each stitch across</td><td class="done-col"><span class="check checked">✓</span></td></tr>
-            <tr><td class="row-col">26</td><td>Ch 1, turn, (sc, ch 1) in next stitch, sc in next 9 stitches, repeat from *</td><td class="done-col"><span class="check checked">✓</span></td></tr>
-            <tr class="active-row"><td class="row-col">→ 27</td><td>Ch 1, turn, sc in each stitch across</td><td class="done-col"><span class="check"></span></td></tr>
-            <tr><td class="row-col">28</td><td>Repeat row 26</td><td class="done-col"><span class="check"></span></td></tr>
-            <tr><td class="row-col">29</td><td>Repeat row 25</td><td class="done-col"><span class="check"></span></td></tr>
-            <tr><td class="row-col">30</td><td>Fasten off and weave in ends</td><td class="done-col"><span class="check"></span></td></tr>
-          </tbody>
-        </table>
+        <div class="tracker-progress-wrap">
+          <div class="tracker-progress-text" id="trackerProgressText">No rows loaded yet.</div>
+          <div class="tracker-progress-bar">
+            <span id="trackerProgressBar"></span>
+          </div>
+        </div>
 
-        <div class="progress">
-          <span>Progress: Row 27 of 100</span>
-          <div class="progress-line"><span></span></div>
-          <span>27%</span>
+        <div class="tracker-empty" id="trackerEmpty">
+          <strong>No pattern rows yet</strong>
+          <span>Click “Paste Pattern” and paste one row per line.</span>
+        </div>
+
+        <div class="tracker-table-wrap" id="trackerTableWrap" hidden>
+          <table class="tracker-table">
+            <thead>
+              <tr>
+                <th class="row-col">Row</th>
+                <th>Instructions</th>
+                <th class="done-col">Done</th>
+              </tr>
+            </thead>
+            <tbody id="patternTrackerBody"></tbody>
+          </table>
         </div>
       </section>
     </section>
@@ -1337,6 +1467,19 @@
     </div>
   </dialog>
 
+
+  <dialog class="project-dialog" id="patternImportDialog">
+    <h2>Paste Pattern Rows</h2>
+    <p class="project-subtitle">Paste one row per line. Row numbers will be detected when possible.</p>
+
+    <textarea id="patternImportText" class="pattern-import-textarea" placeholder="Row 1: Ch 21&#10;Row 2: HDC across&#10;Row 3: Repeat row 2"></textarea>
+
+    <div class="project-dialog-actions">
+      <button class="soft-btn" id="cancelPatternImport" type="button">Cancel</button>
+      <button class="primary-btn" id="importPatternRows" type="button">Import Rows</button>
+    </div>
+  </dialog>
+
   <dialog id="jumpDialog">
     <h2 class="dialog-title">Jump to Row</h2>
     <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
@@ -1394,6 +1537,10 @@
     function renderRow() {
       rowCount.textContent = row;
       saveRow();
+
+      if (typeof renderPatternTracker === "function") {
+        renderPatternTracker();
+      }
     }
 
     function loadRowForCurrentMode() {
@@ -1408,6 +1555,10 @@
 
       rowCount.textContent = row;
       updateCounterModeDisplay();
+
+      if (typeof renderPatternTracker === "function") {
+        renderPatternTracker();
+      }
     }
 
     function updateCounterModeDisplay() {
@@ -1772,6 +1923,18 @@
     const openPdfLink = document.getElementById("openPdfLink");
     const pdfHelp = document.getElementById("pdfHelp");
 
+    const pastePatternBtn = document.getElementById("pastePatternBtn");
+    const clearTrackerBtn = document.getElementById("clearTrackerBtn");
+    const patternImportDialog = document.getElementById("patternImportDialog");
+    const patternImportText = document.getElementById("patternImportText");
+    const cancelPatternImport = document.getElementById("cancelPatternImport");
+    const importPatternRows = document.getElementById("importPatternRows");
+    const trackerProgressText = document.getElementById("trackerProgressText");
+    const trackerProgressBar = document.getElementById("trackerProgressBar");
+    const trackerEmpty = document.getElementById("trackerEmpty");
+    const trackerTableWrap = document.getElementById("trackerTableWrap");
+    const patternTrackerBody = document.getElementById("patternTrackerBody");
+
     const SOURCE_KEYS = {
       video: "crochetWorkspaceVideoUrl",
       web: "crochetWorkspaceWebPatternUrl",
@@ -2006,6 +2169,7 @@
           pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
         },
         notes: document.querySelector(".notes textarea")?.value || "",
+        patternTrackerRows: trackerRows,
         exportedAt: new Date().toISOString(),
         backupType: "crochet-workspace-project-snapshot",
         backupVersion: 1
@@ -2055,7 +2219,8 @@
             webPatternUrl: localStorage.getItem(SOURCE_KEYS.web) || "",
             pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
           },
-          notes: document.querySelector(".notes textarea")?.value || ""
+          notes: document.querySelector(".notes textarea")?.value || "",
+          patternTrackerRows: trackerRows
         }
       };
     }
@@ -2129,6 +2294,11 @@
               notesBox.value = backup.currentDashboardState.notes;
             }
 
+            if (Array.isArray(backup.currentDashboardState?.patternTrackerRows)) {
+              trackerRows = backup.currentDashboardState.patternTrackerRows;
+              saveTrackerRows();
+            }
+
             saveProjects();
             renderProjectSnapshot();
             renderProjectList();
@@ -2173,6 +2343,11 @@
           const notesBox = document.querySelector(".notes textarea");
           if (notesBox && backup.notes) {
             notesBox.value = backup.notes;
+          }
+
+          if (Array.isArray(backup.patternTrackerRows)) {
+            trackerRows = backup.patternTrackerRows;
+            saveTrackerRows();
           }
 
           saveProjects();
@@ -2248,8 +2423,144 @@
       if (file) importProjectBackup(file);
     });
 
+
+    const TRACKER_KEY = "crochetWorkspacePatternTrackerRows";
+    let trackerRows = JSON.parse(localStorage.getItem(TRACKER_KEY) || "[]");
+
+    function saveTrackerRows() {
+      localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
+    }
+
+    function parsePatternRows(text) {
+      return text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map((line, index) => {
+          const rowMatch = line.match(/^(?:row|round|rnd)\s*(\d+)\s*[:.)-]?\s*(.*)$/i);
+          const plainNumberMatch = line.match(/^(\d+)\s*[:.)-]\s*(.*)$/);
+
+          if (rowMatch) {
+            return {
+              id: `tracker-${Date.now()}-${index}`,
+              rowNumber: Number(rowMatch[1]),
+              instruction: rowMatch[2].trim() || line,
+              done: false
+            };
+          }
+
+          if (plainNumberMatch) {
+            return {
+              id: `tracker-${Date.now()}-${index}`,
+              rowNumber: Number(plainNumberMatch[1]),
+              instruction: plainNumberMatch[2].trim() || line,
+              done: false
+            };
+          }
+
+          return {
+            id: `tracker-${Date.now()}-${index}`,
+            rowNumber: index + 1,
+            instruction: line,
+            done: false
+          };
+        });
+    }
+
+    function renderPatternTracker() {
+      const total = trackerRows.length;
+      const done = trackerRows.filter(item => item.done).length;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+
+      trackerProgressText.textContent = total
+        ? `Progress: ${done} of ${total} rows complete (${percent}%)`
+        : "No rows loaded yet.";
+
+      trackerProgressBar.style.width = `${percent}%`;
+      trackerEmpty.hidden = total > 0;
+      trackerTableWrap.hidden = total === 0;
+
+      patternTrackerBody.innerHTML = trackerRows.map(item => {
+        const isCurrent = Number(item.rowNumber) === Number(row);
+        const rowClass = [
+          isCurrent ? "current-tracker-row" : "",
+          item.done ? "completed-row" : ""
+        ].filter(Boolean).join(" ");
+
+        return `
+          <tr class="${rowClass}" data-tracker-id="${item.id}" data-row-number="${item.rowNumber}">
+            <td class="row-col">${isCurrent ? "→ " : ""}${item.rowNumber}</td>
+            <td>${item.instruction}</td>
+            <td class="done-col">
+              <input class="tracker-row-input" type="checkbox" ${item.done ? "checked" : ""} aria-label="Mark row ${item.rowNumber} complete" />
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      patternTrackerBody.querySelectorAll("tr[data-tracker-id]").forEach(rowEl => {
+        const trackerId = rowEl.dataset.trackerId;
+        const checkbox = rowEl.querySelector(".tracker-row-input");
+
+        rowEl.addEventListener("click", event => {
+          if (event.target === checkbox) return;
+          setRow(Number(rowEl.dataset.rowNumber));
+          renderPatternTracker();
+        });
+
+        checkbox.addEventListener("click", event => {
+          event.stopPropagation();
+          trackerRows = trackerRows.map(item => (
+            item.id === trackerId ? { ...item, done: checkbox.checked } : item
+          ));
+          saveTrackerRows();
+          renderPatternTracker();
+        });
+      });
+    }
+
+    function openPatternImport() {
+      patternImportText.value = trackerRows
+        .map(item => `Row ${item.rowNumber}: ${item.instruction}`)
+        .join("\n");
+
+      patternImportDialog.showModal();
+      patternImportText.focus();
+    }
+
+    function importPatternTrackerRows() {
+      const parsed = parsePatternRows(patternImportText.value);
+
+      if (!parsed.length) {
+        alert("Paste at least one pattern row.");
+        return;
+      }
+
+      trackerRows = parsed;
+      saveTrackerRows();
+      renderPatternTracker();
+      patternImportDialog.close();
+    }
+
+    function clearPatternTracker() {
+      const shouldClear = confirm("Clear all pattern tracker rows?");
+
+      if (!shouldClear) return;
+
+      trackerRows = [];
+      saveTrackerRows();
+      renderPatternTracker();
+    }
+
+
     function switchSourcePanel(panelId) {
-      sourceTabs.forEach(tab => {
+  
+    pastePatternBtn.addEventListener("click", openPatternImport);
+    clearTrackerBtn.addEventListener("click", clearPatternTracker);
+    cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
+    importPatternRows.addEventListener("click", importPatternTrackerRows);
+
+    sourceTabs.forEach(tab => {
         tab.classList.toggle("active", tab.dataset.panel === panelId);
       });
 
@@ -2449,6 +2760,12 @@
       localStorage.removeItem(SOURCE_KEYS.pdf);
     }
 
+
+    pastePatternBtn.addEventListener("click", openPatternImport);
+    clearTrackerBtn.addEventListener("click", clearPatternTracker);
+    cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
+    importPatternRows.addEventListener("click", importPatternTrackerRows);
+
     sourceTabs.forEach(tab => {
       tab.addEventListener("click", () => switchSourcePanel(tab.dataset.panel));
     });
@@ -2509,6 +2826,7 @@
     renderProjectSnapshot();
     renderProjectList();
     loadRowForCurrentMode();
+    renderPatternTracker();
     setupSpeechRecognition();
   </script>
 </body>
