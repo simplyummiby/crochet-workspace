@@ -1740,7 +1740,7 @@
     const TIMER_MODE_KEY = "crochetWorkspaceTimerMode";
 
     let timerMode = localStorage.getItem(TIMER_MODE_KEY) || "quick";
-    let timerData = getTimerDataForCurrentMode();
+    let timerData = { currentElapsed: 0, sessions: [] };
     let timerInterval = null;
     let timerStartedAt = null;
 
@@ -2418,6 +2418,9 @@
     let activeProjectId = localStorage.getItem(ACTIVE_PROJECT_KEY) || "";
     let editingProjectId = "";
 
+    // Timer data needs projects/activeProjectId to exist before loading project timer data.
+    timerData = getTimerDataForCurrentMode();
+
     function saveProjects() {
       localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
       localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
@@ -2761,6 +2764,8 @@
             renderProjectSnapshot();
             renderProjectList();
             loadRowForCurrentMode();
+            timerData = getTimerDataForCurrentMode();
+            renderTimer();
             alert("All-projects backup imported. Reload the page to show restored source previews.");
             return;
           }
@@ -2779,7 +2784,8 @@
             materials: backup.materials || backup.yarn || "",
             started: backup.started || "",
             status: backup.status || "Imported",
-            rowCount: Number(backup.rowCount) || 0
+            rowCount: Number(backup.rowCount) || 0,
+            timerData: backup.timerData || defaultTimerData()
           };
 
           projects.push(importedProject);
@@ -2813,6 +2819,8 @@
           renderProjectSnapshot();
           renderProjectList();
           loadRowForCurrentMode();
+          timerData = getTimerDataForCurrentMode();
+          renderTimer();
           alert("Project backup imported. Reload the page to show restored source previews.");
         } catch (error) {
           alert("Could not import this backup file.");
