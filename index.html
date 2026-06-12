@@ -929,6 +929,20 @@
 
     .simple-welcome { grid-template-columns: 1fr auto; }
     .project-card { padding: 18px 20px; }
+    .project-title-with-help {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-help-btn {
+      width: 24px;
+      height: 24px;
+      font-size: 0.78rem;
+      vertical-align: middle;
+    }
+
+
     .project-card-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
     .project-subtitle { margin:8px 0 0; color:var(--muted); font-size:.94rem; line-height:1.35; }
     .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
@@ -1220,7 +1234,14 @@
       <section class="card project-card" id="projectCard">
         <div class="project-card-head">
           <div>
-            <h2 class="section-title">🧺 Current Project</h2>
+            <h2 class="section-title project-title-with-help">
+              🧺 Current Project
+              <button
+                class="help-btn project-help-btn"
+                type="button"
+                data-tooltip="Projects can use either the Row Counter for manual tracking or the Pattern Tracker for imported row-by-row patterns. Both are saved with the project."
+                aria-label="Project tracking help">?</button>
+            </h2>
             <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
           </div>
 
