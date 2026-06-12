@@ -915,6 +915,23 @@
     .project-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .project-form-grid label { display:grid; gap:6px; color:var(--cranberry-dark); font-weight:800; font-size:.88rem; }
     .project-form-grid .full { grid-column:1 / -1; }
+
+    .project-form-grid select,
+    .project-form-grid textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .project-form-grid textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
     .project-form-grid input { width:100%; border:1px solid var(--line); border-radius:13px; padding:11px 12px; background:white; color:var(--text); }
     .project-dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
     .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
@@ -1570,10 +1587,12 @@
     const cancelProjectForm = document.getElementById("cancelProjectForm");
     const saveProjectForm = document.getElementById("saveProjectForm");
     const projectNameInput = document.getElementById("projectNameInput");
-    const projectHookInput = document.getElementById("projectHookInput");
-    const projectYarnInput = document.getElementById("projectYarnInput");
+    const projectHookSelect = document.getElementById("projectHookSelect");
+    const projectHookCustomInput = document.getElementById("projectHookCustomInput");
+    const customHookLabel = document.getElementById("customHookLabel");
     const projectStartedInput = document.getElementById("projectStartedInput");
-    const projectStatusInput = document.getElementById("projectStatusInput");
+    const projectStatusSelect = document.getElementById("projectStatusSelect");
+    const projectMaterialsInput = document.getElementById("projectMaterialsInput");
     const switchProjectDialog = document.getElementById("switchProjectDialog");
     const projectList = document.getElementById("projectList");
     const closeSwitchProject = document.getElementById("closeSwitchProject");
@@ -1607,6 +1626,40 @@
         <div class="snapshot-item"><small>Started</small><strong>${project.started || "—"}</strong></div>
         <div class="snapshot-item"><small>Status</small><strong>${project.status || "In Progress"}</strong></div></div>`;
     }
+
+    function getHookValue() {
+      if (projectHookSelect.value === "custom") {
+        return projectHookCustomInput.value.trim();
+      }
+
+      return projectHookSelect.value;
+    }
+
+    function setHookValue(hookValue) {
+      const matchingOption = Array.from(projectHookSelect.options).find(option => option.value === hookValue);
+
+      if (matchingOption) {
+        projectHookSelect.value = hookValue;
+        projectHookCustomInput.value = "";
+        customHookLabel.hidden = true;
+      } else if (hookValue) {
+        projectHookSelect.value = "custom";
+        projectHookCustomInput.value = hookValue;
+        customHookLabel.hidden = false;
+      } else {
+        projectHookSelect.value = "";
+        projectHookCustomInput.value = "";
+        customHookLabel.hidden = true;
+      }
+    }
+
+    function updateCustomHookVisibility() {
+      customHookLabel.hidden = projectHookSelect.value !== "custom";
+      if (projectHookSelect.value === "custom") {
+        projectHookCustomInput.focus();
+      }
+    }
+
     function openProjectForm(mode, project = null) {
       editingProjectId = project?.id || "";
       projectFormTitle.textContent = mode === "edit" ? "Edit Project" : "Create Project";
@@ -1685,6 +1738,8 @@
       } catch(e){ alert("Could not import this backup file."); } finally { importBackupInput.value = ""; } };
       reader.readAsText(file);
     }
+    projectHookSelect.addEventListener("change", updateCustomHookVisibility);
+
     createProjectBtn.addEventListener("click", () => openProjectForm("create"));
     editProjectBtn.addEventListener("click", () => { const p = getActiveProject(); if (p) openProjectForm("edit", p); });
     switchProjectBtn.addEventListener("click", () => { renderProjectList(); switchProjectDialog.showModal(); });
