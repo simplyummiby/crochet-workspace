@@ -2703,7 +2703,8 @@
       row = Number(localStorage.getItem(QUICK_ROW_KEY)) || 0;
       counterMode = "quick";
       timerMode = "quick";
-      timerData = getTimerDataForCurrentMode();
+      timerData = defaultTimerData();
+      localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(timerData));
 
       trackerRows = [];
       trackerCurrentRow = 0;
