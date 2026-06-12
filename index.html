@@ -334,42 +334,17 @@
       width: max-content;
     }
 
-    .welcome-image-placeholder {
-      min-height: 110px;
-      border: 1px dashed #e4bdc8;
-      border-radius: 20px;
-      background:
-        radial-gradient(circle at top left, #fff0f4 0, transparent 42%),
-        linear-gradient(135deg, #fffdfb, #fff5ef);
-      display: grid;
-      place-items: center;
-      padding: 12px;
+    .welcome-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .placeholder-card {
-      text-align: center;
-      color: var(--muted);
-      line-height: 1.25;
-    }
-
-    .placeholder-icon {
+    .welcome-image img {
+      max-width: 100%;
+      max-height: 165px;
+      object-fit: contain;
       display: block;
-      font-size: 2.4rem;
-      line-height: 1;
-      margin-bottom: 5px;
-    }
-
-    .placeholder-card strong {
-      display: block;
-      color: var(--cranberry-dark);
-      font-size: 0.9rem;
-      margin-bottom: 3px;
-    }
-
-    .placeholder-card small {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 800;
     }
 
     .getting-started-dialog {
@@ -1625,7 +1600,7 @@
       .page { padding: 14px; }
       .side { display: flex; }
       .getting-started-grid { grid-template-columns: 1fr; }
-      .welcome-image-placeholder { min-height: 95px; }
+      .welcome-image img { max-height: 130px; }
       .project-strip { grid-template-columns: 1fr 1fr; }
       .project-strip .field { border-right: 0; }
       .tabs { grid-template-columns: 1fr; }
@@ -1661,12 +1636,8 @@
           <button class="outline-btn getting-started-btn" id="openGettingStarted" type="button">📖 How to Use</button>
         </div>
 
-        <div class="welcome-image-placeholder" aria-label="Crochet workspace illustration placeholder">
-          <div class="placeholder-card">
-            <span class="placeholder-icon">🧺</span>
-            <strong>Image Placeholder</strong>
-            <small>Cozy yarn basket + hook illustration</small>
-          </div>
+        <div class="welcome-image">
+          <img src="assets/yarn-basket.png" alt="Crochet workspace illustration" />
         </div>
       </section>
 
