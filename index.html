@@ -995,7 +995,8 @@
         </div>
         <div class="project-backup-actions">
           <button class="soft-btn" id="editProjectBtn" type="button">✎ Edit Project</button>
-          <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Download Backup</button>
+          <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Download Current Project</button>
+          <button class="soft-btn" id="downloadAllBackupBtn" type="button">⬇ Download All Projects</button>
           <label class="soft-btn import-label" for="importBackupInput">⬆ Import Backup</label>
           <input id="importBackupInput" type="file" accept="application/json,.json" />
         </div>
@@ -1562,6 +1563,7 @@
     const switchProjectBtn = document.getElementById("switchProjectBtn");
     const editProjectBtn = document.getElementById("editProjectBtn");
     const downloadBackupBtn = document.getElementById("downloadBackupBtn");
+    const downloadAllBackupBtn = document.getElementById("downloadAllBackupBtn");
     const importBackupInput = document.getElementById("importBackupInput");
     const projectFormDialog = document.getElementById("projectFormDialog");
     const projectFormTitle = document.getElementById("projectFormTitle");
@@ -1634,6 +1636,41 @@
       const url = URL.createObjectURL(blob); const a = document.createElement("a");
       a.href = url; a.download = `${slugify(p.name)}-backup.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
+
+    function getAllProjectsPayload() {
+      return {
+        backupType: "crochet-workspace-all-projects-backup",
+        backupVersion: 1,
+        exportedAt: new Date().toISOString(),
+        activeProjectId,
+        projects,
+        currentDashboardState: {
+          rowCount: row,
+          sources: {
+            videoUrl: localStorage.getItem(SOURCE_KEYS.video) || "",
+            webPatternUrl: localStorage.getItem(SOURCE_KEYS.web) || "",
+            pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
+          },
+          notes: document.querySelector(".notes textarea")?.value || ""
+        }
+      };
+    }
+
+    function downloadAllProjectsBackup() {
+      const backup = getAllProjectsPayload();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "crochet-workspace-all-projects-backup.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
     function importProjectBackup(file) {
       const reader = new FileReader();
       reader.onload = () => { try { const b = JSON.parse(reader.result); if (b.backupType !== "crochet-workspace-project-snapshot") { alert("This does not look like a Crochet Workspace project backup."); return; }
@@ -1656,6 +1693,7 @@
     closeSwitchProject.addEventListener("click", () => switchProjectDialog.close());
     newProjectFromSwitch.addEventListener("click", () => { switchProjectDialog.close(); openProjectForm("create"); });
     downloadBackupBtn.addEventListener("click", downloadProjectBackup);
+    downloadAllBackupBtn.addEventListener("click", downloadAllProjectsBackup);
     importBackupInput.addEventListener("change", () => { const f = importBackupInput.files[0]; if (f) importProjectBackup(f); });
 
     function switchSourcePanel(panelId) {
