@@ -832,6 +832,27 @@
     }
 
 
+
+    .source-controls-three {
+      grid-template-columns: 1fr auto auto;
+    }
+
+    .clear-source-btn {
+      padding: 12px 14px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      .source-controls,
+      .source-controls-three {
+        grid-template-columns: 1fr;
+      }
+
+      .clear-source-btn {
+        width: 100%;
+      }
+    }
+
     .upload-row {
       display: flex;
       align-items: center;
@@ -942,9 +963,10 @@
         </div>
 
         <section class="source-panel" id="videoPanel">
-          <div class="source-controls">
+          <div class="source-controls source-controls-three">
             <input id="videoUrl" type="url" placeholder="Paste a YouTube tutorial URL..." />
             <button class="primary-btn" id="loadVideo" type="button">Load Video</button>
+            <button class="soft-btn clear-source-btn" id="clearVideo" type="button">Clear</button>
           </div>
 
           <div class="source-frame" id="videoFrameBox">
@@ -961,9 +983,10 @@
         </section>
 
         <section class="source-panel" id="webPanel" hidden>
-          <div class="source-controls">
+          <div class="source-controls source-controls-three">
             <input id="webUrl" type="url" placeholder="Paste a web pattern URL..." />
             <button class="primary-btn" id="loadWeb" type="button">Load Web Pattern</button>
+            <button class="soft-btn clear-source-btn" id="clearWeb" type="button">Clear</button>
           </div>
 
           <div class="source-frame" id="webFrameBox">
@@ -980,9 +1003,10 @@
         </section>
 
         <section class="source-panel" id="pdfPanel" hidden>
-          <div class="source-controls pdf-controls">
+          <div class="source-controls source-controls-three pdf-controls">
             <input id="pdfUrl" type="url" placeholder="Paste a PDF pattern URL..." />
             <button class="primary-btn" id="loadPdf" type="button">Load PDF URL</button>
+            <button class="soft-btn clear-source-btn" id="clearPdf" type="button">Clear</button>
           </div>
 
           <div class="upload-row">
@@ -1442,16 +1466,19 @@
 
     const videoUrl = document.getElementById("videoUrl");
     const loadVideo = document.getElementById("loadVideo");
+    const clearVideo = document.getElementById("clearVideo");
     const videoFrameBox = document.getElementById("videoFrameBox");
     const openVideoLink = document.getElementById("openVideoLink");
 
     const webUrl = document.getElementById("webUrl");
     const loadWeb = document.getElementById("loadWeb");
+    const clearWeb = document.getElementById("clearWeb");
     const webFrameBox = document.getElementById("webFrameBox");
     const openWebLink = document.getElementById("openWebLink");
 
     const pdfUrl = document.getElementById("pdfUrl");
     const loadPdf = document.getElementById("loadPdf");
+    const clearPdf = document.getElementById("clearPdf");
     const pdfUpload = document.getElementById("pdfUpload");
     const pdfFrameBox = document.getElementById("pdfFrameBox");
     const openPdfLink = document.getElementById("openPdfLink");
@@ -1601,13 +1628,81 @@
       pdfHelp.textContent = `Loaded uploaded PDF: ${file.name}. You may need to upload it again in a later session.`;
     }
 
+
+    function videoPlaceholderHtml() {
+      return `
+        <div class="source-placeholder" id="videoPlaceholder">
+          <div>
+            <strong>Video Tutorial</strong>
+            <span>Paste a YouTube link to keep your tutorial close while you stitch.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function webPlaceholderHtml() {
+      return `
+        <div class="source-placeholder" id="webPlaceholder">
+          <div>
+            <strong>Web Pattern</strong>
+            <span>Paste a pattern webpage URL to keep the written pattern nearby while you work.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function pdfPlaceholderHtml() {
+      return `
+        <div class="source-placeholder" id="pdfPlaceholder">
+          <div>
+            <strong>PDF Pattern</strong>
+            <span>Paste a PDF URL or upload a PDF pattern from your computer.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function clearVideoSource() {
+      videoUrl.value = "";
+      videoFrameBox.innerHTML = videoPlaceholderHtml();
+      openVideoLink.href = "#";
+      openVideoLink.hidden = true;
+      localStorage.removeItem(SOURCE_KEYS.video);
+    }
+
+    function clearWebSource() {
+      webUrl.value = "";
+      webFrameBox.innerHTML = webPlaceholderHtml();
+      openWebLink.href = "#";
+      openWebLink.hidden = true;
+      const webHelp = document.getElementById("webHelp");
+      webHelp.textContent = "Some websites block embedding. If the page does not appear, use the link below.";
+      webHelp.classList.remove("warning");
+      localStorage.removeItem(SOURCE_KEYS.web);
+    }
+
+    function clearPdfSource() {
+      pdfUrl.value = "";
+      pdfUpload.value = "";
+      pdfFrameBox.innerHTML = pdfPlaceholderHtml();
+      openPdfLink.href = "#";
+      openPdfLink.hidden = true;
+      pdfHelp.textContent = "Uploaded PDFs may need to be uploaded again in a later session. PDF URLs can be saved locally.";
+      localStorage.removeItem(SOURCE_KEYS.pdf);
+    }
+
     sourceTabs.forEach(tab => {
       tab.addEventListener("click", () => switchSourcePanel(tab.dataset.panel));
     });
 
     loadVideo.addEventListener("click", loadVideoSource);
+    clearVideo.addEventListener("click", clearVideoSource);
+
     loadWeb.addEventListener("click", loadWebSource);
+    clearWeb.addEventListener("click", clearWebSource);
+
     loadPdf.addEventListener("click", loadPdfSource);
+    clearPdf.addEventListener("click", clearPdfSource);
     pdfUpload.addEventListener("change", loadUploadedPdf);
 
     videoUrl.addEventListener("keydown", event => {
