@@ -1068,9 +1068,29 @@
 
     .notes, .quick { padding: 18px; }
 
+    .notes {
+      background:
+        radial-gradient(circle at top left, rgba(100, 133, 110, 0.12), transparent 38%),
+        rgba(255, 253, 251, 0.95);
+    }
+
+    .notes-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
     .notes .section-title {
       color: var(--green);
-      margin-bottom: 12px;
+    }
+
+    .notes-saved-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
     textarea {
@@ -1081,6 +1101,23 @@
       border-radius: 13px;
       padding: 12px;
       background: white;
+    }
+
+    .notes textarea {
+      min-height: 135px;
+      background:
+        linear-gradient(#fffdfb, #fffdfb) padding-box,
+        linear-gradient(135deg, rgba(100,133,110,0.22), rgba(194,58,105,0.18)) border-box;
+      border: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+      line-height: 1.45;
+    }
+
+    .notes textarea:focus {
+      outline: none;
+      box-shadow:
+        0 0 0 4px rgba(100, 133, 110, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.75);
     }
 
     .note-save {
@@ -1601,6 +1638,8 @@
       .side { display: flex; }
       .getting-started-grid { grid-template-columns: 1fr; }
       .welcome-image img { max-height: 130px; }
+      .notes-head { flex-direction: column; align-items: flex-start; gap: 3px; }
+      .notes-saved-label { white-space: normal; }
       .project-strip { grid-template-columns: 1fr 1fr; }
       .project-strip .field { border-right: 0; }
       .tabs { grid-template-columns: 1fr; }
@@ -1886,9 +1925,11 @@
       </article>
 
       <section class="card notes">
-        <h2 class="section-title">📝 Project Notes</h2>
+        <div class="notes-head">
+          <h2 class="section-title">📝 Project Notes</h2>
+          <span class="notes-saved-label">(saved with this project)</span>
+        </div>
         <textarea id="projectNotes" placeholder="Add your notes here..."></textarea>
-        <div class="note-save">Last saved 2 min ago ☁</div>
       </section>
 
       <section class="card quick">
