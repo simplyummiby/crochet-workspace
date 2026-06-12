@@ -942,8 +942,8 @@
     let recognition = null;
     let voiceActive = false;
     let shouldRestartVoice = false;
-    let lastVoiceCommand = "";
-    let lastVoiceCommandTime = 0;
+    let lastCommandLabel = "";
+    let lastCommandTime = 0;
 
     function saveRow() {
       localStorage.setItem(ROW_KEY, String(row));
@@ -988,13 +988,24 @@
       }
     }
 
-    function normalizeCommand(transcript) {
-      const heard = transcript.toLowerCase().trim();
+    function normalizeWords(text) {
+      return text
+        .toLowerCase()
+        .replace(/[.,!?]/g, "")
+        .replace(/\bto\b/g, "two")
+        .replace(/\btoo\b/g, "two")
+        .trim();
+    }
+
+    function getCommand(transcript) {
+      const heard = normalizeWords(transcript);
 
       const numberMatch =
         heard.match(/row number (\d+)/) ||
         heard.match(/row (\d+)/) ||
-        heard.match(/number (\d+)/);
+        heard.match(/number (\d+)/) ||
+        heard.match(/go to row (\d+)/) ||
+        heard.match(/set row (\d+)/);
 
       if (numberMatch) {
         return {
@@ -1004,78 +1015,98 @@
         };
       }
 
-      if (
-        heard.includes("add row") ||
-        heard.includes("plus row") ||
-        heard.includes("next row")
-      ) {
+      const addWords = [
+        "add row",
+        "add one",
+        "plus row",
+        "plus one",
+        "next row",
+        "increase row",
+        "increase one",
+        "row up"
+      ];
+
+      const minusWords = [
+        "minus row",
+        "minus one",
+        "minus 1",
+        "subtract row",
+        "subtract one",
+        "previous row",
+        "back row",
+        "go back",
+        "decrease row",
+        "decrease one",
+        "row down"
+      ];
+
+      const resetWords = [
+        "reset row",
+        "reset rows",
+        "reset counter",
+        "start over",
+        "clear rows"
+      ];
+
+      if (addWords.some(phrase => heard.includes(phrase))) {
         return { type: "add", label: "add" };
       }
 
-      if (
-        heard.includes("minus row") ||
-        heard.includes("subtract row") ||
-        heard.includes("previous row") ||
-        heard.includes("back row")
-      ) {
+      if (minusWords.some(phrase => heard.includes(phrase))) {
         return { type: "minus", label: "minus" };
       }
 
-      if (
-        heard.includes("reset row") ||
-        heard.includes("reset rows") ||
-        heard.includes("reset counter")
-      ) {
+      if (resetWords.some(phrase => heard.includes(phrase))) {
         return { type: "reset", label: "reset" };
       }
 
       return { type: "unknown", label: heard };
     }
 
-    function isDuplicateCommand(commandLabel) {
+    function isRepeat(commandLabel) {
       const now = Date.now();
-      const isDuplicate = commandLabel === lastVoiceCommand && now - lastVoiceCommandTime < 1400;
+      const repeat = commandLabel === lastCommandLabel && now - lastCommandTime < 900;
 
-      lastVoiceCommand = commandLabel;
-      lastVoiceCommandTime = now;
+      lastCommandLabel = commandLabel;
+      lastCommandTime = now;
 
-      return isDuplicate;
+      return repeat;
     }
 
     function handleVoiceCommand(transcript) {
-      const command = normalizeCommand(transcript);
+      const command = getCommand(transcript);
 
       if (command.type === "unknown") {
-        voiceMessage.textContent = `Heard “${transcript}”, but I did not recognize that command.`;
+        voiceMessage.textContent = `Heard “${transcript}”, but did not recognize it. Try “add one” or “minus one”.`;
         return;
       }
 
-      if (isDuplicateCommand(command.label)) {
+      if (isRepeat(command.label)) {
         voiceMessage.textContent = `Ignored repeat: “${transcript}”.`;
         return;
       }
 
       if (command.type === "set") {
         setRow(command.value);
-        voiceMessage.textContent = `Heard “${transcript}” — set row to ${command.value}.`;
+        voiceMessage.textContent = `Set row to ${command.value}.`;
         return;
       }
 
       if (command.type === "add") {
         setRow(row + 1);
-        voiceMessage.textContent = `Heard “${transcript}” — added 1 row.`;
+        voiceMessage.textContent = "Added 1 row.";
         return;
       }
 
       if (command.type === "minus") {
         setRow(row - 1);
-        voiceMessage.textContent = `Heard “${transcript}” — subtracted 1 row.`;
+        voiceMessage.textContent = "Subtracted 1 row.";
         return;
       }
 
       if (command.type === "reset") {
         setRow(0);
-        voiceMessage.textContent = `Heard “${transcript}” — reset rows.`;
+        voiceMessage.textContent = "Reset rows.";
       }
     }
 
@@ -1090,22 +1121,35 @@
       }
 
       recognition = new SpeechRecognition();
-      recognition.continuous = false;
+
+      // Continuous mode gives less lag between commands.
+      recognition.continuous = true;
       recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+      recognition.maxAlternatives = 3;
       recognition.lang = "en-US";
 
       recognition.onstart = () => {
-        setVoiceOn("Voice counter is on. Say: add row, minus row, reset rows, or row 12.");
+        setVoiceOn("Voice counter is on. Try “add one” or “minus one”.");
       };
 
       recognition.onresult = (event) => {
-        const result = event.results[event.results.length - 1];
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (!result.isFinal) continue;
 
-        if (!result.isFinal) return;
+          // Try the best transcript first, but allow alternatives too.
+          for (let j = 0; j < result.length; j++) {
+            const transcript = result[j].transcript;
+            const command = getCommand(transcript);
 
-        const transcript = result[0].transcript;
-        handleVoiceCommand(transcript);
+            if (command.type !== "unknown") {
+              handleVoiceCommand(transcript);
+              return;
+            }
+          }
+
+          handleVoiceCommand(result[0].transcript);
+        }
       };
 
       recognition.onerror = (event) => {
@@ -1120,7 +1164,7 @@
         }
 
         if (event.error === "no-speech") {
-          voiceMessage.textContent = "Still on. Say a command when ready.";
+          voiceMessage.textContent = "Voice is still on.";
           return;
         }
 
@@ -1133,6 +1177,7 @@
           return;
         }
 
+        // Chrome sometimes ends listening automatically. Restart to keep Voice On.
         window.setTimeout(() => {
           if (!shouldRestartVoice) return;
 
@@ -1141,7 +1186,7 @@
           } catch (error) {
             setVoiceOff("Voice counter paused. Press Start Voice Counter again.");
           }
-        }, 450);
+        }, 250);
       };
     }
 
