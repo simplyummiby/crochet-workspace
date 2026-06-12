@@ -859,6 +859,22 @@
       line-height: 1;
     }
 
+    .timer-session-count {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .timer-active-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--cranberry-dark);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
     .timer-sessions {
       margin-top: 16px;
       border-top: 1px solid var(--line);
@@ -1701,7 +1717,8 @@
 
         <div class="timer-total-box">
           <span class="timer-label" id="timerTotalLabel">Total Project Time</span>
-          <strong id="timerTotalDisplay">00:00:00</strong>
+          <strong id="timerTotalDisplay">0s</strong>
+          <span class="timer-session-count" id="timerSessionCount">0 sessions</span>
         </div>
 
         <div class="timer-sessions">
@@ -1857,6 +1874,7 @@
     const timerResetSessionBtn = document.getElementById("timerResetSessionBtn");
     const timerTotalDisplay = document.getElementById("timerTotalDisplay");
     const timerTotalLabel = document.getElementById("timerTotalLabel");
+    const timerSessionCount = document.getElementById("timerSessionCount");
     const timerSessionList = document.getElementById("timerSessionList");
     const timerClearAllBtn = document.getElementById("timerClearAllBtn");
     const projectNotes = document.getElementById("projectNotes");
@@ -2118,6 +2136,7 @@
     function defaultTimerData() {
       return {
         currentElapsed: 0,
+        startedAt: null,
         sessions: []
       };
     }
@@ -2126,13 +2145,19 @@
       const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
 
       if (timerMode === "project" && activeProject) {
-        return activeProject.timerData || defaultTimerData();
+        return {
+          ...defaultTimerData(),
+          ...(activeProject.timerData || {})
+        };
       }
 
       timerMode = "quick";
 
       try {
-        return JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || defaultTimerData();
+        return {
+          ...defaultTimerData(),
+          ...(JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || {})
+        };
       } catch (error) {
         return defaultTimerData();
       }
@@ -2151,8 +2176,8 @@
       localStorage.setItem(TIMER_MODE_KEY, timerMode);
     }
 
-    function formatTimer(ms) {
-      const totalSeconds = Math.floor(ms / 1000);
+    function formatClock(ms) {
+      const totalSeconds = Math.floor(Math.max(0, ms) / 1000);
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
@@ -2163,7 +2188,7 @@
     }
 
     function formatDuration(ms) {
-      const totalSeconds = Math.floor(ms / 1000);
+      const totalSeconds = Math.floor(Math.max(0, ms) / 1000);
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
@@ -2182,28 +2207,36 @@
       });
     }
 
-    function getCurrentTimerElapsed() {
-      if (!timerStartedAt) return timerData.currentElapsed || 0;
+    function formatSessionTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
 
-      return (timerData.currentElapsed || 0) + (Date.now() - timerStartedAt);
+    function getCurrentTimerElapsed() {
+      const savedElapsed = Number(timerData.currentElapsed) || 0;
+
+      if (!timerData.startedAt) return savedElapsed;
+
+      return savedElapsed + (Date.now() - new Date(timerData.startedAt).getTime());
     }
 
     function getTotalTimerTime() {
-      const savedTotal = timerData.sessions.reduce((sum, session) => sum + Number(session.duration || 0), 0);
-      return savedTotal;
+      return timerData.sessions.reduce((sum, session) => sum + Number(session.duration || 0), 0);
     }
 
     function getTimerBackupPayload() {
       return {
         mode: timerMode,
         currentElapsed: getCurrentTimerElapsed(),
+        startedAt: timerData.startedAt || null,
         totalSavedTime: getTotalTimerTime(),
         sessions: Array.isArray(timerData.sessions) ? timerData.sessions : [],
-        isRunning: Boolean(timerStartedAt),
+        isRunning: Boolean(timerData.startedAt),
         exportedAt: new Date().toISOString()
       };
     }
-
 
     function updateTimerModeDisplay() {
       if (!timerModeText || !timerModeToggle) return;
@@ -2232,8 +2265,13 @@
     }
 
     function renderTimer() {
-      timerDisplay.textContent = formatTimer(getCurrentTimerElapsed());
-      timerTotalDisplay.textContent = formatTimer(getTotalTimerTime());
+      const currentElapsed = getCurrentTimerElapsed();
+      const totalSaved = getTotalTimerTime();
+      const sessionTotal = timerData.sessions.length;
+
+      timerDisplay.innerHTML = `${formatClock(currentElapsed)}${timerData.startedAt ? '<span class="timer-active-note">● Session active</span>' : ''}`;
+      timerTotalDisplay.textContent = formatDuration(totalSaved);
+      timerSessionCount.textContent = `${sessionTotal} ${sessionTotal === 1 ? "session" : "sessions"}`;
       updateTimerModeDisplay();
 
       const recentSessions = [...timerData.sessions]
@@ -2249,7 +2287,7 @@
         <li>
           <span class="timer-session-left">
             <span class="timer-session-number">${index + 1}</span>
-            <span>${formatSessionDate(session.endedAt)}</span>
+            <span>${formatSessionDate(session.endedAt)} • ${formatSessionTime(session.startedAt)}</span>
           </span>
           <strong>${formatDuration(session.duration)}</strong>
         </li>
@@ -2257,20 +2295,25 @@
     }
 
     function startTimer() {
-      if (timerStartedAt) return;
+      if (timerData.startedAt) return;
 
-      timerStartedAt = Date.now();
+      timerData.startedAt = new Date().toISOString();
+      saveTimerData();
+
+      window.clearInterval(timerInterval);
       timerInterval = window.setInterval(renderTimer, 1000);
       renderTimer();
     }
 
     function pauseTimer() {
-      if (!timerStartedAt) return;
+      if (!timerData.startedAt) return;
 
       timerData.currentElapsed = getCurrentTimerElapsed();
-      timerStartedAt = null;
+      timerData.startedAt = null;
+
       window.clearInterval(timerInterval);
       timerInterval = null;
+
       saveTimerData();
       renderTimer();
     }
@@ -2283,28 +2326,37 @@
         return;
       }
 
+      const endedAt = new Date().toISOString();
+      const startedAt = timerData.startedAt
+        ? new Date(new Date(timerData.startedAt).getTime() - (Number(timerData.currentElapsed) || 0)).toISOString()
+        : new Date(Date.now() - elapsed).toISOString();
+
       timerData.sessions.push({
         id: `session-${Date.now()}-${Math.random().toString(16).slice(2)}`,
         duration: elapsed,
-        startedAt: new Date(Date.now() - elapsed).toISOString(),
-        endedAt: new Date().toISOString(),
+        startedAt,
+        endedAt,
         mode: timerMode,
         projectId: timerMode === "project" ? activeProjectId : ""
       });
 
       timerData.currentElapsed = 0;
-      timerStartedAt = null;
+      timerData.startedAt = null;
+
       window.clearInterval(timerInterval);
       timerInterval = null;
+
       saveTimerData();
       renderTimer();
     }
 
     function resetTimerSession() {
       timerData.currentElapsed = 0;
-      timerStartedAt = null;
+      timerData.startedAt = null;
+
       window.clearInterval(timerInterval);
       timerInterval = null;
+
       saveTimerData();
       renderTimer();
     }
@@ -2315,9 +2367,10 @@
       if (!shouldClear) return;
 
       timerData = defaultTimerData();
-      timerStartedAt = null;
+
       window.clearInterval(timerInterval);
       timerInterval = null;
+
       saveTimerData();
       renderTimer();
     }
@@ -2616,6 +2669,7 @@
       project.patternTrackerCurrentRow = trackerCurrentRow;
       project.timerData = {
         currentElapsed: getCurrentTimerElapsed(),
+        startedAt: timerData.startedAt || null,
         sessions: Array.isArray(timerData.sessions) ? timerData.sessions : []
       };
       project.timerBackup = getTimerBackupPayload();
@@ -2694,6 +2748,12 @@
       loadRowForCurrentMode();
       renderPatternTracker();
       renderTimer();
+
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      if (timerData.startedAt) {
+        timerInterval = window.setInterval(renderTimer, 1000);
+      }
     }
 
     function clearProjectWorkspaceDisplay() {
@@ -2923,6 +2983,7 @@
         timerBackup: project.timerBackup || {
           mode: "project",
           currentElapsed: Number(project.timerData?.currentElapsed) || 0,
+          startedAt: project.timerData?.startedAt || null,
           totalSavedTime: (project.timerData?.sessions || []).reduce((sum, session) => sum + Number(session.duration || 0), 0),
           sessions: project.timerData?.sessions || [],
           isRunning: false
@@ -3060,6 +3121,7 @@
             if (backup.currentDashboardState?.activeTimerBackup && timerMode === "quick") {
               localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify({
                 currentElapsed: Number(backup.currentDashboardState.activeTimerBackup.currentElapsed) || 0,
+                startedAt: backup.currentDashboardState.activeTimerBackup.startedAt || null,
                 sessions: backup.currentDashboardState.activeTimerBackup.sessions || []
               }));
             }
@@ -3678,6 +3740,10 @@
       loadRowForCurrentMode();
       renderPatternTracker();
       renderTimer();
+    }
+
+    if (timerData.startedAt) {
+      timerInterval = window.setInterval(renderTimer, 1000);
     }
 
     setupSpeechRecognition();
