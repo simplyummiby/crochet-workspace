@@ -2287,7 +2287,7 @@
         <li>
           <span class="timer-session-left">
             <span class="timer-session-number">${index + 1}</span>
-            <span>${formatSessionDate(session.endedAt)} • ${formatSessionTime(session.startedAt)}</span>
+            <span>${formatSessionDate(session.endedAt)} • ${formatSessionTime(session.startedAt)}–${formatSessionTime(session.endedAt)}</span>
           </span>
           <strong>${formatDuration(session.duration)}</strong>
         </li>
