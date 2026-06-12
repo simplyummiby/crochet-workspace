@@ -1178,6 +1178,34 @@
     }
 
 
+
+    .project-card {
+      overflow: visible;
+    }
+
+    .project-help-btn::after {
+      left: 0;
+      right: auto;
+      width: 285px;
+    }
+
+    .project-help-btn::before {
+      left: 8px;
+      right: auto;
+    }
+
+    @media (max-width: 520px) {
+      .project-help-btn::after {
+        left: -110px;
+        width: min(285px, calc(100vw - 36px));
+      }
+
+      .project-help-btn::before {
+        left: 8px;
+      }
+    }
+
+
     @media (max-width: 1100px) {
       .topbar { grid-template-columns: 1fr auto; }
       .nav { display: none; }
