@@ -825,6 +825,12 @@
       line-height: 1.4;
     }
 
+
+    .source-help.warning {
+      color: var(--cranberry-dark);
+      font-weight: 700;
+    }
+
     .open-link {
       display: inline-block;
       margin-top: 8px;
@@ -934,12 +940,12 @@
             <div class="source-placeholder" id="webPlaceholder">
               <div>
                 <strong>Web Pattern</strong>
-                <span>Paste a pattern webpage URL to view it inside your crochet workspace.</span>
+                <span>Paste a pattern webpage URL to keep the written pattern nearby while you work.</span>
               </div>
             </div>
           </div>
 
-          <p class="source-help">Some websites block embedding. If that happens, use the “open in a new tab” link.</p>
+          <p class="source-help" id="webHelp">Some websites block embedding. If the page does not appear, use the link below.</p>
           <a class="open-link" id="openWebLink" href="#" target="_blank" rel="noopener" hidden>Open web pattern in a new tab</a>
         </section>
 
@@ -1475,18 +1481,40 @@
       localStorage.setItem(SOURCE_KEYS.video, url);
     }
 
+    function normalizePatternUrl(url) {
+      const trimmed = url.trim();
+
+      if (!trimmed) return "";
+
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        return trimmed;
+      }
+
+      return `https://${trimmed}`;
+    }
+
     function loadWebSource() {
-      const url = webUrl.value.trim();
+      const url = normalizePatternUrl(webUrl.value);
 
       if (!url) {
         alert("Please paste a web pattern URL.");
         return;
       }
 
+      const webHelp = document.getElementById("webHelp");
+
+      webUrl.value = url;
       showFrame(webFrameBox, url, "Web pattern");
       openWebLink.href = url;
       openWebLink.hidden = false;
+      webHelp.textContent = "Loading web pattern. If the page stays blank, the site may block embedding.";
+      webHelp.classList.remove("warning");
       localStorage.setItem(SOURCE_KEYS.web, url);
+
+      window.setTimeout(() => {
+        webHelp.textContent = "If the pattern did not load here, the website may block embedding. Use “Open web pattern in a new tab.”";
+        webHelp.classList.add("warning");
+      }, 3500);
     }
 
     function loadPdfSource() {
@@ -1540,6 +1568,8 @@
       showFrame(webFrameBox, savedWebUrl, "Web pattern");
       openWebLink.href = savedWebUrl;
       openWebLink.hidden = false;
+      const webHelp = document.getElementById("webHelp");
+      webHelp.textContent = "Saved web pattern loaded. If it appears blank, use the new tab link.";
     }
 
     const savedPdfUrl = localStorage.getItem(SOURCE_KEYS.pdf);
