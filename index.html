@@ -1202,7 +1202,27 @@
     .project-snapshot { border:1px solid var(--line); background:#fff8f9; border-radius:16px; padding:15px; }
     .empty-project strong { display:block; color:var(--cranberry-dark); margin-bottom:5px; }
     .empty-project span { display:block; color:var(--muted); line-height:1.4; }
-    .snapshot-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+    .snapshot-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:stretch; }
+    .snapshot-main { grid-column:span 2; }
+    .snapshot-status-pill {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:max-content;
+      max-width:100%;
+      padding:4px 9px;
+      border-radius:999px;
+      background:#fff0f4;
+      color:var(--cranberry-dark);
+      border:1px solid #f0c4c9;
+      font-size:.82rem;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .snapshot-metric strong {
+      color:var(--cranberry-dark);
+      font-size:1.02rem;
+    }
     .snapshot-main { grid-column:span 2; }
     .snapshot-item { border-right:1px solid var(--line); padding-right:10px; min-height:45px; }
     .snapshot-item:last-child { border-right:0; }
@@ -1239,7 +1259,8 @@
     .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
     .project-list button { text-align:left; padding:12px; background:#fff8f9; border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
     .project-list button.active-project { border-color:var(--cranberry-2); background:var(--soft-pink); color:var(--cranberry-dark); }
-    @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} .snapshot-item{border-right:0;} }
+    @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr 1fr;} .snapshot-main{grid-column:span 2;} .snapshot-item{border-right:0;} }
+    @media(max-width:650px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} }
     @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
 
 
@@ -1505,7 +1526,7 @@
         <div class="project-snapshot" id="projectSnapshot">
           <div class="empty-project">
             <strong>No project selected</strong>
-            <span>Create a project to save your hook size, materials, row count, pattern links, and notes.</span>
+            <span>Create a project to save your hook size, rows, timer, pattern links, and notes.</span>
           </div>
         </div>
 
@@ -1916,6 +1937,9 @@
     function renderRow() {
       rowCount.textContent = row;
       saveRow();
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
     }
 
     function loadRowForCurrentMode() {
@@ -2174,6 +2198,10 @@
       }
 
       localStorage.setItem(TIMER_MODE_KEY, timerMode);
+
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
     }
 
     function formatClock(ms) {
@@ -2793,6 +2821,39 @@
     }
 
 
+    function formatProjectDate(dateValue) {
+      if (!dateValue) return "—";
+
+      const date = new Date(`${dateValue}T00:00:00`);
+
+      if (Number.isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function getProjectRowsSummary(project) {
+      const projectTrackerRows = Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [];
+
+      if (projectTrackerRows.length) {
+        const completed = projectTrackerRows.filter(item => item.done).length;
+        return `${completed} / ${projectTrackerRows.length}`;
+      }
+
+      return String(Number(project.rowCount) || 0);
+    }
+
+    function getProjectTimeSummary(project) {
+      const sessions = Array.isArray(project.timerData?.sessions) ? project.timerData.sessions : [];
+      const totalMs = sessions.reduce((sum, session) => sum + Number(session.duration || 0), 0);
+
+      return formatDuration(totalMs);
+    }
+
     function renderProjectSnapshot() {
       const project = getActiveProject();
 
@@ -2801,7 +2862,7 @@
         projectSnapshot.innerHTML = `
           <div class="empty-project">
             <strong>No project selected</strong>
-            <span>Create a project to save your hook size, materials, row count, pattern links, and notes.</span>
+            <span>Create a project to save your hook size, rows, timer, pattern links, and notes.</span>
           </div>
         `;
         editProjectBtn.disabled = true;
@@ -2820,20 +2881,24 @@
             <strong>${project.name || "Untitled Project"}</strong>
           </div>
           <div class="snapshot-item">
+            <small>Status</small>
+            <strong class="snapshot-status-pill">${project.status || "In Progress"}</strong>
+          </div>
+          <div class="snapshot-item">
             <small>Hook</small>
             <strong>${project.hook || "—"}</strong>
           </div>
           <div class="snapshot-item">
-            <small>Materials</small>
-            <strong>${getProjectMaterials(project) || "—"}</strong>
-          </div>
-          <div class="snapshot-item">
             <small>Started</small>
-            <strong>${project.started || "—"}</strong>
+            <strong>${formatProjectDate(project.started)}</strong>
           </div>
-          <div class="snapshot-item">
-            <small>Status</small>
-            <strong>${project.status || "In Progress"}</strong>
+          <div class="snapshot-item snapshot-metric">
+            <small>Rows Completed</small>
+            <strong>${getProjectRowsSummary(project)}</strong>
+          </div>
+          <div class="snapshot-item snapshot-metric">
+            <small>Project Time</small>
+            <strong>${getProjectTimeSummary(project)}</strong>
           </div>
         </div>
       `;
@@ -3257,6 +3322,10 @@
       localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
       localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
       saveWorkspaceToActiveProject();
+
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
     }
 
     function parsePatternRows(text) {
