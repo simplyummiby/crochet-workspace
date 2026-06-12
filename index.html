@@ -46,6 +46,86 @@
       touch-action: manipulation;
     }
 
+
+    button,
+    .soft-btn,
+    .primary-btn,
+    .outline-btn,
+    .source-tab,
+    .tab,
+    .upload-btn,
+    .import-label,
+    .voice-btn,
+    .counter-mode-btn,
+    .timer-mode-btn,
+    .library-btn {
+      transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        filter 0.12s ease,
+        background 0.12s ease,
+        border-color 0.12s ease;
+    }
+
+    button:hover,
+    .soft-btn:hover,
+    .primary-btn:hover,
+    .outline-btn:hover,
+    .source-tab:hover,
+    .tab:hover,
+    .upload-btn:hover,
+    .import-label:hover,
+    .voice-btn:hover,
+    .counter-mode-btn:hover,
+    .timer-mode-btn:hover,
+    .library-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 9px 18px rgba(157, 42, 85, 0.13);
+    }
+
+    button:active,
+    .soft-btn:active,
+    .primary-btn:active,
+    .outline-btn:active,
+    .source-tab:active,
+    .tab:active,
+    .upload-btn:active,
+    .import-label:active,
+    .voice-btn:active,
+    .counter-mode-btn:active,
+    .timer-mode-btn:active,
+    .library-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: inset 0 2px 5px rgba(90, 30, 50, 0.16);
+      filter: brightness(0.97);
+    }
+
+    button:focus-visible,
+    .soft-btn:focus-visible,
+    .primary-btn:focus-visible,
+    .outline-btn:focus-visible,
+    .source-tab:focus-visible,
+    .tab:focus-visible,
+    .upload-btn:focus-visible,
+    .import-label:focus-visible,
+    .voice-btn:focus-visible,
+    .counter-mode-btn:focus-visible,
+    .timer-mode-btn:focus-visible,
+    .library-btn:focus-visible {
+      outline: 3px solid rgba(194, 58, 105, 0.25);
+      outline-offset: 3px;
+    }
+
+    .help-btn:hover {
+      transform: none;
+    }
+
+    .help-btn:active {
+      transform: scale(0.96);
+    }
+
+
     .topbar {
       min-height: 76px;
       display: grid;
