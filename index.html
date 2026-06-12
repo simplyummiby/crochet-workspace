@@ -1105,11 +1105,7 @@
     .tracker-table .completed-row td {
       color: var(--muted);
     }
-.tracker-table .completed-row td:nth-child(2) {
-  text-decoration: line-through;
-  opacity: 0.65;
-}
-    
+
     .tracker-row-input {
       width: 17px;
       height: 17px;
@@ -1336,7 +1332,7 @@
         <div class="tracker-head">
           <div>
             <h2 class="section-title">▤ Pattern Tracker</h2>
-            <p class="tracker-subtitle">Paste pattern rows, check them off, and keep your place with the row counter.</p>
+            <p class="tracker-subtitle">Paste pattern rows, check them off, and keep your place in the pattern.</p>
           </div>
 
           <div class="tracker-actions">
@@ -1579,10 +1575,6 @@
     function renderRow() {
       rowCount.textContent = row;
       saveRow();
-
-      if (typeof renderPatternTracker === "function") {
-        renderPatternTracker();
-      }
     }
 
     function loadRowForCurrentMode() {
@@ -1597,10 +1589,6 @@
 
       rowCount.textContent = row;
       updateCounterModeDisplay();
-
-      if (typeof renderPatternTracker === "function") {
-        renderPatternTracker();
-      }
     }
 
     function updateCounterModeDisplay() {
@@ -2214,6 +2202,7 @@
         },
         notes: document.querySelector(".notes textarea")?.value || "",
         patternTrackerRows: trackerRows,
+        patternTrackerCurrentRow: trackerCurrentRow,
         exportedAt: new Date().toISOString(),
         backupType: "crochet-workspace-project-snapshot",
         backupVersion: 1
@@ -2264,7 +2253,8 @@
             pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
           },
           notes: document.querySelector(".notes textarea")?.value || "",
-          patternTrackerRows: trackerRows
+          patternTrackerRows: trackerRows,
+          patternTrackerCurrentRow: trackerCurrentRow
         }
       };
     }
@@ -2340,6 +2330,7 @@
 
             if (Array.isArray(backup.currentDashboardState?.patternTrackerRows)) {
               trackerRows = backup.currentDashboardState.patternTrackerRows;
+              trackerCurrentRow = Number(backup.currentDashboardState.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
               saveTrackerRows();
             }
 
@@ -2391,6 +2382,7 @@
 
           if (Array.isArray(backup.patternTrackerRows)) {
             trackerRows = backup.patternTrackerRows;
+            trackerCurrentRow = Number(backup.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
             saveTrackerRows();
           }
 
@@ -2469,10 +2461,13 @@
 
 
     const TRACKER_KEY = "crochetWorkspacePatternTrackerRows";
+    const TRACKER_CURRENT_ROW_KEY = "crochetWorkspacePatternTrackerCurrentRow";
     let trackerRows = JSON.parse(localStorage.getItem(TRACKER_KEY) || "[]");
+    let trackerCurrentRow = Number(localStorage.getItem(TRACKER_CURRENT_ROW_KEY)) || 0;
 
     function saveTrackerRows() {
       localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
+      localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
     }
 
     function parsePatternRows(text) {
@@ -2523,6 +2518,11 @@
       return anyUnchecked ? Number(anyUnchecked.rowNumber) : null;
     }
 
+    function setTrackerCurrentRow(rowNumber) {
+      trackerCurrentRow = Number(rowNumber) || 0;
+      saveTrackerRows();
+    }
+
     function scrollCurrentTrackerRowIntoView() {
       const currentRowEl = patternTrackerBody.querySelector(".current-tracker-row");
 
@@ -2537,6 +2537,11 @@
       const percent = total ? Math.round((done / total) * 100) : 0;
       const isComplete = total > 0 && done === total;
 
+      if (total && !trackerCurrentRow) {
+        trackerCurrentRow = Number(trackerRows[0].rowNumber) || 1;
+        saveTrackerRows();
+      }
+
       trackerProgressText.textContent = total
         ? `Progress: ${done} of ${total} rows complete (${percent}%)`
         : "No rows loaded yet.";
@@ -2547,7 +2552,7 @@
       trackerTableWrap.hidden = total === 0;
 
       patternTrackerBody.innerHTML = trackerRows.map(item => {
-        const isCurrent = Number(item.rowNumber) === Number(row);
+        const isCurrent = Number(item.rowNumber) === Number(trackerCurrentRow);
         const rowClass = [
           isCurrent ? "current-tracker-row" : "",
           item.done ? "completed-row" : ""
@@ -2570,7 +2575,7 @@
 
         rowEl.addEventListener("click", event => {
           if (event.target === checkbox) return;
-          setRow(Number(rowEl.dataset.rowNumber));
+          setTrackerCurrentRow(Number(rowEl.dataset.rowNumber));
           renderPatternTracker();
           scrollCurrentTrackerRowIntoView();
         });
@@ -2584,18 +2589,19 @@
             item.id === trackerId ? { ...item, done: checkbox.checked } : item
           ));
 
-          saveTrackerRows();
-
           if (checkbox.checked) {
             const nextRow = findNextUncheckedRowNumber(checkedRowNumber);
 
             if (nextRow !== null) {
-              setRow(nextRow);
+              setTrackerCurrentRow(nextRow);
             } else {
-              setRow(checkedRowNumber);
+              setTrackerCurrentRow(checkedRowNumber);
             }
+          } else {
+            setTrackerCurrentRow(checkedRowNumber);
           }
 
+          saveTrackerRows();
           renderPatternTracker();
           scrollCurrentTrackerRowIntoView();
         });
@@ -2623,7 +2629,7 @@
       saveTrackerRows();
 
       if (trackerRows.length) {
-        setRow(Number(trackerRows[0].rowNumber) || 1);
+        setTrackerCurrentRow(Number(trackerRows[0].rowNumber) || 1);
       }
 
       renderPatternTracker();
@@ -2638,7 +2644,7 @@
       saveTrackerRows();
 
       if (trackerRows.length) {
-        setRow(Number(trackerRows[0].rowNumber) || 1);
+        setTrackerCurrentRow(Number(trackerRows[0].rowNumber) || 1);
       }
 
       renderPatternTracker();
@@ -2651,6 +2657,7 @@
       if (!shouldDelete) return;
 
       trackerRows = [];
+      trackerCurrentRow = 0;
       saveTrackerRows();
       renderPatternTracker();
     }
