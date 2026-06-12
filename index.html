@@ -2188,6 +2188,18 @@
       return savedTotal;
     }
 
+    function getTimerBackupPayload() {
+      return {
+        mode: timerMode,
+        currentElapsed: getCurrentTimerElapsed(),
+        totalSavedTime: getTotalTimerTime(),
+        sessions: Array.isArray(timerData.sessions) ? timerData.sessions : [],
+        isRunning: Boolean(timerStartedAt),
+        exportedAt: new Date().toISOString()
+      };
+    }
+
+
     function updateTimerModeDisplay() {
       if (!timerModeText || !timerModeToggle) return;
 
@@ -2597,7 +2609,11 @@
       project.notes = projectNotes?.value || "";
       project.patternTrackerRows = trackerRows;
       project.patternTrackerCurrentRow = trackerCurrentRow;
-      project.timerData = timerData || defaultTimerData();
+      project.timerData = {
+        currentElapsed: getCurrentTimerElapsed(),
+        sessions: Array.isArray(timerData.sessions) ? timerData.sessions : []
+      };
+      project.timerBackup = getTimerBackupPayload();
 
       saveProjects();
     }
@@ -2662,6 +2678,9 @@
       if (projectNotes) {
         projectNotes.value = project.notes || "";
       }
+
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
 
       loadSourcesForProject(project);
       saveTrackerRows();
@@ -2859,9 +2878,17 @@
         notes: project.notes || "",
         patternTrackerRows: project.patternTrackerRows || [],
         patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || 0,
+        timerData: project.timerData || defaultTimerData(),
+        timerBackup: project.timerBackup || {
+          mode: "project",
+          currentElapsed: Number(project.timerData?.currentElapsed) || 0,
+          totalSavedTime: (project.timerData?.sessions || []).reduce((sum, session) => sum + Number(session.duration || 0), 0),
+          sessions: project.timerData?.sessions || [],
+          isRunning: false
+        },
         exportedAt: new Date().toISOString(),
         backupType: "crochet-workspace-project-snapshot",
-        backupVersion: 1
+        backupVersion: 2
       };
     }
 
@@ -2873,6 +2900,7 @@
     }
 
     function downloadProjectBackup() {
+      // Saves the full active workspace before exporting, including timer data.
       saveWorkspaceToActiveProject();
       const project = getActiveProject();
 
@@ -2897,7 +2925,7 @@
     function getAllProjectsPayload() {
       return {
         backupType: "crochet-workspace-all-projects-backup",
-        backupVersion: 1,
+        backupVersion: 2,
         exportedAt: new Date().toISOString(),
         activeProjectId,
         projects,
@@ -2912,12 +2940,14 @@
           patternTrackerRows: trackerRows,
           patternTrackerCurrentRow: trackerCurrentRow,
           quickTimerData: JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || defaultTimerData(),
-          timerMode
+          timerMode,
+          activeTimerBackup: getTimerBackupPayload()
         }
       };
     }
 
     function downloadAllProjectsBackup() {
+      // Saves the full active workspace before exporting, including timer data.
       saveWorkspaceToActiveProject();
       const backup = getAllProjectsPayload();
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
@@ -2934,6 +2964,8 @@
     }
 
     function importProjectBackup(file) {
+      // Restores project-specific workspace data:
+      // project card, row counter, sources, notes, pattern tracker, and timer.
       const reader = new FileReader();
 
       reader.onload = () => {
@@ -2949,60 +2981,47 @@
             }
 
             const existingIds = new Set(projects.map(project => project.id));
+            const idMap = new Map();
+
             const projectsToAdd = importedProjects.map(project => {
-              const incomingId = project.id || makeProjectId();
+              const originalId = project.id || makeProjectId();
+              const newId = existingIds.has(originalId) ? makeProjectId() : originalId;
+
+              idMap.set(originalId, newId);
 
               return {
                 ...project,
-                id: existingIds.has(incomingId) ? makeProjectId() : incomingId,
+                id: newId,
                 materials: project.materials || project.yarn || "",
                 rowCount: Number(project.rowCount) || 0,
                 sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
                 notes: project.notes || "",
                 patternTrackerRows: Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [],
-                patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || 0,
-                timerData: project.timerData || defaultTimerData(),
+                patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || Number(project.patternTrackerRows?.[0]?.rowNumber) || 0,
+                timerData: project.timerData || project.timerBackup || defaultTimerData(),
+                timerBackup: project.timerBackup || null,
                 importedAt: new Date().toISOString()
               };
             });
 
             projects.push(...projectsToAdd);
-            activeProjectId = projectsToAdd[0].id;
-            counterMode = "project";
 
-            if (Number.isFinite(Number(backup.currentDashboardState?.rowCount))) {
-              projectsToAdd[0].rowCount = Number(backup.currentDashboardState.rowCount);
-            }
+            const backedUpActiveId = backup.activeProjectId || "";
+            activeProjectId = idMap.get(backedUpActiveId) || projectsToAdd[0].id;
 
-            if (backup.currentDashboardState?.sources?.videoUrl) {
-              localStorage.setItem(SOURCE_KEYS.video, backup.currentDashboardState.sources.videoUrl);
-            }
-
-            if (backup.currentDashboardState?.sources?.webPatternUrl) {
-              localStorage.setItem(SOURCE_KEYS.web, backup.currentDashboardState.sources.webPatternUrl);
-            }
-
-            if (backup.currentDashboardState?.sources?.pdfPatternUrl) {
-              localStorage.setItem(SOURCE_KEYS.pdf, backup.currentDashboardState.sources.pdfPatternUrl);
-            }
-
-            const notesBox = document.querySelector(".notes textarea");
-            if (notesBox && backup.currentDashboardState?.notes) {
-              notesBox.value = backup.currentDashboardState.notes;
-            }
-
-            if (Array.isArray(backup.currentDashboardState?.patternTrackerRows)) {
-              trackerRows = backup.currentDashboardState.patternTrackerRows;
-              trackerCurrentRow = Number(backup.currentDashboardState.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
-              saveTrackerRows();
-            }
+            counterMode = activeProjectId ? "project" : "quick";
+            timerMode = activeProjectId ? "project" : (backup.currentDashboardState?.timerMode || "quick");
 
             if (backup.currentDashboardState?.quickTimerData) {
               localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(backup.currentDashboardState.quickTimerData));
             }
 
-            timerMode = backup.currentDashboardState?.timerMode || "project";
-            timerData = getTimerDataForCurrentMode();
+            if (backup.currentDashboardState?.activeTimerBackup && timerMode === "quick") {
+              localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify({
+                currentElapsed: Number(backup.currentDashboardState.activeTimerBackup.currentElapsed) || 0,
+                sessions: backup.currentDashboardState.activeTimerBackup.sessions || []
+              }));
+            }
 
             saveProjects();
             loadWorkspaceFromActiveProject();
@@ -3029,12 +3048,14 @@
             notes: backup.notes || "",
             patternTrackerRows: Array.isArray(backup.patternTrackerRows) ? backup.patternTrackerRows : [],
             patternTrackerCurrentRow: Number(backup.patternTrackerCurrentRow) || 0,
-            timerData: backup.timerData || defaultTimerData()
+            timerData: backup.timerData || backup.timerBackup || defaultTimerData(),
+            timerBackup: backup.timerBackup || null
           };
 
           projects.push(importedProject);
           activeProjectId = importedProject.id;
           counterMode = "project";
+          timerMode = "project";
 
           if (backup.sources?.videoUrl) {
             localStorage.setItem(SOURCE_KEYS.video, backup.sources.videoUrl);
