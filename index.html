@@ -831,6 +831,36 @@
       font-weight: 700;
     }
 
+
+    .upload-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: -2px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .or-label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 11px 16px;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    #pdfUpload {
+      display: none;
+    }
+
     .open-link {
       display: inline-block;
       margin-top: 8px;
@@ -950,21 +980,27 @@
         </section>
 
         <section class="source-panel" id="pdfPanel" hidden>
-          <div class="source-controls">
+          <div class="source-controls pdf-controls">
             <input id="pdfUrl" type="url" placeholder="Paste a PDF pattern URL..." />
-            <button class="primary-btn" id="loadPdf" type="button">Load PDF</button>
+            <button class="primary-btn" id="loadPdf" type="button">Load PDF URL</button>
+          </div>
+
+          <div class="upload-row">
+            <span class="or-label">or</span>
+            <label class="upload-btn" for="pdfUpload">Upload PDF from computer</label>
+            <input id="pdfUpload" type="file" accept="application/pdf,.pdf" />
           </div>
 
           <div class="source-frame" id="pdfFrameBox">
             <div class="source-placeholder" id="pdfPlaceholder">
               <div>
                 <strong>PDF Pattern</strong>
-                <span>Paste a PDF link to preview the pattern here.</span>
+                <span>Paste a PDF URL or upload a PDF pattern from your computer.</span>
               </div>
             </div>
           </div>
 
-          <p class="source-help">Later, this could also support uploaded PDF files. For now, it uses a PDF URL.</p>
+          <p class="source-help" id="pdfHelp">Uploaded PDFs may need to be uploaded again in a later session. PDF URLs can be saved locally.</p>
           <a class="open-link" id="openPdfLink" href="#" target="_blank" rel="noopener" hidden>Open PDF in a new tab</a>
         </section>
       </section>
@@ -1416,8 +1452,10 @@
 
     const pdfUrl = document.getElementById("pdfUrl");
     const loadPdf = document.getElementById("loadPdf");
+    const pdfUpload = document.getElementById("pdfUpload");
     const pdfFrameBox = document.getElementById("pdfFrameBox");
     const openPdfLink = document.getElementById("openPdfLink");
+    const pdfHelp = document.getElementById("pdfHelp");
 
     const SOURCE_KEYS = {
       video: "crochetWorkspaceVideoUrl",
@@ -1517,18 +1555,50 @@
       }, 3500);
     }
 
+    function normalizePdfUrl(url) {
+      const trimmed = url.trim();
+
+      if (!trimmed) return "";
+
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        return trimmed;
+      }
+
+      return `https://${trimmed}`;
+    }
+
     function loadPdfSource() {
-      const url = pdfUrl.value.trim();
+      const url = normalizePdfUrl(pdfUrl.value);
 
       if (!url) {
         alert("Please paste a PDF URL.");
         return;
       }
 
+      pdfUrl.value = url;
       showFrame(pdfFrameBox, url, "PDF pattern");
       openPdfLink.href = url;
       openPdfLink.hidden = false;
+      pdfHelp.textContent = "PDF URL loaded and saved locally.";
       localStorage.setItem(SOURCE_KEYS.pdf, url);
+    }
+
+    function loadUploadedPdf() {
+      const file = pdfUpload.files[0];
+
+      if (!file) return;
+
+      if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+        alert("Please choose a PDF file.");
+        pdfUpload.value = "";
+        return;
+      }
+
+      const fileUrl = URL.createObjectURL(file);
+      showFrame(pdfFrameBox, fileUrl, "Uploaded PDF pattern");
+      openPdfLink.href = fileUrl;
+      openPdfLink.hidden = false;
+      pdfHelp.textContent = `Loaded uploaded PDF: ${file.name}. You may need to upload it again in a later session.`;
     }
 
     sourceTabs.forEach(tab => {
@@ -1538,6 +1608,7 @@
     loadVideo.addEventListener("click", loadVideoSource);
     loadWeb.addEventListener("click", loadWebSource);
     loadPdf.addEventListener("click", loadPdfSource);
+    pdfUpload.addEventListener("change", loadUploadedPdf);
 
     videoUrl.addEventListener("keydown", event => {
       if (event.key === "Enter") loadVideoSource();
@@ -1578,6 +1649,7 @@
       showFrame(pdfFrameBox, savedPdfUrl, "PDF pattern");
       openPdfLink.href = savedPdfUrl;
       openPdfLink.hidden = false;
+      pdfHelp.textContent = "Saved PDF URL loaded.";
     }
 
 
