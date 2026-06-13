@@ -176,6 +176,7 @@
     .nav {
       display: flex;
       justify-content: flex-end;
+      align-items: center;
       gap: 28px;
       height: 76px;
     }
@@ -199,6 +200,10 @@
     .nav a.active {
       color: var(--cranberry);
       border-bottom-color: var(--cranberry);
+    }
+
+    .nav-link {
+      color: var(--cranberry-dark);
     }
 
     .nav-link:hover {
@@ -1716,6 +1721,7 @@
       .nav {
         display: flex;
         justify-content: flex-end;
+        align-items: center;
         gap: 18px;
       }
       .top-actions { display: none; }
@@ -1735,7 +1741,7 @@
       }
       .brand { font-size: 1.3rem; }
       .nav {
-        justify-content: flex-start;
+        justify-content: flex-end;
         height: auto;
         gap: 18px;
       }
@@ -1764,7 +1770,6 @@
   <header class="topbar">
     <div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-su-transparent.png" alt="Simply Ummiby logo" /></span> Crochet Workspace</div>
     <nav class="nav">
-      <a class="active" href="#">⌂ Dashboard</a>
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
     </nav>
     
