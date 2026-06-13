@@ -1,0 +1,4456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crochet Workspace Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #fff8f6;
+      --card: #fffdfb;
+      --soft-pink: #fff0f4;
+      --cranberry: #c23a69;
+      --cranberry-2: #df4f7d;
+      --cranberry-dark: #9d2a55;
+      --cream: #fffaf4;
+      --line: #efd4dc;
+      --text: #35292d;
+      --muted: #7b6b70;
+      --green: #64856e;
+      --orange: #c76b1f;
+      --shadow: 0 14px 30px rgba(157, 42, 85, 0.11);
+      --radius: 22px;
+    }
+
+    body[data-theme="rose"] {
+      --bg: #fff8f6;
+      --card: #fffdfb;
+      --soft-pink: #fff0f4;
+      --cranberry: #c23a69;
+      --cranberry-2: #df4f7d;
+      --cranberry-dark: #9d2a55;
+      --cream: #fffaf4;
+      --line: #efd4dc;
+      --green: #64856e;
+      --orange: #c76b1f;
+    }
+
+    body[data-theme="sage"] {
+      --bg: #f8fbf6;
+      --card: #fffdf9;
+      --soft-pink: #eef6ec;
+      --cranberry: #6f9278;
+      --cranberry-2: #86aa90;
+      --cranberry-dark: #4f7559;
+      --cream: #fffdf6;
+      --line: #d7e5d4;
+      --green: #557c60;
+      --orange: #b8793d;
+    }
+
+    body[data-theme="lavender"] {
+      --bg: #fbf8ff;
+      --card: #fffdfb;
+      --soft-pink: #f1ebff;
+      --cranberry: #8a6fc2;
+      --cranberry-2: #a184d8;
+      --cranberry-dark: #6b519f;
+      --cream: #fffaff;
+      --line: #ded2f0;
+      --green: #64856e;
+      --orange: #b57645;
+    }
+
+    body[data-theme="peach"] {
+      --bg: #fff8f1;
+      --card: #fffdfb;
+      --soft-pink: #fff0e5;
+      --cranberry: #d07050;
+      --cranberry-2: #e08a67;
+      --cranberry-dark: #a9543c;
+      --cream: #fffaf4;
+      --line: #f0d8c7;
+      --green: #64856e;
+      --orange: #c76b1f;
+    }
+
+    body[data-theme="blue"] {
+      --bg: #f6fbff;
+      --card: #fffdfb;
+      --soft-pink: #eaf4ff;
+      --cranberry: #4f83b8;
+      --cranberry-2: #6aa7d8;
+      --cranberry-dark: #315f8f;
+      --cream: #fbfdff;
+      --line: #cfe1ef;
+      --green: #5f8171;
+      --orange: #b97642;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #fff0f4 0, transparent 34%),
+        radial-gradient(circle at bottom right, #fff1e4 0, transparent 32%),
+        linear-gradient(180deg, var(--cream), var(--bg));
+    }
+
+    button, input, textarea { font: inherit; }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 14px;
+      font-weight: 700;
+      touch-action: manipulation;
+    }
+
+
+    button,
+    .soft-btn,
+    .primary-btn,
+    .outline-btn,
+    .source-tab,
+    .tab,
+    .upload-btn,
+    .import-label,
+    .voice-btn,
+    .counter-mode-btn,
+    .timer-mode-btn,
+    .library-btn {
+      transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        filter 0.12s ease,
+        background 0.12s ease,
+        border-color 0.12s ease;
+    }
+
+    button:hover,
+    .soft-btn:hover,
+    .primary-btn:hover,
+    .outline-btn:hover,
+    .source-tab:hover,
+    .tab:hover,
+    .upload-btn:hover,
+    .import-label:hover,
+    .voice-btn:hover,
+    .counter-mode-btn:hover,
+    .timer-mode-btn:hover,
+    .library-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 9px 18px rgba(157, 42, 85, 0.13);
+    }
+
+    button:active,
+    .soft-btn:active,
+    .primary-btn:active,
+    .outline-btn:active,
+    .source-tab:active,
+    .tab:active,
+    .upload-btn:active,
+    .import-label:active,
+    .voice-btn:active,
+    .counter-mode-btn:active,
+    .timer-mode-btn:active,
+    .library-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: inset 0 2px 5px rgba(90, 30, 50, 0.16);
+      filter: brightness(0.97);
+    }
+
+    button:focus-visible,
+    .soft-btn:focus-visible,
+    .primary-btn:focus-visible,
+    .outline-btn:focus-visible,
+    .source-tab:focus-visible,
+    .tab:focus-visible,
+    .upload-btn:focus-visible,
+    .import-label:focus-visible,
+    .voice-btn:focus-visible,
+    .counter-mode-btn:focus-visible,
+    .timer-mode-btn:focus-visible,
+    .library-btn:focus-visible {
+      outline: 3px solid rgba(194, 58, 105, 0.25);
+      outline-offset: 3px;
+    }
+
+    .help-btn:hover {
+      transform: none;
+    }
+
+    .help-btn:active {
+      transform: scale(0.96);
+    }
+
+
+    .topbar {
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: minmax(260px, auto) 1fr;
+      gap: 18px;
+      align-items: center;
+      padding: 0 28px;
+      background: rgba(255, 253, 251, 0.88);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--cranberry);
+      white-space: nowrap;
+      min-width: 0;
+      overflow: visible;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+
+    .brand-title {
+      color: var(--cranberry);
+      font-size: 1.42rem;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      font-style: italic;
+      letter-spacing: 0.03em;
+      margin-top: 3px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #fff0f4;
+      border: 1px solid var(--line);
+      font-size: 1.5rem;
+      overflow: hidden;
+    }
+
+    .logo-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 3px;
+      display: block;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 28px;
+      height: 76px;
+    }
+
+    .nav a,
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 3px solid transparent;
+      font-weight: 700;
+      padding: 0 2px;
+      background: transparent;
+      border-radius: 0;
+      height: 76px;
+      box-shadow: none;
+    }
+
+    .nav a.active {
+      color: var(--cranberry);
+      border-bottom-color: var(--cranberry);
+    }
+
+    .nav-link {
+      color: var(--cranberry-dark);
+    }
+
+    .nav-link:hover {
+      color: var(--cranberry);
+      box-shadow: none;
+      transform: none;
+    }
+
+    .nav-link:active {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .top-actions:empty {
+      display: block;
+    }
+
+    .library-btn {
+      border: 1px solid var(--line);
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #ffd2dc;
+      color: var(--cranberry-dark);
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: minmax(680px, 1fr) 330px;
+      gap: 20px;
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 22px 24px 34px;
+    }
+
+    .main, .side {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: rgba(255, 253, 251, 0.95);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .welcome {
+      min-height: 150px;
+      display: grid;
+      grid-template-columns: 1fr 330px 230px;
+      align-items: center;
+      gap: 22px;
+      padding: 22px 28px;
+      background: linear-gradient(105deg, #fffdfb, #fff2ef);
+    }
+
+    .welcome h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      line-height: 1.12;
+      font-weight: 600;
+    }
+
+    .script-name {
+      color: var(--cranberry-2);
+      font-size: 2.8rem;
+      font-style: italic;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .welcome p {
+      margin: 10px 0 0;
+      color: var(--text);
+      line-height: 1.4;
+      max-width: 430px;
+    }
+
+    .welcome-project {
+      border-left: 1px solid var(--line);
+      padding-left: 24px;
+    }
+
+    .small-label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .welcome-project strong {
+      display: block;
+      margin: 7px 0 4px;
+      color: var(--text);
+    }
+
+    .welcome-project span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 0.95rem;
+    }
+
+    .outline-btn {
+      margin-top: 12px;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .welcome-art {
+      font-size: 4.4rem;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .welcome-refined {
+      grid-template-columns: minmax(0, 1fr) 280px;
+      min-height: 145px;
+    }
+
+    .welcome-copy h1 {
+      margin: 0;
+      color: var(--cranberry);
+      font-size: 2rem;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+
+    .welcome-copy p {
+      max-width: 560px;
+      margin-top: 9px;
+      color: var(--text);
+    }
+
+    .getting-started-btn {
+      margin-top: 14px;
+      width: max-content;
+    }
+
+    .welcome-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .welcome-image img {
+      max-width: 100%;
+      max-height: 165px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .getting-started-dialog {
+      width: min(720px, calc(100vw - 34px));
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .getting-started-content {
+      padding: 22px;
+    }
+
+    .getting-started-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(105deg, #fffdfb, #fff2ef);
+    }
+
+    .getting-started-header h2 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1.45rem;
+      line-height: 1.15;
+    }
+
+    .getting-started-header p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .close-help-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      font-family: Arial, sans-serif;
+      font-size: 1.1rem;
+      padding: 0;
+      flex: 0 0 auto;
+    }
+
+    .getting-started-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .help-step {
+      border: 1px solid #f1dbe1;
+      background: #fffdfb;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .help-step strong {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 5px;
+      font-size: 0.98rem;
+    }
+
+    .help-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.38;
+    }
+
+    .help-note {
+      margin: 14px 0 0;
+      padding: 12px 14px;
+      border-radius: 15px;
+      background: #fff8f9;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 0.92rem;
+    }
+
+    .help-note strong {
+      color: var(--cranberry-dark);
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1fr 190px;
+      gap: 16px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff8f9;
+    }
+
+    .settings-row label {
+      display: grid;
+      gap: 4px;
+    }
+
+    .settings-row label strong {
+      color: var(--cranberry-dark);
+      font-size: 1rem;
+    }
+
+    .settings-row label span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .settings-row select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--text);
+      font: inherit;
+      font-weight: 800;
+    }
+
+    .settings-row select:focus {
+      outline: none;
+      border-color: var(--cranberry-2);
+      box-shadow: 0 0 0 4px rgba(194, 58, 105, 0.12);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px 0;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--cranberry);
+      font-size: 0.92rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .viewer { padding-bottom: 18px; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin: 16px 20px 10px;
+      max-width: 700px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      overflow: hidden;
+    }
+
+    .tab {
+      background: #fffdfb;
+      color: var(--text);
+      border-right: 1px solid var(--line);
+      padding: 12px;
+      font-weight: 800;
+    }
+
+    .tab:last-child { border-right: 0; }
+    .tab.active { background: var(--soft-pink); color: var(--cranberry); }
+
+    .video-frame {
+      margin: 0 20px;
+      min-height: 330px;
+      aspect-ratio: 16 / 7.4;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(to top, rgba(0,0,0,.62), transparent 40%),
+        radial-gradient(circle at 24% 24%, #f7b4c4, #d84b78 46%, #a5345d);
+    }
+
+    .stitch-texture {
+      position: absolute;
+      inset: 0;
+      opacity: .54;
+      background-image:
+        radial-gradient(circle at 14px 14px, rgba(255,255,255,.32) 0 5px, transparent 6px),
+        radial-gradient(circle at 34px 30px, rgba(75,0,28,.21) 0 6px, transparent 7px);
+      background-size: 42px 36px;
+      transform: rotate(-3deg) scale(1.08);
+    }
+
+    .hook {
+      position: absolute;
+      width: 58%;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e9dddd, #cbc0c2 22%, #df4f7d 23%, #b73563);
+      transform: rotate(13deg);
+      top: 43%;
+      right: -8%;
+      box-shadow: 0 10px 18px rgba(60, 10, 30, .26);
+    }
+
+    .video-controls {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+    }
+
+    .play {
+      width: 0;
+      height: 0;
+      border-top: 11px solid transparent;
+      border-bottom: 11px solid transparent;
+      border-left: 17px solid white;
+    }
+
+    .bar {
+      height: 5px;
+      flex: 1;
+      border-radius: 999px;
+      background: rgba(255,255,255,.3);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 36%;
+      background: var(--cranberry-2);
+    }
+
+    .project-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 16px 20px;
+    }
+
+    .project-strip .field {
+      border-right: 1px solid var(--line);
+      min-height: 46px;
+    }
+
+    .project-strip .field:last-of-type { border-right: 0; }
+
+    .project-strip small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .project-strip strong {
+      display: block;
+      color: var(--text);
+      min-height: 18px;
+    }
+
+    .tracker { padding-bottom: 14px; }
+
+    .tracker-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tracker-actions {
+      display: flex;
+      gap: 22px;
+      color: var(--cranberry);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid #f5e4e8;
+      padding: 10px 20px;
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.82rem;
+      color: #51464a;
+    }
+
+    .row-col {
+      width: 70px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .done-col {
+      width: 70px;
+      text-align: center;
+    }
+
+    .active-row {
+      background: #fff0f4;
+      color: #7f173c;
+      font-weight: 900;
+    }
+
+    .check {
+      width: 17px;
+      height: 17px;
+      border: 2px solid #ddc5cc;
+      border-radius: 5px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 0.75rem;
+      color: white;
+    }
+
+    .checked {
+      background: var(--cranberry-2);
+      border-color: var(--cranberry-2);
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 14px 20px 0;
+      font-weight: 800;
+    }
+
+    .progress-line {
+      height: 8px;
+      background: #fde5eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-line span {
+      display: block;
+      width: 27%;
+      height: 100%;
+      background: var(--cranberry-2);
+    }
+
+    .row-card { padding: 18px; }
+
+    .tool-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .help-btn {
+      position: relative;
+      width: 27px;
+      height: 27px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      font-family: Arial, sans-serif;
+      font-weight: 800;
+      cursor: help;
+      padding: 0;
+    }
+
+    .help-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      right: 0;
+      top: 36px;
+      width: 235px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #3d3035;
+      color: white;
+      font-size: 0.8rem;
+      line-height: 1.35;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 20;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+      text-align: left;
+    }
+
+    .help-btn::before {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 29px;
+      border: 7px solid transparent;
+      border-bottom-color: #3d3035;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 21;
+    }
+
+    .help-btn:hover::after,
+    .help-btn:hover::before { opacity: 1; }
+
+
+    .counter-mode-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: -4px 0 12px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff8f9;
+    }
+
+    .counter-mode-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .counter-mode-btn {
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .counter-mode-btn[hidden] {
+      display: none;
+    }
+
+    .row-number {
+      display: grid;
+      place-items: center;
+      width: 142px;
+      height: 142px;
+      margin: 8px auto 18px;
+      border-radius: 50%;
+      background: var(--soft-pink);
+      border: 1px solid var(--line);
+      color: var(--cranberry-2);
+      font-family: Arial, sans-serif;
+      font-size: 4.4rem;
+      font-weight: 800;
+      line-height: 1;
+      box-shadow: inset 0 0 0 10px rgba(255,255,255,0.55);
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .primary-btn {
+      background: var(--cranberry);
+      color: white;
+      padding: 13px 12px;
+      box-shadow: 0 8px 18px rgba(194, 58, 105, 0.22);
+      font-size: 1rem;
+    }
+
+    .soft-btn {
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 13px 12px;
+      font-size: 1rem;
+    }
+
+    .management-row { margin-top: 10px; }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 17px 0 14px;
+    }
+
+    .voice-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .voice-title strong {
+      color: var(--cranberry-dark);
+      font-size: 0.95rem;
+    }
+
+    .voice-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid #cdb5bd;
+      background: white;
+    }
+
+    .status-dot.on {
+      background: var(--cranberry-2);
+      border-color: var(--cranberry-2);
+    }
+
+    .voice-btn {
+      width: 100%;
+      padding: 11px 12px;
+      font-size: 0.94rem;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+    }
+
+    .voice-btn.on {
+      background: var(--cranberry);
+      color: white;
+      border-color: var(--cranberry);
+    }
+
+    .voice-hint, .voice-message {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .voice-message {
+      color: var(--cranberry-dark);
+      font-weight: 700;
+      min-height: 1.1em;
+    }
+
+    .saved-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+
+
+    .timer-card button,
+    .timer-card .soft-btn,
+    .timer-card .primary-btn {
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, background 0.12s ease;
+    }
+
+    .timer-card button:hover,
+    .timer-card .soft-btn:hover,
+    .timer-card .primary-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 9px 18px rgba(157, 42, 85, 0.13);
+    }
+
+    .timer-card button:active,
+    .timer-card .soft-btn:active,
+    .timer-card .primary-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: inset 0 2px 5px rgba(90, 30, 50, 0.16);
+      filter: brightness(0.97);
+    }
+
+    .timer-card {
+      padding: 18px;
+    }
+
+    .timer-mode-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: -4px 0 14px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff8f9;
+    }
+
+    .timer-mode-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .timer-mode-btn {
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .timer-mode-btn[hidden] {
+      display: none;
+    }
+
+    .timer-block {
+      text-align: center;
+      padding: 8px 0 14px;
+    }
+
+    .timer-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .timer-display {
+      font-family: Arial, sans-serif;
+      color: var(--cranberry-2);
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .timer-total-box {
+      margin-top: 16px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff8f9;
+      text-align: center;
+    }
+
+    .timer-total-box strong {
+      display: block;
+      color: var(--cranberry-dark);
+      font-family: Arial, sans-serif;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .timer-session-count {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .timer-active-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--cranberry-dark);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .timer-sessions {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 13px;
+    }
+
+    .timer-sessions-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .timer-sessions ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+
+    .timer-session-number {
+      display: inline-grid;
+      place-items: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff0f4;
+      color: var(--cranberry-dark);
+      font-size: 0.72rem;
+      font-weight: 900;
+      margin-right: 7px;
+      font-family: Arial, sans-serif;
+    }
+
+    .timer-session-left {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .timer-sessions li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid #f5e4e8;
+      background: #fffdfb;
+      border-radius: 12px;
+      padding: 8px 10px;
+    }
+
+    .timer-clear-btn {
+      background: transparent;
+      color: #a32635;
+      border: 0;
+      padding: 0;
+      font-size: 0.76rem;
+      box-shadow: none;
+      white-space: nowrap;
+    }
+
+
+    .notes, .quick { padding: 18px; }
+
+    .notes {
+      background:
+        radial-gradient(circle at top left, rgba(100, 133, 110, 0.12), transparent 38%),
+        rgba(255, 253, 251, 0.95);
+    }
+
+    .notes-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .notes .section-title {
+      color: var(--green);
+    }
+
+    .notes-saved-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 12px;
+      background: white;
+    }
+
+    .notes textarea {
+      min-height: 135px;
+      background:
+        linear-gradient(#fffdfb, #fffdfb) padding-box,
+        linear-gradient(135deg, rgba(100,133,110,0.22), rgba(194,58,105,0.18)) border-box;
+      border: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+      line-height: 1.45;
+    }
+
+    .notes textarea:focus {
+      outline: none;
+      box-shadow:
+        0 0 0 4px rgba(100, 133, 110, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+
+    .note-save {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 10px;
+    }
+
+    .quick .section-title {
+      color: var(--orange);
+      margin-bottom: 13px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .tool {
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff7f3;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .tool b {
+      display: block;
+      color: var(--cranberry-2);
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 18px 44px rgba(90, 30, 50, 0.22);
+      background: var(--card);
+      padding: 20px;
+      width: min(290px, calc(100vw - 34px));
+    }
+
+    dialog::backdrop {
+      background: rgba(53, 41, 45, 0.22);
+      backdrop-filter: blur(2px);
+    }
+
+    .dialog-title {
+      margin: 0 0 12px;
+      color: var(--cranberry-dark);
+      font-size: 1.25rem;
+    }
+
+    .jump-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .dialog-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+
+    .source-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 16px 20px 12px;
+    }
+
+    .source-tab {
+      background: #fffdfb;
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 11px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      box-shadow: 0 5px 14px rgba(157, 42, 85, 0.06);
+    }
+
+    .source-tab.active {
+      background: var(--soft-pink);
+      color: var(--cranberry);
+      border-color: #e8bdca;
+    }
+
+    .source-panel {
+      margin: 0 20px;
+    }
+
+    .source-panel[hidden] {
+      display: none;
+    }
+
+    .source-controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .source-controls input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+
+    .source-controls input:focus {
+      border-color: var(--cranberry-2);
+      box-shadow: 0 0 0 4px rgba(194, 58, 105, 0.12);
+    }
+
+    .source-frame {
+      min-height: 460px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, #fff0f4 0, transparent 36%),
+        linear-gradient(135deg, #fffdfb, #fff7f0);
+      position: relative;
+    }
+
+    .source-frame iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 460px;
+      border: 0;
+      display: block;
+      background: white;
+    }
+
+    .source-placeholder {
+      min-height: 460px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+    }
+
+    .source-placeholder strong {
+      display: block;
+      color: var(--cranberry-dark);
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .source-help {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+
+    .source-help.warning {
+      color: var(--cranberry-dark);
+      font-weight: 700;
+    }
+
+
+
+    .source-controls-three {
+      grid-template-columns: 1fr auto auto;
+    }
+
+    .clear-source-btn {
+      padding: 12px 14px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      .source-controls,
+      .source-controls-three {
+        grid-template-columns: 1fr;
+      }
+
+      .clear-source-btn {
+        width: 100%;
+      }
+    }
+
+    .upload-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: -2px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .or-label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      background: #fff6f8;
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 11px 16px;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    #pdfUpload {
+      display: none;
+    }
+
+    .open-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--cranberry-dark);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+
+    .simple-welcome { grid-template-columns: 1fr auto; }
+    .project-card { padding: 18px 20px; }
+    .project-card-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
+    .project-subtitle { margin:8px 0 0; color:var(--muted); font-size:.94rem; line-height:1.35; }
+    .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .project-card-actions { justify-content:flex-end; }
+    .project-snapshot { border:1px solid var(--line); background:#fff8f9; border-radius:16px; padding:15px; }
+    .empty-project strong { display:block; color:var(--cranberry-dark); margin-bottom:5px; }
+    .empty-project span { display:block; color:var(--muted); line-height:1.4; }
+    .snapshot-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:stretch; }
+    .snapshot-main { grid-column:span 2; }
+    .snapshot-status-pill {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:max-content;
+      max-width:100%;
+      padding:4px 9px;
+      border-radius:999px;
+      background:#fff0f4;
+      color:var(--cranberry-dark);
+      border:1px solid #f0c4c9;
+      font-size:.82rem;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .snapshot-metric strong {
+      color:var(--cranberry-dark);
+      font-size:1.02rem;
+    }
+    .snapshot-main { grid-column:span 2; }
+    .snapshot-item { border-right:1px solid var(--line); padding-right:10px; min-height:45px; }
+    .snapshot-item:last-child { border-right:0; }
+    .snapshot-item small { display:block; color:var(--muted); font-weight:800; margin-bottom:6px; font-size:.78rem; }
+    .snapshot-item strong { display:block; color:var(--text); word-break:break-word; }
+    .project-backup-actions { margin-top:12px; }
+    .import-label { display:inline-block; text-align:center; cursor:pointer; }
+    #importBackupInput { display:none; }
+    .project-dialog { border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(90,30,50,.22); background:var(--card); padding:20px; width:min(520px, calc(100vw - 34px)); }
+    .project-dialog::backdrop { background:rgba(53,41,45,.22); backdrop-filter:blur(2px); }
+    .project-dialog h2 { margin:0 0 14px; color:var(--cranberry-dark); }
+    .project-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .project-form-grid label { display:grid; gap:6px; color:var(--cranberry-dark); font-weight:800; font-size:.88rem; }
+    .project-form-grid .full { grid-column:1 / -1; }
+
+    .project-form-grid select,
+    .project-form-grid textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .project-form-grid textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .project-form-grid input { width:100%; border:1px solid var(--line); border-radius:13px; padding:11px 12px; background:white; color:var(--text); }
+    .project-dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
+    .project-list button { text-align:left; padding:12px; background:#fff8f9; border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .project-list button.active-project { border-color:var(--cranberry-2); background:var(--soft-pink); color:var(--cranberry-dark); }
+
+    .your-projects-list {
+      display: grid;
+      gap: 16px;
+      max-height: 64vh;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .project-status-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .project-status-heading {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .your-project-item {
+      width: 100%;
+      text-align: left;
+      padding: 12px 13px;
+      background: #fff8f9;
+      border: 1px solid var(--line);
+      color: var(--text);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border-radius: 14px;
+    }
+
+    .your-project-item.active-project {
+      border-color: var(--cranberry-2);
+      background: var(--soft-pink);
+      color: var(--cranberry-dark);
+    }
+
+    .your-project-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .your-project-item small {
+      color: var(--muted);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .your-project-empty {
+      padding: 18px;
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+      background: #fff8f9;
+    }
+    @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr 1fr;} .snapshot-main{grid-column:span 2;} .snapshot-item{border-right:0;} }
+    @media(max-width:650px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} }
+    @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
+
+
+    .backup-restore {
+      margin-top: 20px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .backup-restore summary {
+      cursor: pointer;
+      color: var(--cranberry-dark);
+      font-weight: 800;
+      list-style-position: inside;
+    }
+
+    .backup-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .danger-btn {
+      background: #fff1f1;
+      color: #a32635;
+      border: 1px solid #f0c4c9;
+      padding: 13px 12px;
+      font-size: 1rem;
+    }
+
+    .danger-btn:hover {
+      background: #ffe7e9;
+    }
+
+
+    .tracker-subtitle {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .tracker-head {
+      gap: 14px;
+    }
+
+
+    .danger-outline-btn {
+      color: #a32635;
+      border-color: #f0c4c9;
+      background: #fff7f7;
+    }
+
+    .danger-outline-btn:hover {
+      background: #ffecef;
+    }
+
+    .tracker-complete-message {
+      margin-top: 9px;
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.92rem;
+    }
+
+    .tracker-actions button {
+      margin-top: 0;
+      white-space: nowrap;
+    }
+
+    .tracker-progress-wrap {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tracker-progress-text {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 9px;
+    }
+
+    .tracker-progress-bar {
+      height: 9px;
+      background: #fde5eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .tracker-progress-bar span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: var(--cranberry-2);
+      transition: width 0.2s ease;
+    }
+
+    .tracker-empty {
+      padding: 24px 20px 26px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .tracker-empty strong {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 6px;
+    }
+
+    .tracker-table-wrap {
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .tracker-table tbody tr {
+      cursor: pointer;
+    }
+
+    .tracker-table tbody tr:hover {
+      background: #fff8f9;
+    }
+
+    .tracker-table .current-tracker-row {
+      background: #fff0f4;
+      color: #7f173c;
+      font-weight: 900;
+    }
+
+    .tracker-table .completed-row td {
+      color: var(--muted);
+    }
+
+    .tracker-table .completed-row td:nth-child(2) {
+      text-decoration: line-through;
+      opacity: 0.65;
+    }
+
+    .tracker-row-input {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--cranberry-2);
+      cursor: pointer;
+    }
+
+    .pattern-import-textarea {
+      width: 100%;
+      min-height: 230px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      resize: vertical;
+      background: white;
+      color: var(--text);
+      font: inherit;
+    }
+
+    @media (max-width: 720px) {
+      .tracker-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .tracker-actions {
+        width: 100%;
+      }
+
+  
+    .danger-outline-btn {
+      color: #a32635;
+      border-color: #f0c4c9;
+      background: #fff7f7;
+    }
+
+    .danger-outline-btn:hover {
+      background: #ffecef;
+    }
+
+    .tracker-complete-message {
+      margin-top: 9px;
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.92rem;
+    }
+
+    .tracker-actions button {
+        flex: 1 1 100%;
+      }
+
+      .tracker-table th,
+      .tracker-table td {
+        padding: 9px 10px;
+      }
+    }
+
+
+    @media (max-width: 1100px) {
+      .topbar { grid-template-columns: minmax(220px, auto) 1fr; }
+      .nav {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 18px;
+      }
+      .top-actions { display: none; }
+      .page { grid-template-columns: 1fr; }
+      .side { display: grid; grid-template-columns: 330px 1fr; align-items: start; }
+      .welcome { grid-template-columns: 1fr; }
+      .welcome-refined { grid-template-columns: 1fr; }
+      .welcome-project { border-left: 0; padding-left: 0; }
+      .welcome-art { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 16px;
+      }
+      .brand-title { font-size: 1.22rem; }
+      .brand-subtitle { font-size: 0.72rem; }
+      .nav {
+        justify-content: flex-end;
+        height: auto;
+        gap: 18px;
+      }
+      .nav a,
+      .nav-link {
+        height: auto;
+        padding: 6px 0;
+      }
+      .library-btn { display: none; }
+      .page { padding: 14px; }
+      .side { display: flex; }
+      .getting-started-grid { grid-template-columns: 1fr; }
+      .welcome-image img { max-height: 130px; }
+      .notes-head { flex-direction: column; align-items: flex-start; gap: 3px; }
+      .notes-saved-label { white-space: normal; }
+      .settings-row { grid-template-columns: 1fr; }
+      .project-strip { grid-template-columns: 1fr 1fr; }
+      .project-strip .field { border-right: 0; }
+      .tabs { grid-template-columns: 1fr; }
+      .tab { border-right: 0; border-bottom: 1px solid var(--line); }
+      .video-frame { min-height: 250px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark logo-mark">
+        <img src="assets/logo-su-transparent.png" alt="Simply Ummiby logo" />
+      </span>
+      <div class="brand-text">
+        <span class="brand-title">Crochet Workspace</span>
+        <span class="brand-subtitle">by Simply Ummiby</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
+      <button class="nav-link" id="openSettingsNav" type="button">⚙️ Settings</button>
+    </nav>
+    
+  </header>
+
+  <main class="page">
+    <section class="main">
+      <section class="card welcome simple-welcome welcome-refined">
+        <div class="welcome-copy">
+          <h1>Your Crochet Project Companion</h1>
+          <p>Keep track of projects, patterns, rows, time, and notes—all in one place.</p>
+          <button class="outline-btn getting-started-btn" id="openGettingStarted" type="button">📖 How to Use</button>
+        </div>
+
+        <div class="welcome-image">
+          <img src="assets/yarn-basket.png" alt="Crochet workspace illustration" />
+        </div>
+      </section>
+
+      <section class="card project-card" id="projectCard">
+        <div class="project-card-head">
+          <div>
+            <h2 class="section-title">🧺 Current Project</h2>
+            <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
+          </div>
+
+          <div class="project-card-actions">
+            <button class="outline-btn" id="createProjectBtn" type="button">➕ New</button>
+            <button class="outline-btn" id="editProjectBtn" type="button">✏️ Edit</button>
+            <button class="outline-btn" id="switchProjectBtn" type="button">🔄 Switch</button>
+          </div>
+        </div>
+
+        <div class="project-snapshot" id="projectSnapshot">
+          <div class="empty-project">
+            <strong>No project selected</strong>
+            <span>Create a project to save your hook size, rows, timer, pattern links, and notes.</span>
+          </div>
+        </div>
+
+        <details class="backup-restore">
+          <summary>💾 Backup & Restore</summary>
+
+          <div class="backup-actions">
+            <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Current Project</button>
+            <button class="soft-btn" id="downloadAllBackupBtn" type="button">⬇ All Projects</button>
+            <label class="soft-btn import-label" for="importBackupInput">⬆ Import Backup</label>
+            <input id="importBackupInput" type="file" accept="application/json,.json" />
+          </div>
+        </details>
+      </section>
+
+      <section class="card viewer">
+        <div class="section-head">
+          <h2 class="section-title">🔗 Pattern Source</h2>
+        </div>
+
+        <div class="source-tabs" role="tablist" aria-label="Pattern source options">
+          <button class="source-tab active" id="videoTab" type="button" data-panel="videoPanel">🎥 Video Tutorial</button>
+          <button class="source-tab" id="webTab" type="button" data-panel="webPanel">🌐 Web Pattern</button>
+          <button class="source-tab" id="pdfTab" type="button" data-panel="pdfPanel">📄 PDF Pattern</button>
+        </div>
+
+        <section class="source-panel" id="videoPanel">
+          <div class="source-controls source-controls-three">
+            <input id="videoUrl" type="url" placeholder="Paste a YouTube tutorial URL..." />
+            <button class="primary-btn" id="loadVideo" type="button">Load Video</button>
+            <button class="soft-btn clear-source-btn" id="clearVideo" type="button">Clear</button>
+          </div>
+
+          <div class="source-frame" id="videoFrameBox">
+            <div class="source-placeholder" id="videoPlaceholder">
+              <div>
+                <strong>Video Tutorial</strong>
+                <span>Paste a YouTube link to keep your tutorial close while you stitch.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="source-help">Tip: YouTube links will be converted into an embedded player when possible.</p>
+          <a class="open-link" id="openVideoLink" href="#" target="_blank" rel="noopener" hidden>Open video in a new tab</a>
+        </section>
+
+        <section class="source-panel" id="webPanel" hidden>
+          <div class="source-controls source-controls-three">
+            <input id="webUrl" type="url" placeholder="Paste a web pattern URL..." />
+            <button class="primary-btn" id="loadWeb" type="button">Load Web Pattern</button>
+            <button class="soft-btn clear-source-btn" id="clearWeb" type="button">Clear</button>
+          </div>
+
+          <div class="source-frame" id="webFrameBox">
+            <div class="source-placeholder" id="webPlaceholder">
+              <div>
+                <strong>Web Pattern</strong>
+                <span>Paste a pattern webpage URL to keep the written pattern nearby while you work.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="source-help" id="webHelp">Some websites block embedding. If the page does not appear, use the link below.</p>
+          <a class="open-link" id="openWebLink" href="#" target="_blank" rel="noopener" hidden>Open web pattern in a new tab</a>
+        </section>
+
+        <section class="source-panel" id="pdfPanel" hidden>
+          <div class="source-controls source-controls-three pdf-controls">
+            <input id="pdfUrl" type="url" placeholder="Paste a PDF pattern URL..." />
+            <button class="primary-btn" id="loadPdf" type="button">Load PDF URL</button>
+            <button class="soft-btn clear-source-btn" id="clearPdf" type="button">Clear</button>
+          </div>
+
+          <div class="upload-row">
+            <span class="or-label">or</span>
+            <label class="upload-btn" for="pdfUpload">Upload PDF from computer</label>
+            <input id="pdfUpload" type="file" accept="application/pdf,.pdf" />
+          </div>
+
+          <div class="source-frame" id="pdfFrameBox">
+            <div class="source-placeholder" id="pdfPlaceholder">
+              <div>
+                <strong>PDF Pattern</strong>
+                <span>Paste a PDF URL or upload a PDF pattern from your computer.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="source-help" id="pdfHelp">Uploaded PDFs may need to be uploaded again in a later session. PDF URLs can be saved locally.</p>
+          <a class="open-link" id="openPdfLink" href="#" target="_blank" rel="noopener" hidden>Open PDF in a new tab</a>
+        </section>
+      </section>
+
+      <section class="card tracker">
+        <div class="tracker-head">
+          <div>
+            <h2 class="section-title">🌺 Pattern Tracker</h2>
+            <p class="tracker-subtitle">Paste pattern rows, check them off, and keep your place in the pattern.</p>
+          </div>
+
+          <div class="tracker-actions">
+            <button class="outline-btn" id="pastePatternBtn" type="button">Paste Pattern</button>
+            <button class="outline-btn" id="uncheckRowsBtn" type="button">Uncheck Rows</button>
+            <button class="outline-btn danger-outline-btn" id="deletePatternBtn" type="button">Delete Pattern</button>
+          </div>
+        </div>
+
+        <div class="tracker-progress-wrap">
+          <div class="tracker-progress-text" id="trackerProgressText">No rows loaded yet.</div>
+          <div class="tracker-progress-bar">
+            <span id="trackerProgressBar"></span>
+          </div>
+          <div class="tracker-complete-message" id="trackerCompleteMessage" hidden>🎉 Pattern complete!</div>
+        </div>
+
+        <div class="tracker-empty" id="trackerEmpty">
+          <strong>No pattern rows yet</strong>
+          <span>Click “Paste Pattern” and paste one row per line.</span>
+        </div>
+
+        <div class="tracker-table-wrap" id="trackerTableWrap" hidden>
+          <table class="tracker-table">
+            <thead>
+              <tr>
+                <th class="row-col">Row</th>
+                <th>Instructions</th>
+                <th class="done-col">Done</th>
+              </tr>
+            </thead>
+            <tbody id="patternTrackerBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <aside class="side">
+      <article class="card row-card">
+        <div class="tool-title-row">
+          <p class="section-title">🧮 Row Counter</p>
+          <button
+            class="help-btn"
+            type="button"
+            data-tooltip="If a project is active, this counter can save to that project. Use Quick Counter mode for one-off projects so you don’t overwrite your project row count."
+            aria-label="Row counter help">?</button>
+        </div>
+
+        <div class="counter-mode-row">
+          <p class="counter-mode-text" id="counterModeText">Quick Counter Mode</p>
+          <button class="counter-mode-btn" id="counterModeToggle" type="button">Use Project Counter</button>
+        </div>
+
+        <div class="row-number" id="rowCount" aria-live="polite">0</div>
+
+        <div class="button-grid">
+          <button class="soft-btn" id="minusRow" type="button">− 1 Row</button>
+          <button class="primary-btn" id="addRow" type="button">＋ 1 Row</button>
+        </div>
+
+        <div class="button-grid management-row">
+          <button class="soft-btn" id="openJump" type="button">Jump...</button>
+          <button class="soft-btn" id="resetRows" type="button">↻ Reset</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <section class="voice-section" aria-label="Voice counter controls">
+          <div class="voice-title">
+            <strong>🎙️ Voice Counter</strong>
+            <span class="voice-status"><span class="status-dot" id="voiceDot"></span><span id="voiceStatus">Voice Off</span></span>
+          </div>
+
+          <button class="voice-btn" id="voiceToggle" type="button">Start Voice Counter</button>
+          <p class="voice-message" id="voiceMessage"></p>
+          <p class="voice-hint">Try: “add row” • “minus row” • “reset rows” • “row 12”</p>
+        </section>
+
+        <p class="saved-note">Saved locally</p>
+      </article>
+
+      <article class="card timer-card">
+        <div class="tool-title-row">
+          <p class="section-title">🕓 Project Timer</p>
+          <button
+            class="help-btn"
+            type="button"
+            data-tooltip="Quick Timer tracks general crochet time. Project Timer tracks time spent on the active project."
+            aria-label="Project timer help">?</button>
+        </div>
+
+        <div class="timer-mode-row">
+          <p class="timer-mode-text" id="timerModeText">Quick Timer Mode</p>
+          <button class="timer-mode-btn" id="timerModeToggle" type="button">Use Project Timer</button>
+        </div>
+
+        <div class="timer-block">
+          <span class="timer-label">Current Session</span>
+          <div class="timer-display" id="timerDisplay">00:00:00</div>
+        </div>
+
+        <div class="button-grid">
+          <button class="primary-btn" id="timerStartBtn" type="button">▶ Start Session</button>
+          <button class="soft-btn" id="timerPauseBtn" type="button">⏸ Pause</button>
+        </div>
+
+        <div class="button-grid management-row">
+          <button class="soft-btn" id="timerEndBtn" type="button">🏁 End Session</button>
+          <button class="soft-btn" id="timerResetSessionBtn" type="button">↺ Reset Session</button>
+        </div>
+
+        <div class="timer-total-box">
+          <span class="timer-label" id="timerTotalLabel">Total Project Time</span>
+          <strong id="timerTotalDisplay">0s</strong>
+          <span class="timer-session-count" id="timerSessionCount">0 sessions</span>
+        </div>
+
+        <div class="timer-sessions">
+          <div class="timer-sessions-head">
+            <span class="timer-label">Recent Sessions</span>
+            <button class="timer-clear-btn" id="timerClearAllBtn" type="button">🗑️ Clear All Time</button>
+          </div>
+          <ul id="timerSessionList">
+            <li>No sessions yet.</li>
+          </ul>
+        </div>
+      </article>
+
+      <section class="card notes">
+        <div class="notes-head">
+          <h2 class="section-title">📝 Project Notes</h2>
+          <span class="notes-saved-label">(saved with this project)</span>
+        </div>
+        <textarea id="projectNotes" placeholder="Add your notes here..."></textarea>
+      </section>
+
+
+    </aside>
+  </main>
+
+
+  <dialog class="project-dialog" id="projectFormDialog">
+    <h2 id="projectFormTitle">Create Project</h2>
+
+    <div class="project-form-grid">
+      <label class="full">Project Name
+        <input id="projectNameInput" type="text" placeholder="Sunflower Market Bag" />
+      </label>
+
+      <label>Hook Size
+        <select id="projectHookSelect">
+          <option value="">Select hook size</option>
+          <option value="2.0 mm (B)">2.0 mm (B)</option>
+          <option value="2.25 mm (B/1)">2.25 mm (B/1)</option>
+          <option value="2.75 mm (C)">2.75 mm (C)</option>
+          <option value="3.0 mm (D)">3.0 mm (D)</option>
+          <option value="3.25 mm (D)">3.25 mm (D)</option>
+          <option value="3.5 mm (E)">3.5 mm (E)</option>
+          <option value="3.75 mm (F)">3.75 mm (F)</option>
+          <option value="4.0 mm (G)">4.0 mm (G)</option>
+          <option value="4.25 mm (G)">4.25 mm (G)</option>
+          <option value="4.5 mm (7)">4.5 mm (7)</option>
+          <option value="5.0 mm (H)">5.0 mm (H)</option>
+          <option value="5.5 mm (I)">5.5 mm (I)</option>
+          <option value="6.0 mm (J)">6.0 mm (J)</option>
+          <option value="6.5 mm (K)">6.5 mm (K)</option>
+          <option value="7.0 mm">7.0 mm</option>
+          <option value="8.0 mm (L)">8.0 mm (L)</option>
+          <option value="9.0 mm (M/N)">9.0 mm (M/N)</option>
+          <option value="10.0 mm (N/P)">10.0 mm (N/P)</option>
+          <option value="12.0 mm (O)">12.0 mm (O)</option>
+          <option value="15.0 mm (P/Q)">15.0 mm (P/Q)</option>
+          <option value="custom">Other / Custom...</option>
+        </select>
+      </label>
+
+      <label id="customHookLabel" hidden>Custom Hook Size
+        <input id="projectHookCustomInput" type="text" placeholder="Example: 7.5 mm or 4.5 mm ergonomic" />
+      </label>
+
+      <label>Started
+        <input id="projectStartedInput" type="date" />
+      </label>
+
+      <label>Status
+        <select id="projectStatusSelect">
+          <option value="Not Started">Not Started</option>
+          <option value="In Progress" selected>In Progress</option>
+          <option value="Complete">Complete</option>
+        </select>
+      </label>
+
+      <label class="full">Materials
+        <textarea id="projectMaterialsInput" placeholder="Example: Cotton DK in cream, yellow, and brown; wooden button"></textarea>
+      </label>
+    </div>
+
+    <div class="project-dialog-actions">
+      <button class="danger-btn" id="deleteProjectBtn" type="button" hidden>Delete Project</button>
+      <button class="soft-btn" id="cancelProjectForm" type="button">Cancel</button>
+      <button class="primary-btn" id="saveProjectForm" type="button">Save Project</button>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog" id="switchProjectDialog">
+    <h2>Switch Project</h2>
+    <p class="project-subtitle">Choose which project snapshot should be active.</p>
+    <div class="project-list" id="projectList"></div>
+    <div class="project-dialog-actions">
+      <button class="soft-btn" id="closeSwitchProject" type="button">Close</button>
+      <button class="primary-btn" id="newProjectFromSwitch" type="button">＋ New Project</button>
+    </div>
+  </dialog>
+
+
+  <dialog class="project-dialog" id="patternImportDialog">
+    <h2>Paste Pattern Rows</h2>
+    <p class="project-subtitle">Paste one row per line. Row numbers will be detected when possible.</p>
+
+    <textarea id="patternImportText" class="pattern-import-textarea" placeholder="Row 1: Ch 21&#10;Row 2: HDC across&#10;Row 3: Repeat row 2"></textarea>
+
+    <div class="project-dialog-actions">
+      <button class="soft-btn" id="cancelPatternImport" type="button">Cancel</button>
+      <button class="primary-btn" id="importPatternRows" type="button">Import Rows</button>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog getting-started-dialog" id="yourProjectsDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>🎯 My Projects</h2>
+        <p>View your projects by status and open the one you want to work on.</p>
+      </div>
+      <button class="close-help-btn" id="closeYourProjects" type="button" aria-label="Close projects">×</button>
+    </div>
+
+    <div class="getting-started-content">
+      <div class="your-projects-list" id="yourProjectsList"></div>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog getting-started-dialog" id="gettingStartedDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>🧶 How to Use Crochet Workspace</h2>
+        <p>A quick guide to projects, patterns, rows, time, notes, and backups.</p>
+      </div>
+      <button class="close-help-btn" id="closeGettingStarted" type="button" aria-label="Close help">×</button>
+    </div>
+
+    <div class="getting-started-content">
+      <div class="getting-started-grid">
+        <div class="help-step">
+          <strong>1. Create a project</strong>
+          <p>Save the project name, hook size, materials, status, notes, rows, timer data, and pattern sources.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>2. Add a pattern source</strong>
+          <p>Use 🎥 Video Tutorial, 🌐 Web Pattern, or 📄 PDF Pattern to keep your instructions nearby.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>3. Track your rows</strong>
+          <p>Use the Row Counter for manual tracking, or paste rows into the Pattern Tracker and check them off.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>4. Track your time</strong>
+          <p>Start a Project Timer session when you crochet. End the session to save it to the project history.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>5. Keep notes</strong>
+          <p>Use Project Notes for yarn changes, modifications, reminders, sizing notes, or anything you want to remember.</p>
+        </div>
+
+        <div class="help-step">
+          <strong>6. Back up your work</strong>
+          <p>Use Backup & Restore to download the current project or all projects as a JSON backup file.</p>
+        </div>
+      </div>
+
+      <p class="help-note">
+        <strong>Tip:</strong> Row Counter and Pattern Tracker are independent tools. Use either one—or both—depending on how you like to follow a pattern.
+      </p>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog getting-started-dialog" id="settingsDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>⚙️ Settings</h2>
+        <p>Choose the color theme for your crochet workspace.</p>
+      </div>
+      <button class="close-help-btn" id="closeSettings" type="button" aria-label="Close settings">×</button>
+    </div>
+
+    <div class="getting-started-content">
+      <div class="settings-row">
+        <label for="themeSelect">
+          <strong>Theme Color</strong>
+          <span>Pick the color palette you want to use.</span>
+        </label>
+
+        <select id="themeSelect">
+          <option value="rose">Rose</option>
+          <option value="sage">Sage</option>
+          <option value="lavender">Lavender</option>
+          <option value="peach">Peach</option>
+          <option value="blue">Blue</option>
+        </select>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="jumpDialog">
+    <h2 class="dialog-title">Jump to Row</h2>
+    <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
+    <div class="dialog-actions">
+      <button class="soft-btn" id="cancelJump" type="button">Cancel</button>
+      <button class="primary-btn" id="goJump" type="button">Go</button>
+    </div>
+  </dialog>
+
+  <script>
+    const rowCount = document.getElementById("rowCount");
+    const addRow = document.getElementById("addRow");
+    const minusRow = document.getElementById("minusRow");
+    const resetRows = document.getElementById("resetRows");
+
+    const openJump = document.getElementById("openJump");
+    const jumpDialog = document.getElementById("jumpDialog");
+    const jumpInput = document.getElementById("jumpInput");
+    const cancelJump = document.getElementById("cancelJump");
+    const goJump = document.getElementById("goJump");
+
+    const counterModeText = document.getElementById("counterModeText");
+    const counterModeToggle = document.getElementById("counterModeToggle");
+
+    const voiceToggle = document.getElementById("voiceToggle");
+    const voiceStatus = document.getElementById("voiceStatus");
+    const voiceDot = document.getElementById("voiceDot");
+    const voiceMessage = document.getElementById("voiceMessage");
+
+    const timerModeText = document.getElementById("timerModeText");
+    const timerModeToggle = document.getElementById("timerModeToggle");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStartBtn = document.getElementById("timerStartBtn");
+    const timerPauseBtn = document.getElementById("timerPauseBtn");
+    const timerEndBtn = document.getElementById("timerEndBtn");
+    const timerResetSessionBtn = document.getElementById("timerResetSessionBtn");
+    const timerTotalDisplay = document.getElementById("timerTotalDisplay");
+    const timerTotalLabel = document.getElementById("timerTotalLabel");
+    const timerSessionCount = document.getElementById("timerSessionCount");
+    const timerSessionList = document.getElementById("timerSessionList");
+    const timerClearAllBtn = document.getElementById("timerClearAllBtn");
+    const projectNotes = document.getElementById("projectNotes");
+    const openGettingStarted = document.getElementById("openGettingStarted");
+    const gettingStartedDialog = document.getElementById("gettingStartedDialog");
+    const closeGettingStarted = document.getElementById("closeGettingStarted");
+    const openYourProjectsNav = document.getElementById("openYourProjectsNav");
+    const yourProjectsDialog = document.getElementById("yourProjectsDialog");
+    const closeYourProjects = document.getElementById("closeYourProjects");
+    const yourProjectsList = document.getElementById("yourProjectsList");
+    const openSettingsNav = document.getElementById("openSettingsNav");
+    const settingsDialog = document.getElementById("settingsDialog");
+    const closeSettings = document.getElementById("closeSettings");
+    const themeSelect = document.getElementById("themeSelect");
+
+    const QUICK_ROW_KEY = "crochetWorkspaceQuickCounterRow";
+    const COUNTER_MODE_KEY = "crochetWorkspaceCounterMode";
+    let counterMode = localStorage.getItem(COUNTER_MODE_KEY) || "quick";
+    let row = 0;
+
+
+    const QUICK_TIMER_KEY = "crochetWorkspaceQuickTimerData";
+    const TIMER_MODE_KEY = "crochetWorkspaceTimerMode";
+
+    let timerMode = localStorage.getItem(TIMER_MODE_KEY) || "quick";
+    let timerData = { currentElapsed: 0, sessions: [] };
+    let timerInterval = null;
+    let timerStartedAt = null;
+
+    const THEME_KEY = "crochetWorkspaceTheme";
+
+    function applyTheme(themeName) {
+      const safeTheme = ["rose", "sage", "lavender", "peach", "blue"].includes(themeName)
+        ? themeName
+        : "rose";
+
+      document.body.dataset.theme = safeTheme;
+      localStorage.setItem(THEME_KEY, safeTheme);
+
+      if (themeSelect) {
+        themeSelect.value = safeTheme;
+      }
+    }
+
+    let recognition = null;
+    let voiceActive = false;
+    let shouldRestartVoice = false;
+    let lastCommandLabel = "";
+    let lastCommandTime = 0;
+
+    function saveRow() {
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (counterMode === "project" && activeProject) {
+        activeProject.rowCount = row;
+        saveProjects();
+      } else {
+        localStorage.setItem(QUICK_ROW_KEY, String(row));
+      }
+
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      updateCounterModeDisplay();
+    }
+
+    function renderRow() {
+      rowCount.textContent = row;
+      saveRow();
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
+    }
+
+    function loadRowForCurrentMode() {
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (counterMode === "project" && activeProject) {
+        row = Number(activeProject.rowCount) || 0;
+      } else {
+        counterMode = "quick";
+        row = Number(localStorage.getItem(QUICK_ROW_KEY)) || 0;
+      }
+
+      rowCount.textContent = row;
+      updateCounterModeDisplay();
+    }
+
+    function updateCounterModeDisplay() {
+      if (!counterModeText || !counterModeToggle) return;
+
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (!activeProject) {
+        counterMode = "quick";
+        counterModeText.textContent = "Quick Counter Mode";
+        counterModeToggle.hidden = true;
+        return;
+      }
+
+      counterModeToggle.hidden = false;
+
+      if (counterMode === "project") {
+        counterModeText.textContent = `Project Counter: ${activeProject.name || "Untitled Project"}`;
+        counterModeToggle.textContent = "Use Quick Counter";
+      } else {
+        counterModeText.textContent = "Quick Counter Mode";
+        counterModeToggle.textContent = "Use Project Counter";
+      }
+    }
+
+    function switchCounterMode() {
+      const activeProject = getActiveProject();
+
+      if (!activeProject) {
+        counterMode = "quick";
+        loadRowForCurrentMode();
+        return;
+      }
+
+      saveRow();
+
+      if (counterMode === "project") {
+        counterMode = "quick";
+      } else {
+        counterMode = "project";
+      }
+
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      loadRowForCurrentMode();
+    }
+
+    function setRow(value) {
+      const newRow = Math.max(0, Math.floor(Number(value)));
+      if (!Number.isFinite(newRow)) return;
+
+      row = newRow;
+      renderRow();
+    }
+
+    function setVoiceOff(message) {
+      voiceActive = false;
+      shouldRestartVoice = false;
+      voiceToggle.textContent = "Start Voice Counter";
+      voiceToggle.classList.remove("on");
+      voiceStatus.textContent = "Voice Off";
+      voiceDot.classList.remove("on");
+
+      if (message) {
+        voiceMessage.textContent = message;
+      }
+    }
+
+    function setVoiceOn(message) {
+      voiceActive = true;
+      shouldRestartVoice = true;
+      voiceToggle.textContent = "Stop Voice Counter";
+      voiceToggle.classList.add("on");
+      voiceStatus.textContent = "Voice On";
+      voiceDot.classList.add("on");
+
+      if (message) {
+        voiceMessage.textContent = message;
+      }
+    }
+
+    function normalizeWords(text) {
+      return text
+        .toLowerCase()
+        .replace(/[.,!?]/g, "")
+        .replace(/\bto\b/g, "two")
+        .replace(/\btoo\b/g, "two")
+        .trim();
+    }
+
+    function getCommand(transcript) {
+      const heard = normalizeWords(transcript);
+
+      const numberMatch =
+        heard.match(/row number (\d+)/) ||
+        heard.match(/row (\d+)/) ||
+        heard.match(/number (\d+)/) ||
+        heard.match(/go to row (\d+)/) ||
+        heard.match(/set row (\d+)/);
+
+      if (numberMatch) {
+        return {
+          type: "set",
+          value: Number(numberMatch[1]),
+          label: `set-${numberMatch[1]}`
+        };
+      }
+
+      const addWords = [
+        "add row",
+        "add one",
+        "plus row",
+        "plus one",
+        "next row",
+        "increase row",
+        "increase one",
+        "row up"
+      ];
+
+      const minusWords = [
+        "minus row",
+        "minus one",
+        "minus 1",
+        "subtract row",
+        "subtract one",
+        "previous row",
+        "back row",
+        "go back",
+        "decrease row",
+        "decrease one",
+        "row down"
+      ];
+
+      const resetWords = [
+        "reset row",
+        "reset rows",
+        "reset counter",
+        "start over",
+        "clear rows"
+      ];
+
+      if (addWords.some(phrase => heard.includes(phrase))) {
+        return { type: "add", label: "add" };
+      }
+
+      if (minusWords.some(phrase => heard.includes(phrase))) {
+        return { type: "minus", label: "minus" };
+      }
+
+      if (resetWords.some(phrase => heard.includes(phrase))) {
+        return { type: "reset", label: "reset" };
+      }
+
+      return { type: "unknown", label: heard };
+    }
+
+    function isRepeat(commandLabel) {
+      const now = Date.now();
+      const repeat = commandLabel === lastCommandLabel && now - lastCommandTime < 900;
+
+      lastCommandLabel = commandLabel;
+      lastCommandTime = now;
+
+      return repeat;
+    }
+
+    function handleVoiceCommand(transcript) {
+      const command = getCommand(transcript);
+
+      if (command.type === "unknown") {
+        voiceMessage.textContent = `Heard “${transcript}”, but did not recognize it. Try “add one” or “minus one”.`;
+        return;
+      }
+
+      if (isRepeat(command.label)) {
+        voiceMessage.textContent = `Ignored repeat: “${transcript}”.`;
+        return;
+      }
+
+      if (command.type === "set") {
+        setRow(command.value);
+        voiceMessage.textContent = `Set row to ${command.value}.`;
+        return;
+      }
+
+      if (command.type === "add") {
+        setRow(row + 1);
+        voiceMessage.textContent = "Added 1 row.";
+        return;
+      }
+
+      if (command.type === "minus") {
+        setRow(row - 1);
+        voiceMessage.textContent = "Subtracted 1 row.";
+        return;
+      }
+
+      if (command.type === "reset") {
+        setRow(0);
+        voiceMessage.textContent = "Reset rows.";
+      }
+    }
+
+
+    function defaultTimerData() {
+      return {
+        currentElapsed: 0,
+        startedAt: null,
+        sessions: []
+      };
+    }
+
+    function getTimerDataForCurrentMode() {
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (timerMode === "project" && activeProject) {
+        return {
+          ...defaultTimerData(),
+          ...(activeProject.timerData || {})
+        };
+      }
+
+      timerMode = "quick";
+
+      try {
+        return {
+          ...defaultTimerData(),
+          ...(JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || {})
+        };
+      } catch (error) {
+        return defaultTimerData();
+      }
+    }
+
+    function saveTimerData() {
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (timerMode === "project" && activeProject) {
+        activeProject.timerData = timerData;
+        saveProjects();
+      } else {
+        localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(timerData));
+      }
+
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
+    }
+
+    function formatClock(ms) {
+      const totalSeconds = Math.floor(Math.max(0, ms) / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      return [hours, minutes, seconds]
+        .map(value => String(value).padStart(2, "0"))
+        .join(":");
+    }
+
+    function formatDuration(ms) {
+      const totalSeconds = Math.floor(Math.max(0, ms) / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      if (hours) return `${hours}h ${minutes}m ${seconds}s`;
+      if (minutes) return `${minutes}m ${seconds}s`;
+      return `${seconds}s`;
+    }
+
+    function formatSessionDate(timestamp) {
+      const date = new Date(timestamp);
+
+      return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function formatSessionTime(timestamp) {
+      return new Date(timestamp).toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function getCurrentTimerElapsed() {
+      const savedElapsed = Number(timerData.currentElapsed) || 0;
+
+      if (!timerData.startedAt) return savedElapsed;
+
+      return savedElapsed + (Date.now() - new Date(timerData.startedAt).getTime());
+    }
+
+    function getTotalTimerTime() {
+      return timerData.sessions.reduce((sum, session) => sum + Number(session.duration || 0), 0);
+    }
+
+    function getTimerBackupPayload() {
+      return {
+        mode: timerMode,
+        currentElapsed: getCurrentTimerElapsed(),
+        startedAt: timerData.startedAt || null,
+        totalSavedTime: getTotalTimerTime(),
+        sessions: Array.isArray(timerData.sessions) ? timerData.sessions : [],
+        isRunning: Boolean(timerData.startedAt),
+        exportedAt: new Date().toISOString()
+      };
+    }
+
+    function updateTimerModeDisplay() {
+      if (!timerModeText || !timerModeToggle) return;
+
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+
+      if (!activeProject) {
+        timerMode = "quick";
+        timerModeText.textContent = "Quick Timer Mode";
+        timerModeToggle.hidden = true;
+        if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
+        return;
+      }
+
+      timerModeToggle.hidden = false;
+
+      if (timerMode === "project") {
+        timerModeText.textContent = `Project Timer: ${activeProject.name || "Untitled Project"}`;
+        timerModeToggle.textContent = "Use Quick Timer";
+        if (timerTotalLabel) timerTotalLabel.textContent = "Total Project Time";
+      } else {
+        timerModeText.textContent = "Quick Timer Mode";
+        timerModeToggle.textContent = "Use Project Timer";
+        if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
+      }
+    }
+
+    function renderTimer() {
+      const currentElapsed = getCurrentTimerElapsed();
+      const totalSaved = getTotalTimerTime();
+      const sessionTotal = timerData.sessions.length;
+
+      timerDisplay.innerHTML = `${formatClock(currentElapsed)}${timerData.startedAt ? '<span class="timer-active-note">● Session active</span>' : ''}`;
+      timerTotalDisplay.textContent = formatDuration(totalSaved);
+      timerSessionCount.textContent = `${sessionTotal} ${sessionTotal === 1 ? "session" : "sessions"}`;
+      updateTimerModeDisplay();
+
+      const recentSessions = [...timerData.sessions]
+        .sort((a, b) => new Date(b.endedAt) - new Date(a.endedAt))
+        .slice(0, 5);
+
+      if (!recentSessions.length) {
+        timerSessionList.innerHTML = "<li>No sessions yet.</li>";
+        return;
+      }
+
+      timerSessionList.innerHTML = recentSessions.map((session, index) => `
+        <li>
+          <span class="timer-session-left">
+            <span class="timer-session-number">${index + 1}</span>
+            <span>${formatSessionDate(session.endedAt)} • ${formatSessionTime(session.startedAt)}–${formatSessionTime(session.endedAt)}</span>
+          </span>
+          <strong>${formatDuration(session.duration)}</strong>
+        </li>
+      `).join("");
+    }
+
+    function startTimer() {
+      if (timerData.startedAt) return;
+
+      timerData.startedAt = new Date().toISOString();
+      saveTimerData();
+
+      window.clearInterval(timerInterval);
+      timerInterval = window.setInterval(renderTimer, 1000);
+      renderTimer();
+    }
+
+    function pauseTimer() {
+      if (!timerData.startedAt) return;
+
+      timerData.currentElapsed = getCurrentTimerElapsed();
+      timerData.startedAt = null;
+
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+
+      saveTimerData();
+      renderTimer();
+    }
+
+    function endTimerSession() {
+      const elapsed = getCurrentTimerElapsed();
+
+      if (elapsed < 1000) {
+        alert("Start the timer before ending a session.");
+        return;
+      }
+
+      const endedAt = new Date().toISOString();
+      const startedAt = timerData.startedAt
+        ? new Date(new Date(timerData.startedAt).getTime() - (Number(timerData.currentElapsed) || 0)).toISOString()
+        : new Date(Date.now() - elapsed).toISOString();
+
+      timerData.sessions.push({
+        id: `session-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        duration: elapsed,
+        startedAt,
+        endedAt,
+        mode: timerMode,
+        projectId: timerMode === "project" ? activeProjectId : ""
+      });
+
+      timerData.currentElapsed = 0;
+      timerData.startedAt = null;
+
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+
+      saveTimerData();
+      renderTimer();
+    }
+
+    function resetTimerSession() {
+      timerData.currentElapsed = 0;
+      timerData.startedAt = null;
+
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+
+      saveTimerData();
+      renderTimer();
+    }
+
+    function clearAllTimerTime() {
+      const shouldClear = confirm("Clear all saved timer sessions? This removes total time and recent sessions.");
+
+      if (!shouldClear) return;
+
+      timerData = defaultTimerData();
+
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+
+      saveTimerData();
+      renderTimer();
+    }
+
+    function switchTimerMode() {
+      pauseTimer();
+      saveWorkspaceToActiveProject();
+
+      const activeProject = getActiveProject();
+
+      if (!activeProject) {
+        timerMode = "quick";
+      } else if (timerMode === "project") {
+        timerMode = "quick";
+      } else {
+        timerMode = "project";
+      }
+
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+      timerData = getTimerDataForCurrentMode();
+      renderTimer();
+    }
+
+
+    function setupSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        voiceToggle.disabled = true;
+        voiceToggle.textContent = "Voice unavailable";
+        voiceMessage.textContent = "Voice commands need Chrome on an HTTPS page.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+
+      // Continuous mode gives less lag between commands.
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 3;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        setVoiceOn("Voice counter is on. Try “add one” or “minus one”.");
+      };
+
+      recognition.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (!result.isFinal) continue;
+
+          // Try the best transcript first, but allow alternatives too.
+          for (let j = 0; j < result.length; j++) {
+            const transcript = result[j].transcript;
+            const command = getCommand(transcript);
+
+            if (command.type !== "unknown") {
+              handleVoiceCommand(transcript);
+              return;
+            }
+          }
+
+          handleVoiceCommand(result[0].transcript);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === "not-allowed") {
+          setVoiceOff("Microphone permission was blocked.");
+          return;
+        }
+
+        if (event.error === "audio-capture") {
+          setVoiceOff("No microphone was found.");
+          return;
+        }
+
+        if (event.error === "no-speech") {
+          voiceMessage.textContent = "Voice is still on.";
+          return;
+        }
+
+        voiceMessage.textContent = `Voice error: ${event.error}`;
+      };
+
+      recognition.onend = () => {
+        if (!shouldRestartVoice) {
+          setVoiceOff("Voice counter stopped.");
+          return;
+        }
+
+        // Chrome sometimes ends listening automatically. Restart to keep Voice On.
+        window.setTimeout(() => {
+          if (!shouldRestartVoice) return;
+
+          try {
+            recognition.start();
+          } catch (error) {
+            setVoiceOff("Voice counter paused. Press Start Voice Counter again.");
+          }
+        }, 250);
+      };
+    }
+
+    openGettingStarted.addEventListener("click", () => {
+      gettingStartedDialog.showModal();
+    });
+
+    closeGettingStarted.addEventListener("click", () => {
+      gettingStartedDialog.close();
+    });
+
+    gettingStartedDialog.addEventListener("click", event => {
+      if (event.target === gettingStartedDialog) {
+        gettingStartedDialog.close();
+      }
+    });
+
+    openYourProjectsNav.addEventListener("click", () => {
+      renderYourProjectsList();
+      yourProjectsDialog.showModal();
+    });
+
+    closeYourProjects.addEventListener("click", () => {
+      yourProjectsDialog.close();
+    });
+
+    yourProjectsDialog.addEventListener("click", event => {
+      if (event.target === yourProjectsDialog) {
+        yourProjectsDialog.close();
+      }
+    });
+
+    openSettingsNav.addEventListener("click", () => {
+      settingsDialog.showModal();
+    });
+
+    closeSettings.addEventListener("click", () => {
+      settingsDialog.close();
+    });
+
+    settingsDialog.addEventListener("click", event => {
+      if (event.target === settingsDialog) {
+        settingsDialog.close();
+      }
+    });
+
+    themeSelect.addEventListener("change", () => {
+      applyTheme(themeSelect.value);
+    });
+
+    addRow.addEventListener("click", () => setRow(row + 1));
+    minusRow.addEventListener("click", () => setRow(row - 1));
+
+    resetRows.addEventListener("click", () => {
+      setRow(0);
+    });
+
+    counterModeToggle.addEventListener("click", switchCounterMode);
+
+    openJump.addEventListener("click", () => {
+      jumpInput.value = "";
+      jumpDialog.showModal();
+      jumpInput.focus();
+    });
+
+    cancelJump.addEventListener("click", () => {
+      jumpDialog.close();
+    });
+
+    function jumpToRow() {
+      const value = Number(jumpInput.value);
+
+      if (!Number.isFinite(value) || value < 0) {
+        alert("Please enter a row number of 0 or higher.");
+        return;
+      }
+
+      setRow(value);
+      jumpDialog.close();
+    }
+
+    goJump.addEventListener("click", jumpToRow);
+
+    jumpInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") jumpToRow();
+      if (event.key === "Escape") jumpDialog.close();
+    });
+
+
+    projectNotes.addEventListener("input", () => {
+      saveWorkspaceToActiveProject();
+    });
+
+    timerStartBtn.addEventListener("click", startTimer);
+    timerPauseBtn.addEventListener("click", pauseTimer);
+    timerEndBtn.addEventListener("click", endTimerSession);
+    timerResetSessionBtn.addEventListener("click", resetTimerSession);
+    timerClearAllBtn.addEventListener("click", clearAllTimerTime);
+    timerModeToggle.addEventListener("click", switchTimerMode);
+
+    voiceToggle.addEventListener("click", () => {
+      if (!recognition) return;
+
+      if (voiceActive) {
+        shouldRestartVoice = false;
+        recognition.stop();
+        setVoiceOff("Voice counter stopped.");
+        return;
+      }
+
+      voiceMessage.textContent = "Starting voice counter...";
+
+      try {
+        shouldRestartVoice = true;
+        recognition.start();
+      } catch (error) {
+        setVoiceOff("Voice is still starting. Try again in a second.");
+      }
+    });
+
+
+    const sourceTabs = document.querySelectorAll(".source-tab");
+    const sourcePanels = document.querySelectorAll(".source-panel");
+
+    const videoUrl = document.getElementById("videoUrl");
+    const loadVideo = document.getElementById("loadVideo");
+    const clearVideo = document.getElementById("clearVideo");
+    const videoFrameBox = document.getElementById("videoFrameBox");
+    const openVideoLink = document.getElementById("openVideoLink");
+
+    const webUrl = document.getElementById("webUrl");
+    const loadWeb = document.getElementById("loadWeb");
+    const clearWeb = document.getElementById("clearWeb");
+    const webFrameBox = document.getElementById("webFrameBox");
+    const openWebLink = document.getElementById("openWebLink");
+
+    const pdfUrl = document.getElementById("pdfUrl");
+    const loadPdf = document.getElementById("loadPdf");
+    const clearPdf = document.getElementById("clearPdf");
+    const pdfUpload = document.getElementById("pdfUpload");
+    const pdfFrameBox = document.getElementById("pdfFrameBox");
+    const openPdfLink = document.getElementById("openPdfLink");
+    const pdfHelp = document.getElementById("pdfHelp");
+
+    const pastePatternBtn = document.getElementById("pastePatternBtn");
+    const uncheckRowsBtn = document.getElementById("uncheckRowsBtn");
+    const deletePatternBtn = document.getElementById("deletePatternBtn");
+    const patternImportDialog = document.getElementById("patternImportDialog");
+    const patternImportText = document.getElementById("patternImportText");
+    const cancelPatternImport = document.getElementById("cancelPatternImport");
+    const importPatternRows = document.getElementById("importPatternRows");
+    const trackerProgressText = document.getElementById("trackerProgressText");
+    const trackerProgressBar = document.getElementById("trackerProgressBar");
+    const trackerCompleteMessage = document.getElementById("trackerCompleteMessage");
+    const trackerEmpty = document.getElementById("trackerEmpty");
+    const trackerTableWrap = document.getElementById("trackerTableWrap");
+    const patternTrackerBody = document.getElementById("patternTrackerBody");
+
+    const SOURCE_KEYS = {
+      video: "crochetWorkspaceVideoUrl",
+      web: "crochetWorkspaceWebPatternUrl",
+      pdf: "crochetWorkspacePdfPatternUrl"
+    };
+
+    let suppressWorkspaceSave = false;
+
+
+    const projectSnapshot = document.getElementById("projectSnapshot");
+    const projectSubtitle = document.getElementById("projectSubtitle");
+    const createProjectBtn = document.getElementById("createProjectBtn");
+    const switchProjectBtn = document.getElementById("switchProjectBtn");
+    const editProjectBtn = document.getElementById("editProjectBtn");
+    const downloadBackupBtn = document.getElementById("downloadBackupBtn");
+    const downloadAllBackupBtn = document.getElementById("downloadAllBackupBtn");
+    const importBackupInput = document.getElementById("importBackupInput");
+
+    const projectFormDialog = document.getElementById("projectFormDialog");
+    const projectFormTitle = document.getElementById("projectFormTitle");
+    const cancelProjectForm = document.getElementById("cancelProjectForm");
+    const saveProjectForm = document.getElementById("saveProjectForm");
+    const deleteProjectBtn = document.getElementById("deleteProjectBtn");
+
+    const projectNameInput = document.getElementById("projectNameInput");
+    const projectHookSelect = document.getElementById("projectHookSelect");
+    const projectHookCustomInput = document.getElementById("projectHookCustomInput");
+    const customHookLabel = document.getElementById("customHookLabel");
+    const projectStartedInput = document.getElementById("projectStartedInput");
+    const projectStatusSelect = document.getElementById("projectStatusSelect");
+    const projectMaterialsInput = document.getElementById("projectMaterialsInput");
+
+    const switchProjectDialog = document.getElementById("switchProjectDialog");
+    const projectList = document.getElementById("projectList");
+    const closeSwitchProject = document.getElementById("closeSwitchProject");
+    const newProjectFromSwitch = document.getElementById("newProjectFromSwitch");
+
+    const PROJECTS_KEY = "crochetWorkspaceProjects";
+    const ACTIVE_PROJECT_KEY = "crochetWorkspaceActiveProjectId";
+
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || "[]");
+    let activeProjectId = localStorage.getItem(ACTIVE_PROJECT_KEY) || "";
+    let editingProjectId = "";
+
+    // Timer data needs projects/activeProjectId to exist before loading project timer data.
+    timerData = getTimerDataForCurrentMode();
+
+    function saveProjects() {
+      localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+      localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
+    }
+
+    function getActiveProject() {
+      return projects.find(project => project.id === activeProjectId) || null;
+    }
+
+    function makeProjectId() {
+      return `project-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function getProjectMaterials(project) {
+      return project.materials || project.yarn || "";
+    }
+
+    function getSourceValues() {
+      return {
+        videoUrl: videoUrl?.value?.trim() || localStorage.getItem(SOURCE_KEYS.video) || "",
+        webPatternUrl: webUrl?.value?.trim() || localStorage.getItem(SOURCE_KEYS.web) || "",
+        pdfPatternUrl: pdfUrl?.value?.trim() || localStorage.getItem(SOURCE_KEYS.pdf) || ""
+      };
+    }
+
+    function saveWorkspaceToActiveProject() {
+      if (suppressWorkspaceSave) return;
+
+      const project = getActiveProject();
+
+      if (!project) return;
+
+      project.rowCount = row;
+      project.sources = getSourceValues();
+      project.notes = projectNotes?.value || "";
+      project.patternTrackerRows = trackerRows;
+      project.patternTrackerCurrentRow = trackerCurrentRow;
+      project.timerData = {
+        currentElapsed: getCurrentTimerElapsed(),
+        startedAt: timerData.startedAt || null,
+        sessions: Array.isArray(timerData.sessions) ? timerData.sessions : []
+      };
+      project.timerBackup = getTimerBackupPayload();
+
+      saveProjects();
+    }
+
+    function clearSourceFramesForProjectLoad() {
+      suppressWorkspaceSave = true;
+      clearVideoSource();
+      clearWebSource();
+      clearPdfSource();
+      suppressWorkspaceSave = false;
+    }
+
+    function loadSourcesForProject(project) {
+      const sources = project?.sources || {};
+
+      clearSourceFramesForProjectLoad();
+
+      if (sources.videoUrl) {
+        videoUrl.value = sources.videoUrl;
+        const embedUrl = getYouTubeEmbedUrl(sources.videoUrl);
+
+        if (embedUrl) {
+          showFrame(videoFrameBox, embedUrl, "Video tutorial");
+          openVideoLink.href = sources.videoUrl;
+          openVideoLink.hidden = false;
+          localStorage.setItem(SOURCE_KEYS.video, sources.videoUrl);
+        }
+      }
+
+      if (sources.webPatternUrl) {
+        webUrl.value = sources.webPatternUrl;
+        showFrame(webFrameBox, sources.webPatternUrl, "Web pattern");
+        openWebLink.href = sources.webPatternUrl;
+        openWebLink.hidden = false;
+        localStorage.setItem(SOURCE_KEYS.web, sources.webPatternUrl);
+
+        const webHelp = document.getElementById("webHelp");
+        webHelp.textContent = "Saved web pattern loaded. If it appears blank, use the new tab link.";
+        webHelp.classList.remove("warning");
+      }
+
+      if (sources.pdfPatternUrl) {
+        pdfUrl.value = sources.pdfPatternUrl;
+        showFrame(pdfFrameBox, sources.pdfPatternUrl, "PDF pattern");
+        openPdfLink.href = sources.pdfPatternUrl;
+        openPdfLink.hidden = false;
+        pdfHelp.textContent = "Saved PDF URL loaded.";
+        localStorage.setItem(SOURCE_KEYS.pdf, sources.pdfPatternUrl);
+      }
+    }
+
+    function loadWorkspaceFromActiveProject() {
+      const project = getActiveProject();
+
+      if (!project) return;
+
+      row = Number(project.rowCount) || 0;
+      trackerRows = Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [];
+      trackerCurrentRow = Number(project.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
+      timerData = project.timerData || defaultTimerData();
+
+      if (projectNotes) {
+        projectNotes.value = project.notes || "";
+      }
+
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+
+      loadSourcesForProject(project);
+      saveTrackerRows();
+      renderProjectSnapshot();
+      renderProjectList();
+      loadRowForCurrentMode();
+      renderPatternTracker();
+      renderTimer();
+
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      if (timerData.startedAt) {
+        timerInterval = window.setInterval(renderTimer, 1000);
+      }
+    }
+
+    function clearProjectWorkspaceDisplay() {
+      // Clears visible project-specific workspace areas after the last project is deleted.
+      suppressWorkspaceSave = true;
+
+      row = Number(localStorage.getItem(QUICK_ROW_KEY)) || 0;
+      counterMode = "quick";
+      timerMode = "quick";
+      timerData = defaultTimerData();
+      localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(timerData));
+
+      trackerRows = [];
+      trackerCurrentRow = 0;
+
+      if (projectNotes) {
+        projectNotes.value = "";
+      }
+
+      clearVideoSource();
+      clearWebSource();
+      clearPdfSource();
+
+      suppressWorkspaceSave = false;
+
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+      localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
+      localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
+
+      rowCount.textContent = row;
+      updateCounterModeDisplay();
+      renderProjectSnapshot();
+      renderProjectList();
+      renderPatternTracker();
+      renderTimer();
+    }
+
+
+    function formatProjectDate(dateValue) {
+      if (!dateValue) return "—";
+
+      const date = new Date(`${dateValue}T00:00:00`);
+
+      if (Number.isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function getProjectRowsSummary(project) {
+      const projectTrackerRows = Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [];
+
+      if (projectTrackerRows.length) {
+        const completed = projectTrackerRows.filter(item => item.done).length;
+        return `${completed} / ${projectTrackerRows.length}`;
+      }
+
+      return String(Number(project.rowCount) || 0);
+    }
+
+    function getProjectTimeSummary(project) {
+      const sessions = Array.isArray(project.timerData?.sessions) ? project.timerData.sessions : [];
+      const totalMs = sessions.reduce((sum, session) => sum + Number(session.duration || 0), 0);
+
+      return formatDuration(totalMs);
+    }
+
+    function renderProjectSnapshot() {
+      const project = getActiveProject();
+
+      if (!project) {
+        projectSubtitle.textContent = "No active project selected.";
+        projectSnapshot.innerHTML = `
+          <div class="empty-project">
+            <strong>No project selected</strong>
+            <span>Create a project to save your hook size, rows, timer, pattern links, and notes.</span>
+          </div>
+        `;
+        editProjectBtn.disabled = true;
+        downloadBackupBtn.disabled = true;
+        return;
+      }
+
+      projectSubtitle.textContent = "This snapshot can be backed up and restored later.";
+      editProjectBtn.disabled = false;
+      downloadBackupBtn.disabled = false;
+
+      projectSnapshot.innerHTML = `
+        <div class="snapshot-grid">
+          <div class="snapshot-item snapshot-main">
+            <small>Project</small>
+            <strong>${project.name || "Untitled Project"}</strong>
+          </div>
+          <div class="snapshot-item">
+            <small>Status</small>
+            <strong class="snapshot-status-pill">${project.status || "In Progress"}</strong>
+          </div>
+          <div class="snapshot-item">
+            <small>Hook</small>
+            <strong>${project.hook || "—"}</strong>
+          </div>
+          <div class="snapshot-item">
+            <small>Started</small>
+            <strong>${formatProjectDate(project.started)}</strong>
+          </div>
+          <div class="snapshot-item snapshot-metric">
+            <small>Rows Completed</small>
+            <strong>${getProjectRowsSummary(project)}</strong>
+          </div>
+          <div class="snapshot-item snapshot-metric">
+            <small>Project Time</small>
+            <strong>${getProjectTimeSummary(project)}</strong>
+          </div>
+        </div>
+      `;
+    }
+
+    function getHookValue() {
+      if (projectHookSelect.value === "custom") {
+        return projectHookCustomInput.value.trim();
+      }
+
+      return projectHookSelect.value;
+    }
+
+    function setHookValue(hookValue) {
+      const matchingOption = Array.from(projectHookSelect.options).find(option => option.value === hookValue);
+
+      if (matchingOption) {
+        projectHookSelect.value = hookValue;
+        projectHookCustomInput.value = "";
+        customHookLabel.hidden = true;
+      } else if (hookValue) {
+        projectHookSelect.value = "custom";
+        projectHookCustomInput.value = hookValue;
+        customHookLabel.hidden = false;
+      } else {
+        projectHookSelect.value = "";
+        projectHookCustomInput.value = "";
+        customHookLabel.hidden = true;
+      }
+    }
+
+    function updateCustomHookVisibility() {
+      customHookLabel.hidden = projectHookSelect.value !== "custom";
+
+      if (projectHookSelect.value === "custom") {
+        projectHookCustomInput.focus();
+      }
+    }
+
+    function openProjectForm(mode, project = null) {
+      editingProjectId = project?.id || "";
+      projectFormTitle.textContent = mode === "edit" ? "Edit Project" : "Create Project";
+      deleteProjectBtn.hidden = mode !== "edit";
+
+      projectNameInput.value = project?.name || "";
+      setHookValue(project?.hook || "");
+      projectStartedInput.value = project?.started || "";
+      projectStatusSelect.value = project?.status || "In Progress";
+      projectMaterialsInput.value = getProjectMaterials(project || {});
+
+      projectFormDialog.showModal();
+      projectNameInput.focus();
+    }
+
+    function saveProjectFromForm() {
+      saveWorkspaceToActiveProject();
+
+      const projectData = {
+        name: projectNameInput.value.trim() || "Untitled Project",
+        hook: getHookValue(),
+        materials: projectMaterialsInput.value.trim(),
+        started: projectStartedInput.value,
+        status: projectStatusSelect.value || "In Progress"
+      };
+
+      if (editingProjectId) {
+        projects = projects.map(project => (
+          project.id === editingProjectId ? { ...project, ...projectData } : project
+        ));
+      } else {
+        const newProject = {
+          id: makeProjectId(),
+          createdAt: new Date().toISOString(),
+          rowCount: 0,
+          sources: { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
+          notes: "",
+          patternTrackerRows: [],
+          patternTrackerCurrentRow: 0,
+          timerData: defaultTimerData(),
+          ...projectData
+        };
+
+        projects.push(newProject);
+        activeProjectId = newProject.id;
+        counterMode = "project";
+        row = Number(newProject.rowCount) || 0;
+      }
+
+      saveProjects();
+      renderProjectSnapshot();
+      renderProjectList();
+
+      if (!editingProjectId && activeProjectId) {
+        loadWorkspaceFromActiveProject();
+      } else {
+        loadRowForCurrentMode();
+        renderTimer();
+      }
+
+      projectFormDialog.close();
+    }
+
+    function getStatusOrder() {
+      return ["In Progress", "Not Started", "Complete", "Imported"];
+    }
+
+    function getProjectMetaSummary(project) {
+      const rows = getProjectRowsSummary(project);
+      const time = getProjectTimeSummary(project);
+      const hook = project.hook || "No hook listed";
+
+      return `${project.status || "In Progress"} • ${hook} • Rows ${rows} • ${time}`;
+    }
+
+    function openProjectById(projectId) {
+      saveWorkspaceToActiveProject();
+      activeProjectId = projectId;
+      counterMode = "project";
+      timerMode = "project";
+      saveProjects();
+      loadWorkspaceFromActiveProject();
+    }
+
+    function renderYourProjectsList() {
+      if (!projects.length) {
+        yourProjectsList.innerHTML = `
+          <div class="your-project-empty">
+            <strong>No projects yet</strong><br>
+            <span>Create your first project from the Current Project card.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const statusOrder = getStatusOrder();
+      const grouped = projects.reduce((groups, project) => {
+        const status = project.status || "In Progress";
+        if (!groups[status]) groups[status] = [];
+        groups[status].push(project);
+        return groups;
+      }, {});
+
+      const orderedStatuses = [
+        ...statusOrder.filter(status => grouped[status]),
+        ...Object.keys(grouped).filter(status => !statusOrder.includes(status)).sort()
+      ];
+
+      yourProjectsList.innerHTML = orderedStatuses.map(status => `
+        <section class="project-status-group">
+          <h3 class="project-status-heading">${status}</h3>
+          ${grouped[status].map(project => `
+            <button type="button" class="your-project-item ${project.id === activeProjectId ? "active-project" : ""}" data-project-id="${project.id}">
+              <span>
+                <strong>${project.name || "Untitled Project"}</strong>
+                <small>${getProjectMetaSummary(project)}</small>
+              </span>
+              <span>${project.id === activeProjectId ? "Active" : "Open"}</span>
+            </button>
+          `).join("")}
+        </section>
+      `).join("");
+
+      yourProjectsList.querySelectorAll("button[data-project-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          openProjectById(button.dataset.projectId);
+          yourProjectsDialog.close();
+        });
+      });
+    }
+
+    function renderProjectList() {
+      if (!projects.length) {
+        projectList.innerHTML = `
+          <div class="empty-project">
+            <strong>No projects yet</strong>
+            <span>Create your first project to start saving snapshots.</span>
+          </div>
+        `;
+        return;
+      }
+
+      projectList.innerHTML = projects.map(project => `
+        <button type="button" class="${project.id === activeProjectId ? "active-project" : ""}" data-project-id="${project.id}">
+          <span>
+            <strong>${project.name || "Untitled Project"}</strong><br>
+            <small>${project.status || "In Progress"} • ${project.hook || "No hook listed"}</small>
+          </span>
+          <span>${project.id === activeProjectId ? "Active" : "Open"}</span>
+        </button>
+      `).join("");
+
+      projectList.querySelectorAll("button[data-project-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          openProjectById(button.dataset.projectId);
+          switchProjectDialog.close();
+        });
+      });
+    }
+
+    function projectBackupPayload(project) {
+      return {
+        ...project,
+        materials: getProjectMaterials(project),
+        rowCount: Number(project.rowCount) || 0,
+        sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
+        notes: project.notes || "",
+        patternTrackerRows: project.patternTrackerRows || [],
+        patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || 0,
+        timerData: project.timerData || defaultTimerData(),
+        timerBackup: project.timerBackup || {
+          mode: "project",
+          currentElapsed: Number(project.timerData?.currentElapsed) || 0,
+          startedAt: project.timerData?.startedAt || null,
+          totalSavedTime: (project.timerData?.sessions || []).reduce((sum, session) => sum + Number(session.duration || 0), 0),
+          sessions: project.timerData?.sessions || [],
+          isRunning: false
+        },
+        exportedAt: new Date().toISOString(),
+        backupType: "crochet-workspace-project-snapshot",
+        backupVersion: 2
+      };
+    }
+
+    function slugify(name) {
+      return (name || "crochet-project")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    }
+
+    function downloadProjectBackup() {
+      // Saves the full active workspace before exporting, including timer data.
+      saveWorkspaceToActiveProject();
+      const project = getActiveProject();
+
+      if (!project) {
+        alert("Create or select a project first.");
+        return;
+      }
+
+      const blob = new Blob([JSON.stringify(projectBackupPayload(project), null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `${slugify(project.name)}-backup.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function getAllProjectsPayload() {
+      return {
+        backupType: "crochet-workspace-all-projects-backup",
+        backupVersion: 2,
+        exportedAt: new Date().toISOString(),
+        activeProjectId,
+        projects,
+        currentDashboardState: {
+          rowCount: row,
+          sources: {
+            videoUrl: localStorage.getItem(SOURCE_KEYS.video) || "",
+            webPatternUrl: localStorage.getItem(SOURCE_KEYS.web) || "",
+            pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
+          },
+          notes: document.querySelector(".notes textarea")?.value || "",
+          patternTrackerRows: trackerRows,
+          patternTrackerCurrentRow: trackerCurrentRow,
+          quickTimerData: JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || defaultTimerData(),
+          timerMode,
+          activeTimerBackup: getTimerBackupPayload()
+        }
+      };
+    }
+
+    function downloadAllProjectsBackup() {
+      // Saves the full active workspace before exporting, including timer data.
+      saveWorkspaceToActiveProject();
+      const backup = getAllProjectsPayload();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "crochet-workspace-all-projects-backup.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function importProjectBackup(file) {
+      // Restores project-specific workspace data:
+      // project card, row counter, sources, notes, pattern tracker, and timer.
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const backup = JSON.parse(reader.result);
+
+          if (backup.backupType === "crochet-workspace-all-projects-backup") {
+            const importedProjects = Array.isArray(backup.projects) ? backup.projects : [];
+
+            if (!importedProjects.length) {
+              alert("This all-projects backup does not contain any projects.");
+              return;
+            }
+
+            const existingIds = new Set(projects.map(project => project.id));
+            const idMap = new Map();
+
+            const projectsToAdd = importedProjects.map(project => {
+              const originalId = project.id || makeProjectId();
+              const newId = existingIds.has(originalId) ? makeProjectId() : originalId;
+
+              idMap.set(originalId, newId);
+
+              return {
+                ...project,
+                id: newId,
+                materials: project.materials || project.yarn || "",
+                rowCount: Number(project.rowCount) || 0,
+                sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
+                notes: project.notes || "",
+                patternTrackerRows: Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [],
+                patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || Number(project.patternTrackerRows?.[0]?.rowNumber) || 0,
+                timerData: project.timerData || project.timerBackup || defaultTimerData(),
+                timerBackup: project.timerBackup || null,
+                importedAt: new Date().toISOString()
+              };
+            });
+
+            projects.push(...projectsToAdd);
+
+            const backedUpActiveId = backup.activeProjectId || "";
+            activeProjectId = idMap.get(backedUpActiveId) || projectsToAdd[0].id;
+
+            counterMode = activeProjectId ? "project" : "quick";
+            timerMode = activeProjectId ? "project" : (backup.currentDashboardState?.timerMode || "quick");
+
+            if (backup.currentDashboardState?.quickTimerData) {
+              localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(backup.currentDashboardState.quickTimerData));
+            }
+
+            if (backup.currentDashboardState?.activeTimerBackup && timerMode === "quick") {
+              localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify({
+                currentElapsed: Number(backup.currentDashboardState.activeTimerBackup.currentElapsed) || 0,
+                startedAt: backup.currentDashboardState.activeTimerBackup.startedAt || null,
+                sessions: backup.currentDashboardState.activeTimerBackup.sessions || []
+              }));
+            }
+
+            localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+            localStorage.setItem(TIMER_MODE_KEY, timerMode);
+            saveProjects();
+            loadWorkspaceFromActiveProject();
+            alert("All-projects backup imported.");
+            return;
+          }
+
+          if (backup.backupType !== "crochet-workspace-project-snapshot") {
+            alert("This does not look like a Crochet Workspace project backup.");
+            return;
+          }
+
+          const importedProject = {
+            id: makeProjectId(),
+            createdAt: backup.createdAt || new Date().toISOString(),
+            importedAt: new Date().toISOString(),
+            name: backup.name || "Imported Project",
+            hook: backup.hook || "",
+            materials: backup.materials || backup.yarn || "",
+            started: backup.started || "",
+            status: backup.status || "Imported",
+            rowCount: Number(backup.rowCount) || 0,
+            sources: backup.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
+            notes: backup.notes || "",
+            patternTrackerRows: Array.isArray(backup.patternTrackerRows) ? backup.patternTrackerRows : [],
+            patternTrackerCurrentRow: Number(backup.patternTrackerCurrentRow) || 0,
+            timerData: backup.timerData || backup.timerBackup || defaultTimerData(),
+            timerBackup: backup.timerBackup || null
+          };
+
+          projects.push(importedProject);
+          activeProjectId = importedProject.id;
+          counterMode = "project";
+          timerMode = "project";
+          localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+          localStorage.setItem(TIMER_MODE_KEY, timerMode);
+
+          saveProjects();
+          loadWorkspaceFromActiveProject();
+          alert("Project backup imported.");
+        } catch (error) {
+          alert("Could not import this backup file.");
+        } finally {
+          importBackupInput.value = "";
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+
+    function deleteCurrentProjectFromForm() {
+      const project = getActiveProject();
+
+      if (!project || !editingProjectId) return;
+
+      const shouldDelete = confirm(`Delete project "${project.name || "Untitled Project"}"? This cannot be undone unless you have a backup.`);
+
+      if (!shouldDelete) return;
+
+      projects = projects.filter(projectItem => projectItem.id !== editingProjectId);
+
+      if (activeProjectId === editingProjectId) {
+        activeProjectId = projects[0]?.id || "";
+      }
+
+      editingProjectId = "";
+
+      if (activeProjectId) {
+        counterMode = "project";
+        timerMode = "project";
+      } else {
+        counterMode = "quick";
+        timerMode = "quick";
+      }
+
+      saveProjects();
+
+      if (activeProjectId) {
+        loadWorkspaceFromActiveProject();
+      } else {
+        clearProjectWorkspaceDisplay();
+      }
+
+      projectFormDialog.close();
+    }
+
+
+    projectHookSelect.addEventListener("change", updateCustomHookVisibility);
+
+    createProjectBtn.addEventListener("click", () => openProjectForm("create"));
+
+    editProjectBtn.addEventListener("click", () => {
+      const project = getActiveProject();
+      if (project) openProjectForm("edit", project);
+    });
+
+    switchProjectBtn.addEventListener("click", () => {
+      renderProjectList();
+      switchProjectDialog.showModal();
+    });
+
+    cancelProjectForm.addEventListener("click", () => projectFormDialog.close());
+    saveProjectForm.addEventListener("click", saveProjectFromForm);
+    deleteProjectBtn.addEventListener("click", deleteCurrentProjectFromForm);
+    closeSwitchProject.addEventListener("click", () => switchProjectDialog.close());
+
+    newProjectFromSwitch.addEventListener("click", () => {
+      switchProjectDialog.close();
+      openProjectForm("create");
+    });
+
+    downloadBackupBtn.addEventListener("click", downloadProjectBackup);
+    downloadAllBackupBtn.addEventListener("click", downloadAllProjectsBackup);
+
+    importBackupInput.addEventListener("change", () => {
+      const file = importBackupInput.files[0];
+      if (file) importProjectBackup(file);
+    });
+
+
+    const TRACKER_KEY = "crochetWorkspacePatternTrackerRows";
+    const TRACKER_CURRENT_ROW_KEY = "crochetWorkspacePatternTrackerCurrentRow";
+    let trackerRows = JSON.parse(localStorage.getItem(TRACKER_KEY) || "[]");
+    let trackerCurrentRow = Number(localStorage.getItem(TRACKER_CURRENT_ROW_KEY)) || 0;
+
+    function saveTrackerRows() {
+      localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
+      localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
+      saveWorkspaceToActiveProject();
+
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
+    }
+
+    function parsePatternRows(text) {
+      return text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map((line, index) => {
+          const rowMatch = line.match(/^(?:row|round|rnd)\s*(\d+)\s*[:.)-]?\s*(.*)$/i);
+          const plainNumberMatch = line.match(/^(\d+)\s*[:.)-]\s*(.*)$/);
+
+          if (rowMatch) {
+            return {
+              id: `tracker-${Date.now()}-${index}`,
+              rowNumber: Number(rowMatch[1]),
+              instruction: rowMatch[2].trim() || line,
+              done: false
+            };
+          }
+
+          if (plainNumberMatch) {
+            return {
+              id: `tracker-${Date.now()}-${index}`,
+              rowNumber: Number(plainNumberMatch[1]),
+              instruction: plainNumberMatch[2].trim() || line,
+              done: false
+            };
+          }
+
+          return {
+            id: `tracker-${Date.now()}-${index}`,
+            rowNumber: index + 1,
+            instruction: line,
+            done: false
+          };
+        });
+    }
+
+    function findNextUncheckedRowNumber(afterRowNumber) {
+      const laterUnchecked = trackerRows.find(item => !item.done && Number(item.rowNumber) > Number(afterRowNumber));
+
+      if (laterUnchecked) {
+        return Number(laterUnchecked.rowNumber);
+      }
+
+      const anyUnchecked = trackerRows.find(item => !item.done);
+
+      return anyUnchecked ? Number(anyUnchecked.rowNumber) : null;
+    }
+
+    function setTrackerCurrentRow(rowNumber) {
+      trackerCurrentRow = Number(rowNumber) || 0;
+      saveTrackerRows();
+    }
+
+    function scrollCurrentTrackerRowIntoView() {
+      const currentRowEl = patternTrackerBody.querySelector(".current-tracker-row");
+
+      if (currentRowEl) {
+        currentRowEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function renderPatternTracker() {
+      const total = trackerRows.length;
+      const done = trackerRows.filter(item => item.done).length;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      const isComplete = total > 0 && done === total;
+
+      if (total && !trackerCurrentRow) {
+        trackerCurrentRow = Number(trackerRows[0].rowNumber) || 1;
+        saveTrackerRows();
+      }
+
+      trackerProgressText.textContent = total
+        ? `Progress: ${done} of ${total} rows complete (${percent}%)`
+        : "No rows loaded yet.";
+
+      trackerProgressBar.style.width = `${percent}%`;
+      trackerCompleteMessage.hidden = !isComplete;
+      trackerEmpty.hidden = total > 0;
+      trackerTableWrap.hidden = total === 0;
+
+      patternTrackerBody.innerHTML = trackerRows.map(item => {
+        const isCurrent = Number(item.rowNumber) === Number(trackerCurrentRow);
+        const rowClass = [
+          isCurrent ? "current-tracker-row" : "",
+          item.done ? "completed-row" : ""
+        ].filter(Boolean).join(" ");
+
+        return `
+          <tr class="${rowClass}" data-tracker-id="${item.id}" data-row-number="${item.rowNumber}">
+            <td class="row-col">${isCurrent ? "→ " : ""}${item.rowNumber}</td>
+            <td>${item.instruction}</td>
+            <td class="done-col">
+              <input class="tracker-row-input" type="checkbox" ${item.done ? "checked" : ""} aria-label="Mark row ${item.rowNumber} complete" />
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      patternTrackerBody.querySelectorAll("tr[data-tracker-id]").forEach(rowEl => {
+        const trackerId = rowEl.dataset.trackerId;
+        const checkbox = rowEl.querySelector(".tracker-row-input");
+
+        rowEl.addEventListener("click", event => {
+          if (event.target === checkbox) return;
+          setTrackerCurrentRow(Number(rowEl.dataset.rowNumber));
+          renderPatternTracker();
+          scrollCurrentTrackerRowIntoView();
+        });
+
+        checkbox.addEventListener("click", event => {
+          event.stopPropagation();
+
+          const checkedRowNumber = Number(rowEl.dataset.rowNumber);
+
+          trackerRows = trackerRows.map(item => (
+            item.id === trackerId ? { ...item, done: checkbox.checked } : item
+          ));
+
+          if (checkbox.checked) {
+            const nextRow = findNextUncheckedRowNumber(checkedRowNumber);
+
+            if (nextRow !== null) {
+              setTrackerCurrentRow(nextRow);
+            } else {
+              setTrackerCurrentRow(checkedRowNumber);
+            }
+          } else {
+            setTrackerCurrentRow(checkedRowNumber);
+          }
+
+          saveTrackerRows();
+          renderPatternTracker();
+          scrollCurrentTrackerRowIntoView();
+        });
+      });
+    }
+
+    function openPatternImport() {
+      patternImportText.value = trackerRows
+        .map(item => `Row ${item.rowNumber}: ${item.instruction}`)
+        .join("\n");
+
+      patternImportDialog.showModal();
+      patternImportText.focus();
+    }
+
+    function importPatternTrackerRows() {
+      const parsed = parsePatternRows(patternImportText.value);
+
+      if (!parsed.length) {
+        alert("Paste at least one pattern row.");
+        return;
+      }
+
+      trackerRows = parsed;
+      saveTrackerRows();
+
+      if (trackerRows.length) {
+        setTrackerCurrentRow(Number(trackerRows[0].rowNumber) || 1);
+      }
+
+      renderPatternTracker();
+      scrollCurrentTrackerRowIntoView();
+      patternImportDialog.close();
+    }
+
+    function uncheckPatternRows() {
+      if (!trackerRows.length) return;
+
+      trackerRows = trackerRows.map(item => ({ ...item, done: false }));
+      saveTrackerRows();
+
+      if (trackerRows.length) {
+        setTrackerCurrentRow(Number(trackerRows[0].rowNumber) || 1);
+      }
+
+      renderPatternTracker();
+      scrollCurrentTrackerRowIntoView();
+    }
+
+    function deletePatternTracker() {
+      const shouldDelete = confirm("Delete this pattern from the tracker? This removes all rows and checkmarks.");
+
+      if (!shouldDelete) return;
+
+      trackerRows = [];
+      trackerCurrentRow = 0;
+      saveTrackerRows();
+      renderPatternTracker();
+    }
+
+
+    function switchSourcePanel(panelId) {
+      sourceTabs.forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.panel === panelId);
+      });
+
+      sourcePanels.forEach(panel => {
+        panel.hidden = panel.id !== panelId;
+      });
+    }
+
+    function getYouTubeEmbedUrl(url) {
+      try {
+        const parsed = new URL(url);
+        let videoId = "";
+
+        if (parsed.hostname.includes("youtu.be")) {
+          videoId = parsed.pathname.replace("/", "");
+        } else if (parsed.hostname.includes("youtube.com")) {
+          videoId = parsed.searchParams.get("v") || "";
+
+          if (!videoId && parsed.pathname.includes("/shorts/")) {
+            videoId = parsed.pathname.split("/shorts/")[1].split("/")[0];
+          }
+
+          if (!videoId && parsed.pathname.includes("/embed/")) {
+            videoId = parsed.pathname.split("/embed/")[1].split("/")[0];
+          }
+        }
+
+        if (!videoId) return "";
+
+        return `https://www.youtube.com/embed/${videoId}`;
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function showFrame(box, url, title) {
+      box.innerHTML = `<iframe src="${url}" title="${title}" allowfullscreen></iframe>`;
+    }
+
+    function loadVideoSource() {
+      const url = videoUrl.value.trim();
+      const embedUrl = getYouTubeEmbedUrl(url);
+
+      if (!embedUrl) {
+        alert("Please paste a valid YouTube URL.");
+        return;
+      }
+
+      showFrame(videoFrameBox, embedUrl, "Video tutorial");
+      openVideoLink.href = url;
+      openVideoLink.hidden = false;
+      localStorage.setItem(SOURCE_KEYS.video, url);
+      saveWorkspaceToActiveProject();
+    }
+
+    function normalizePatternUrl(url) {
+      const trimmed = url.trim();
+
+      if (!trimmed) return "";
+
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        return trimmed;
+      }
+
+      return `https://${trimmed}`;
+    }
+
+    function loadWebSource() {
+      const url = normalizePatternUrl(webUrl.value);
+
+      if (!url) {
+        alert("Please paste a web pattern URL.");
+        return;
+      }
+
+      const webHelp = document.getElementById("webHelp");
+
+      webUrl.value = url;
+      showFrame(webFrameBox, url, "Web pattern");
+      openWebLink.href = url;
+      openWebLink.hidden = false;
+      webHelp.textContent = "Loading web pattern. If the page stays blank, the site may block embedding.";
+      webHelp.classList.remove("warning");
+      localStorage.setItem(SOURCE_KEYS.web, url);
+      saveWorkspaceToActiveProject();
+
+      window.setTimeout(() => {
+        webHelp.textContent = "If the pattern did not load here, the website may block embedding. Use “Open web pattern in a new tab.”";
+        webHelp.classList.add("warning");
+      }, 3500);
+    }
+
+    function normalizePdfUrl(url) {
+      const trimmed = url.trim();
+
+      if (!trimmed) return "";
+
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        return trimmed;
+      }
+
+      return `https://${trimmed}`;
+    }
+
+    function loadPdfSource() {
+      const url = normalizePdfUrl(pdfUrl.value);
+
+      if (!url) {
+        alert("Please paste a PDF URL.");
+        return;
+      }
+
+      pdfUrl.value = url;
+      showFrame(pdfFrameBox, url, "PDF pattern");
+      openPdfLink.href = url;
+      openPdfLink.hidden = false;
+      pdfHelp.textContent = "PDF URL loaded and saved locally.";
+      localStorage.setItem(SOURCE_KEYS.pdf, url);
+      saveWorkspaceToActiveProject();
+    }
+
+    function loadUploadedPdf() {
+      const file = pdfUpload.files[0];
+
+      if (!file) return;
+
+      if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+        alert("Please choose a PDF file.");
+        pdfUpload.value = "";
+        return;
+      }
+
+      const fileUrl = URL.createObjectURL(file);
+      showFrame(pdfFrameBox, fileUrl, "Uploaded PDF pattern");
+      openPdfLink.href = fileUrl;
+      openPdfLink.hidden = false;
+      pdfHelp.textContent = `Loaded uploaded PDF: ${file.name}. You may need to upload it again in a later session.`;
+      saveWorkspaceToActiveProject();
+    }
+
+
+    function videoPlaceholderHtml() {
+      return `
+        <div class="source-placeholder" id="videoPlaceholder">
+          <div>
+            <strong>Video Tutorial</strong>
+            <span>Paste a YouTube link to keep your tutorial close while you stitch.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function webPlaceholderHtml() {
+      return `
+        <div class="source-placeholder" id="webPlaceholder">
+          <div>
+            <strong>Web Pattern</strong>
+            <span>Paste a pattern webpage URL to keep the written pattern nearby while you work.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function pdfPlaceholderHtml() {
+      return `
+        <div class="source-placeholder" id="pdfPlaceholder">
+          <div>
+            <strong>PDF Pattern</strong>
+            <span>Paste a PDF URL or upload a PDF pattern from your computer.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function clearVideoSource() {
+      videoUrl.value = "";
+      videoFrameBox.innerHTML = videoPlaceholderHtml();
+      openVideoLink.href = "#";
+      openVideoLink.hidden = true;
+      localStorage.removeItem(SOURCE_KEYS.video);
+      saveWorkspaceToActiveProject();
+    }
+
+    function clearWebSource() {
+      webUrl.value = "";
+      webFrameBox.innerHTML = webPlaceholderHtml();
+      openWebLink.href = "#";
+      openWebLink.hidden = true;
+      const webHelp = document.getElementById("webHelp");
+      webHelp.textContent = "Some websites block embedding. If the page does not appear, use the link below.";
+      webHelp.classList.remove("warning");
+      localStorage.removeItem(SOURCE_KEYS.web);
+      saveWorkspaceToActiveProject();
+    }
+
+    function clearPdfSource() {
+      pdfUrl.value = "";
+      pdfUpload.value = "";
+      pdfFrameBox.innerHTML = pdfPlaceholderHtml();
+      openPdfLink.href = "#";
+      openPdfLink.hidden = true;
+      pdfHelp.textContent = "Uploaded PDFs may need to be uploaded again in a later session. PDF URLs can be saved locally.";
+      localStorage.removeItem(SOURCE_KEYS.pdf);
+      saveWorkspaceToActiveProject();
+    }
+
+
+    pastePatternBtn.addEventListener("click", openPatternImport);
+    uncheckRowsBtn.addEventListener("click", uncheckPatternRows);
+    deletePatternBtn.addEventListener("click", deletePatternTracker);
+    cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
+    importPatternRows.addEventListener("click", importPatternTrackerRows);
+
+    sourceTabs.forEach(tab => {
+      tab.addEventListener("click", () => switchSourcePanel(tab.dataset.panel));
+    });
+
+    loadVideo.addEventListener("click", loadVideoSource);
+    clearVideo.addEventListener("click", clearVideoSource);
+
+    loadWeb.addEventListener("click", loadWebSource);
+    clearWeb.addEventListener("click", clearWebSource);
+
+    loadPdf.addEventListener("click", loadPdfSource);
+    clearPdf.addEventListener("click", clearPdfSource);
+    pdfUpload.addEventListener("change", loadUploadedPdf);
+
+    videoUrl.addEventListener("keydown", event => {
+      if (event.key === "Enter") loadVideoSource();
+    });
+
+    webUrl.addEventListener("keydown", event => {
+      if (event.key === "Enter") loadWebSource();
+    });
+
+    pdfUrl.addEventListener("keydown", event => {
+      if (event.key === "Enter") loadPdfSource();
+    });
+
+    const savedVideoUrl = localStorage.getItem(SOURCE_KEYS.video);
+    if (savedVideoUrl) {
+      videoUrl.value = savedVideoUrl;
+      const savedEmbedUrl = getYouTubeEmbedUrl(savedVideoUrl);
+      if (savedEmbedUrl) {
+        showFrame(videoFrameBox, savedEmbedUrl, "Video tutorial");
+        openVideoLink.href = savedVideoUrl;
+        openVideoLink.hidden = false;
+      }
+    }
+
+    const savedWebUrl = localStorage.getItem(SOURCE_KEYS.web);
+    if (savedWebUrl) {
+      webUrl.value = savedWebUrl;
+      showFrame(webFrameBox, savedWebUrl, "Web pattern");
+      openWebLink.href = savedWebUrl;
+      openWebLink.hidden = false;
+      const webHelp = document.getElementById("webHelp");
+      webHelp.textContent = "Saved web pattern loaded. If it appears blank, use the new tab link.";
+    }
+
+    const savedPdfUrl = localStorage.getItem(SOURCE_KEYS.pdf);
+    if (savedPdfUrl) {
+      pdfUrl.value = savedPdfUrl;
+      showFrame(pdfFrameBox, savedPdfUrl, "PDF pattern");
+      openPdfLink.href = savedPdfUrl;
+      openPdfLink.hidden = false;
+      pdfHelp.textContent = "Saved PDF URL loaded.";
+    }
+
+
+    applyTheme(localStorage.getItem(THEME_KEY) || "rose");
+
+    renderProjectSnapshot();
+    renderProjectList();
+
+    if (getActiveProject() && counterMode === "project") {
+      loadWorkspaceFromActiveProject();
+    } else {
+      loadRowForCurrentMode();
+      renderPatternTracker();
+      renderTimer();
+    }
+
+    if (timerData.startedAt) {
+      timerInterval = window.setInterval(renderTimer, 1000);
+    }
+
+    setupSpeechRecognition();
+  </script>
+</body>
+</html>
