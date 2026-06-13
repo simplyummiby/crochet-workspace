@@ -129,7 +129,7 @@
     .topbar {
       min-height: 76px;
       display: grid;
-      grid-template-columns: 270px 1fr 40px;
+      grid-template-columns: minmax(260px, auto) 1fr;
       gap: 18px;
       align-items: center;
       padding: 0 28px;
@@ -149,6 +149,8 @@
       font-size: 1.7rem;
       font-weight: 800;
       white-space: nowrap;
+      min-width: 0;
+      overflow: visible;
     }
 
     .brand-mark {
@@ -167,13 +169,13 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 4px;
+      padding: 3px;
       display: block;
     }
 
     .nav {
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       gap: 28px;
       height: 76px;
     }
@@ -1710,7 +1712,7 @@
 
 
     @media (max-width: 1100px) {
-      .topbar { grid-template-columns: 1fr auto; }
+      .topbar { grid-template-columns: minmax(220px, auto) 1fr; }
       .nav {
         display: flex;
         justify-content: flex-end;
@@ -1765,7 +1767,7 @@
       <a class="active" href="#">⌂ Dashboard</a>
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
     </nav>
-    <div class="top-actions"></div>
+    
   </header>
 
   <main class="page">
@@ -2129,7 +2131,7 @@
     <div class="getting-started-header">
       <div>
         <h2>🎯 My Projects</h2>
-        <p>View projects by status and open the one you want to work on.</p>
+        <p>View your projects by status and open the one you want to work on.</p>
       </div>
       <button class="close-help-btn" id="closeYourProjects" type="button" aria-label="Close projects">×</button>
     </div>
