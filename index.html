@@ -129,7 +129,7 @@
     .topbar {
       min-height: 76px;
       display: grid;
-      grid-template-columns: 270px 1fr 260px;
+      grid-template-columns: 270px 1fr 40px;
       gap: 18px;
       align-items: center;
       padding: 0 28px;
@@ -160,6 +160,15 @@
       background: #fff0f4;
       border: 1px solid var(--line);
       font-size: 1.5rem;
+      overflow: hidden;
+    }
+
+    .logo-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 4px;
+      display: block;
     }
 
     .nav {
@@ -169,7 +178,8 @@
       height: 76px;
     }
 
-    .nav a {
+    .nav a,
+    .nav-link {
       color: var(--text);
       text-decoration: none;
       display: flex;
@@ -178,6 +188,10 @@
       border-bottom: 3px solid transparent;
       font-weight: 700;
       padding: 0 2px;
+      background: transparent;
+      border-radius: 0;
+      height: 76px;
+      box-shadow: none;
     }
 
     .nav a.active {
@@ -185,11 +199,26 @@
       border-bottom-color: var(--cranberry);
     }
 
+    .nav-link:hover {
+      color: var(--cranberry);
+      box-shadow: none;
+      transform: none;
+    }
+
+    .nav-link:active {
+      transform: none;
+      box-shadow: none;
+    }
+
     .top-actions {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 16px;
+    }
+
+    .top-actions:empty {
+      display: block;
     }
 
     .library-btn {
@@ -1421,6 +1450,68 @@
     .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
     .project-list button { text-align:left; padding:12px; background:#fff8f9; border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
     .project-list button.active-project { border-color:var(--cranberry-2); background:var(--soft-pink); color:var(--cranberry-dark); }
+
+    .your-projects-list {
+      display: grid;
+      gap: 16px;
+      max-height: 64vh;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .project-status-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .project-status-heading {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .your-project-item {
+      width: 100%;
+      text-align: left;
+      padding: 12px 13px;
+      background: #fff8f9;
+      border: 1px solid var(--line);
+      color: var(--text);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border-radius: 14px;
+    }
+
+    .your-project-item.active-project {
+      border-color: var(--cranberry-2);
+      background: var(--soft-pink);
+      color: var(--cranberry-dark);
+    }
+
+    .your-project-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .your-project-item small {
+      color: var(--muted);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .your-project-empty {
+      padding: 18px;
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+      background: #fff8f9;
+    }
     @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr 1fr;} .snapshot-main{grid-column:span 2;} .snapshot-item{border-right:0;} }
     @media(max-width:650px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} }
     @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
@@ -1620,8 +1711,12 @@
 
     @media (max-width: 1100px) {
       .topbar { grid-template-columns: 1fr auto; }
-      .nav { display: none; }
-      .top-actions { justify-content: end; }
+      .nav {
+        display: flex;
+        justify-content: flex-end;
+        gap: 18px;
+      }
+      .top-actions { display: none; }
       .page { grid-template-columns: 1fr; }
       .side { display: grid; grid-template-columns: 330px 1fr; align-items: start; }
       .welcome { grid-template-columns: 1fr; }
@@ -1631,8 +1726,22 @@
     }
 
     @media (max-width: 720px) {
-      .topbar { padding: 0 16px; }
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 16px;
+      }
       .brand { font-size: 1.3rem; }
+      .nav {
+        justify-content: flex-start;
+        height: auto;
+        gap: 18px;
+      }
+      .nav a,
+      .nav-link {
+        height: auto;
+        padding: 6px 0;
+      }
       .library-btn { display: none; }
       .page { padding: 14px; }
       .side { display: flex; }
@@ -1651,19 +1760,12 @@
 
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">🧶</span> Crochet Workspace</div>
+    <div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-su-transparent.png" alt="Simply Ummiby logo" /></span> Crochet Workspace</div>
     <nav class="nav">
       <a class="active" href="#">⌂ Dashboard</a>
-      <a href="#">🎯 Projects</a>
-      <a href="#">📋 Patterns</a>
-      <a href="#">🛠️ Tools</a>
-      <a href="#">⚙️ Settings</a>
+      <button class="nav-link" id="openYourProjectsNav" type="button">🎯 Your Projects</button>
     </nav>
-    <div class="top-actions">
-      <button class="library-btn">📖 View Library</button>
-      <span>☾</span>
-      <div class="avatar">AS</div>
-    </div>
+    <div class="top-actions"></div>
   </header>
 
   <main class="page">
@@ -1932,14 +2034,7 @@
         <textarea id="projectNotes" placeholder="Add your notes here..."></textarea>
       </section>
 
-      <section class="card quick">
-        <h2 class="section-title">✨ Quick Tools</h2>
-        <div class="tool-grid">
-          <div class="tool"><span><b>♯</b>Row Tips</span></div>
-          <div class="tool"><span><b>🧶</b>Yarn Calc</span></div>
-          <div class="tool"><span><b>✂</b>Stitch Guide</span></div>
-        </div>
-      </section>
+
     </aside>
   </main>
 
@@ -2027,6 +2122,20 @@
     <div class="project-dialog-actions">
       <button class="soft-btn" id="cancelPatternImport" type="button">Cancel</button>
       <button class="primary-btn" id="importPatternRows" type="button">Import Rows</button>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog getting-started-dialog" id="yourProjectsDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>🎯 Your Projects</h2>
+        <p>View projects by status and open the one you want to work on.</p>
+      </div>
+      <button class="close-help-btn" id="closeYourProjects" type="button" aria-label="Close projects">×</button>
+    </div>
+
+    <div class="getting-started-content">
+      <div class="your-projects-list" id="yourProjectsList"></div>
     </div>
   </dialog>
 
@@ -2123,6 +2232,10 @@
     const openGettingStarted = document.getElementById("openGettingStarted");
     const gettingStartedDialog = document.getElementById("gettingStartedDialog");
     const closeGettingStarted = document.getElementById("closeGettingStarted");
+    const openYourProjectsNav = document.getElementById("openYourProjectsNav");
+    const yourProjectsDialog = document.getElementById("yourProjectsDialog");
+    const closeYourProjects = document.getElementById("closeYourProjects");
+    const yourProjectsList = document.getElementById("yourProjectsList");
 
     const QUICK_ROW_KEY = "crochetWorkspaceQuickCounterRow";
     const COUNTER_MODE_KEY = "crochetWorkspaceCounterMode";
@@ -2741,6 +2854,21 @@
       }
     });
 
+    openYourProjectsNav.addEventListener("click", () => {
+      renderYourProjectsList();
+      yourProjectsDialog.showModal();
+    });
+
+    closeYourProjects.addEventListener("click", () => {
+      yourProjectsDialog.close();
+    });
+
+    yourProjectsDialog.addEventListener("click", event => {
+      if (event.target === yourProjectsDialog) {
+        yourProjectsDialog.close();
+      }
+    });
+
     addRow.addEventListener("click", () => setRow(row + 1));
     minusRow.addEventListener("click", () => setRow(row - 1));
 
@@ -3239,6 +3367,74 @@
       projectFormDialog.close();
     }
 
+    function getStatusOrder() {
+      return ["In Progress", "Not Started", "Complete", "Imported"];
+    }
+
+    function getProjectMetaSummary(project) {
+      const rows = getProjectRowsSummary(project);
+      const time = getProjectTimeSummary(project);
+      const hook = project.hook || "No hook listed";
+
+      return `${project.status || "In Progress"} • ${hook} • Rows ${rows} • ${time}`;
+    }
+
+    function openProjectById(projectId) {
+      saveWorkspaceToActiveProject();
+      activeProjectId = projectId;
+      counterMode = "project";
+      timerMode = "project";
+      saveProjects();
+      loadWorkspaceFromActiveProject();
+    }
+
+    function renderYourProjectsList() {
+      if (!projects.length) {
+        yourProjectsList.innerHTML = `
+          <div class="your-project-empty">
+            <strong>No projects yet</strong><br>
+            <span>Create your first project from the Current Project card.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const statusOrder = getStatusOrder();
+      const grouped = projects.reduce((groups, project) => {
+        const status = project.status || "In Progress";
+        if (!groups[status]) groups[status] = [];
+        groups[status].push(project);
+        return groups;
+      }, {});
+
+      const orderedStatuses = [
+        ...statusOrder.filter(status => grouped[status]),
+        ...Object.keys(grouped).filter(status => !statusOrder.includes(status)).sort()
+      ];
+
+      yourProjectsList.innerHTML = orderedStatuses.map(status => `
+        <section class="project-status-group">
+          <h3 class="project-status-heading">${status}</h3>
+          ${grouped[status].map(project => `
+            <button type="button" class="your-project-item ${project.id === activeProjectId ? "active-project" : ""}" data-project-id="${project.id}">
+              <span>
+                <strong>${project.name || "Untitled Project"}</strong>
+                <small>${getProjectMetaSummary(project)}</small>
+              </span>
+              <span>${project.id === activeProjectId ? "Active" : "Open"}</span>
+            </button>
+          `).join("")}
+        </section>
+      `).join("");
+
+      yourProjectsList.querySelectorAll("button[data-project-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          openProjectById(button.dataset.projectId);
+          yourProjectsDialog.close();
+        });
+      });
+    }
+
     function renderProjectList() {
       if (!projects.length) {
         projectList.innerHTML = `
@@ -3262,12 +3458,7 @@
 
       projectList.querySelectorAll("button[data-project-id]").forEach(button => {
         button.addEventListener("click", () => {
-          saveWorkspaceToActiveProject();
-          activeProjectId = button.dataset.projectId;
-          counterMode = "project";
-          timerMode = "project";
-          saveProjects();
-          loadWorkspaceFromActiveProject();
+          openProjectById(button.dataset.projectId);
           switchProjectDialog.close();
         });
       });
