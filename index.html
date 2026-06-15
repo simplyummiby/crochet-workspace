@@ -1530,6 +1530,185 @@
     }
 
 
+    /* Tutorial Notes drawer */
+    .tutorial-notes {
+      margin: 12px 20px 0;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 253, 251, 0.94);
+      overflow: hidden;
+    }
+
+    .tutorial-notes-toggle {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--accent-light);
+      color: var(--cranberry-dark);
+      border-radius: 0;
+      text-align: left;
+      box-shadow: none;
+    }
+
+    .tutorial-notes-toggle:hover {
+      transform: none;
+    }
+
+    .tutorial-notes-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+    }
+
+    .tutorial-notes-status {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tutorial-notes-body {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+      background: #fffdfb;
+    }
+
+    .tutorial-notes-body[hidden] {
+      display: none;
+    }
+
+    .tutorial-notes-help {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .tutorial-notes-table-wrap {
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+    }
+
+    .tutorial-notes-table {
+      min-width: 760px;
+    }
+
+    .tutorial-notes-table th,
+    .tutorial-notes-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    .tutorial-notes-table th {
+      background: var(--accent-light);
+      color: var(--cranberry-dark);
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .tutorial-row-col {
+      width: 120px;
+    }
+
+    .tutorial-count-col {
+      width: 120px;
+    }
+
+    .tutorial-done-col {
+      width: 74px;
+      text-align: center;
+    }
+
+    .tutorial-delete-col {
+      width: 72px;
+      text-align: center;
+    }
+
+    .tutorial-notes-table input[type="text"],
+    .tutorial-notes-table textarea {
+      width: 100%;
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 9px;
+      background: #fffdfb;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .tutorial-notes-table textarea {
+      min-height: 44px;
+      resize: vertical;
+      line-height: 1.35;
+    }
+
+    .tutorial-note-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--cranberry-2);
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .tutorial-note-delete {
+      background: #fff7f7;
+      color: #a32635;
+      border: 1px solid #f0c4c9;
+      padding: 7px 9px;
+      border-radius: 10px;
+      box-shadow: none;
+    }
+
+    .tutorial-notes-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tutorial-notes-actions button {
+      flex: 0 1 auto;
+      white-space: nowrap;
+    }
+
+    .tutorial-clear-notes {
+      padding: 13px 12px;
+    }
+
+    .tutorial-notes-empty {
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .tutorial-notes-empty strong {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 720px) {
+      .tutorial-notes-status {
+        display: none;
+      }
+
+      .tutorial-notes-table-wrap {
+        max-height: 230px;
+      }
+    }
+
+
 
     .source-controls-three {
       grid-template-columns: 1fr auto auto;
@@ -1544,6 +1723,10 @@
       .source-controls,
       .source-controls-three {
         grid-template-columns: 1fr;
+      }
+
+      .tutorial-notes-actions button {
+        flex: 1 1 100%;
       }
 
       .clear-source-btn {
@@ -2060,6 +2243,46 @@
 
           <p class="source-help">Tip: YouTube links will be converted into an embedded player when possible.</p>
           <a class="open-link" id="openVideoLink" href="#" target="_blank" rel="noopener" hidden>Open video in a new tab</a>
+
+          <section class="tutorial-notes" aria-label="Tutorial notes">
+            <button class="tutorial-notes-toggle" id="tutorialNotesToggle" type="button" aria-expanded="false" aria-controls="tutorialNotesBody">
+              <span class="tutorial-notes-title">
+                <span id="tutorialNotesArrow">▶</span>
+                <span id="tutorialNotesTitle">Tutorial Notes (0 entries)</span>
+              </span>
+              <span class="tutorial-notes-status" id="tutorialNotesStatus">Optional row/round notes</span>
+            </button>
+
+            <div class="tutorial-notes-body" id="tutorialNotesBody" hidden>
+              <p class="tutorial-notes-help">Use this while watching the video to jot down row/round steps, stitch counts, and your place.</p>
+
+              <div class="tutorial-notes-table-wrap" id="tutorialNotesTableWrap">
+                <table class="tutorial-notes-table">
+                  <thead>
+                    <tr>
+                      <th class="tutorial-row-col">Row/Round</th>
+                      <th>Step / Instructions</th>
+                      <th class="tutorial-count-col">Stitch Count</th>
+                      <th class="tutorial-done-col">Done</th>
+                      <th class="tutorial-delete-col">Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tutorialNotesBodyRows"></tbody>
+                </table>
+              </div>
+
+              <div class="tutorial-notes-empty" id="tutorialNotesEmpty" hidden>
+                <strong>No tutorial notes yet</strong>
+                <span>Add a note row when the video gives a row, round, stitch count, or important step. Notes save with the active project.</span>
+              </div>
+
+              <div class="tutorial-notes-actions">
+                <button class="primary-btn" id="addTutorialNoteRow" type="button">＋ Add Note Row</button>
+                <button class="soft-btn" id="sortTutorialNotes" type="button">↕ Sort by Row/Round</button>
+                <button class="danger-btn tutorial-clear-notes" id="clearTutorialNotes" type="button">🧹 Clear All Notes</button>
+              </div>
+            </div>
+          </section>
         </section>
 
         <section class="source-panel" id="webPanel" hidden>
@@ -2448,6 +2671,13 @@
   </dialog>
 
   <script>
+    /*
+      Version: Tutorial Notes Sort and Clear
+      Date: 2026-06-14
+      Changes: Adds Sort by Row/Round and Clear All Notes actions to the Tutorial Notes drawer.
+      Previous: Tutorial Notes add-row feedback fix.
+    */
+
     const rowCount = document.getElementById("rowCount");
     const addRow = document.getElementById("addRow");
     const minusRow = document.getElementById("minusRow");
@@ -3290,6 +3520,21 @@
     const trackerTableWrap = document.getElementById("trackerTableWrap");
     const patternTrackerBody = document.getElementById("patternTrackerBody");
 
+    const tutorialNotesToggle = document.getElementById("tutorialNotesToggle");
+    const tutorialNotesArrow = document.getElementById("tutorialNotesArrow");
+    const tutorialNotesTitle = document.getElementById("tutorialNotesTitle");
+    const tutorialNotesStatus = document.getElementById("tutorialNotesStatus");
+    const tutorialNotesBody = document.getElementById("tutorialNotesBody");
+    const tutorialNotesBodyRows = document.getElementById("tutorialNotesBodyRows");
+    const tutorialNotesEmpty = document.getElementById("tutorialNotesEmpty");
+    const tutorialNotesTableWrap = document.getElementById("tutorialNotesTableWrap");
+    const addTutorialNoteRow = document.getElementById("addTutorialNoteRow");
+    const sortTutorialNotes = document.getElementById("sortTutorialNotes");
+    const clearTutorialNotes = document.getElementById("clearTutorialNotes");
+
+    let tutorialNotesExpanded = false;
+    let tutorialNotesRows = [];
+
     const SOURCE_KEYS = {
       video: "crochetWorkspaceVideoUrl",
       web: "crochetWorkspaceWebPatternUrl",
@@ -3372,6 +3617,7 @@
       project.rowCount = row;
       project.sources = getSourceValues();
       project.notes = projectNotes?.value || "";
+      project.tutorialNotes = Array.isArray(tutorialNotesRows) ? tutorialNotesRows : [];
       project.patternTrackerRows = trackerRows;
       project.patternTrackerCurrentRow = trackerCurrentRow;
       project.timerData = {
@@ -3439,6 +3685,7 @@
       row = Number(project.rowCount) || 0;
       trackerRows = Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [];
       trackerCurrentRow = Number(project.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
+      tutorialNotesRows = Array.isArray(project.tutorialNotes) ? project.tutorialNotes : [];
       timerData = project.timerData || defaultTimerData();
 
       if (projectNotes) {
@@ -3454,6 +3701,7 @@
       renderProjectList();
       loadRowForCurrentMode();
       renderPatternTracker();
+      renderTutorialNotes();
       renderTimer();
 
       window.clearInterval(timerInterval);
@@ -3475,6 +3723,8 @@
 
       trackerRows = [];
       trackerCurrentRow = 0;
+      tutorialNotesRows = [];
+      tutorialNotesExpanded = false;
 
       if (projectNotes) {
         projectNotes.value = "";
@@ -3496,6 +3746,7 @@
       renderProjectSnapshot();
       renderProjectList();
       renderPatternTracker();
+      renderTutorialNotes();
       renderTimer();
     }
 
@@ -3654,6 +3905,7 @@
           rowCount: 0,
           sources: { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
           notes: "",
+          tutorialNotes: [],
           patternTrackerRows: [],
           patternTrackerCurrentRow: 0,
           timerData: defaultTimerData(),
@@ -3784,6 +4036,7 @@
         rowCount: Number(project.rowCount) || 0,
         sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
         notes: project.notes || "",
+        tutorialNotes: Array.isArray(project.tutorialNotes) ? project.tutorialNotes : [],
         patternTrackerRows: project.patternTrackerRows || [],
         patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || 0,
         timerData: project.timerData || defaultTimerData(),
@@ -3846,6 +4099,7 @@
             pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
           },
           notes: document.querySelector(".notes textarea")?.value || "",
+          tutorialNotes: tutorialNotesRows,
           patternTrackerRows: trackerRows,
           patternTrackerCurrentRow: trackerCurrentRow,
           quickTimerData: JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || defaultTimerData(),
@@ -3905,6 +4159,7 @@
                 rowCount: Number(project.rowCount) || 0,
                 sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
                 notes: project.notes || "",
+                tutorialNotes: Array.isArray(project.tutorialNotes) ? project.tutorialNotes : [],
                 patternTrackerRows: Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [],
                 patternTrackerCurrentRow: Number(project.patternTrackerCurrentRow) || Number(project.patternTrackerRows?.[0]?.rowNumber) || 0,
                 timerData: project.timerData || project.timerBackup || defaultTimerData(),
@@ -3958,6 +4213,7 @@
             rowCount: Number(backup.rowCount) || 0,
             sources: backup.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
             notes: backup.notes || "",
+            tutorialNotes: Array.isArray(backup.tutorialNotes) ? backup.tutorialNotes : [],
             patternTrackerRows: Array.isArray(backup.patternTrackerRows) ? backup.patternTrackerRows : [],
             patternTrackerCurrentRow: Number(backup.patternTrackerCurrentRow) || 0,
             timerData: backup.timerData || backup.timerBackup || defaultTimerData(),
@@ -4053,6 +4309,203 @@
       const file = importBackupInput.files[0];
       if (file) importProjectBackup(file);
     });
+
+
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getTutorialNoteCountLabel(count) {
+      return `${count} ${count === 1 ? "entry" : "entries"}`;
+    }
+
+    function saveTutorialNotes() {
+      const project = getActiveProject();
+
+      if (project) {
+        project.tutorialNotes = Array.isArray(tutorialNotesRows) ? tutorialNotesRows : [];
+        saveProjects();
+      }
+
+      if (typeof renderProjectSnapshot === "function") {
+        renderProjectSnapshot();
+      }
+    }
+
+    function updateTutorialNotesHeader() {
+      const count = Array.isArray(tutorialNotesRows) ? tutorialNotesRows.length : 0;
+
+      tutorialNotesTitle.textContent = `Tutorial Notes (${getTutorialNoteCountLabel(count)})`;
+      tutorialNotesArrow.textContent = tutorialNotesExpanded ? "▼" : "▶";
+      tutorialNotesBody.hidden = !tutorialNotesExpanded;
+      tutorialNotesToggle.setAttribute("aria-expanded", String(tutorialNotesExpanded));
+    }
+
+    function renderTutorialNotes() {
+      const project = getActiveProject();
+      const count = Array.isArray(tutorialNotesRows) ? tutorialNotesRows.length : 0;
+
+      updateTutorialNotesHeader();
+
+      if (!project) {
+        tutorialNotesStatus.textContent = "Create/select a project to save notes";
+        addTutorialNoteRow.disabled = false;
+        sortTutorialNotes.disabled = true;
+        clearTutorialNotes.disabled = true;
+        tutorialNotesBodyRows.innerHTML = "";
+        tutorialNotesTableWrap.hidden = true;
+        tutorialNotesEmpty.hidden = false;
+        return;
+      }
+
+      tutorialNotesStatus.textContent = "Saved with this project";
+      addTutorialNoteRow.disabled = false;
+      sortTutorialNotes.disabled = count < 2;
+      clearTutorialNotes.disabled = count === 0;
+      tutorialNotesTableWrap.hidden = count === 0;
+      tutorialNotesEmpty.hidden = count > 0;
+
+      tutorialNotesBodyRows.innerHTML = tutorialNotesRows.map((note, index) => `
+        <tr data-note-index="${index}">
+          <td>
+            <input
+              type="text"
+              class="tutorial-note-input"
+              data-field="rowRound"
+              value="${escapeHtml(note.rowRound || "")}"
+              placeholder="Row 1 / Round 1"
+              aria-label="Tutorial note row or round"
+            />
+          </td>
+          <td>
+            <textarea
+              class="tutorial-note-input"
+              data-field="instructions"
+              placeholder="Write the step here..."
+              aria-label="Tutorial note step or instructions"
+            >${escapeHtml(note.instructions || "")}</textarea>
+          </td>
+          <td>
+            <input
+              type="text"
+              class="tutorial-note-input"
+              data-field="stitchCount"
+              value="${escapeHtml(note.stitchCount || "")}"
+              placeholder="12"
+              aria-label="Tutorial note stitch count"
+            />
+          </td>
+          <td class="tutorial-done-col">
+            <input
+              type="checkbox"
+              class="tutorial-note-checkbox"
+              data-field="done"
+              ${note.done ? "checked" : ""}
+              aria-label="Mark tutorial note done"
+            />
+          </td>
+          <td class="tutorial-delete-col">
+            <button class="tutorial-note-delete" type="button" aria-label="Delete tutorial note">🗑</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function addTutorialNote() {
+      if (!getActiveProject()) {
+        alert("Create or select a project first so tutorial notes can be saved with it.");
+        return;
+      }
+
+      tutorialNotesRows.push({
+        rowRound: "",
+        instructions: "",
+        stitchCount: "",
+        done: false
+      });
+
+      tutorialNotesExpanded = true;
+      saveTutorialNotes();
+      renderTutorialNotes();
+
+      const lastInput = tutorialNotesBodyRows.querySelector("tr:last-child input");
+      if (lastInput) lastInput.focus();
+    }
+
+    function updateTutorialNote(index, field, value) {
+      if (!tutorialNotesRows[index]) return;
+
+      tutorialNotesRows[index] = {
+        ...tutorialNotesRows[index],
+        [field]: value
+      };
+
+      saveTutorialNotes();
+      updateTutorialNotesHeader();
+    }
+
+    function deleteTutorialNote(index) {
+      if (!tutorialNotesRows[index]) return;
+
+      tutorialNotesRows.splice(index, 1);
+      saveTutorialNotes();
+      renderTutorialNotes();
+    }
+
+    function getTutorialSortValue(rowRound) {
+      const text = String(rowRound || "").trim().toLowerCase();
+      const numberMatch = text.match(/\d+(?:\.\d+)?/);
+
+      if (!numberMatch) return Number.POSITIVE_INFINITY;
+
+      return Number(numberMatch[0]);
+    }
+
+    function sortTutorialNotesByRowRound() {
+      if (!getActiveProject()) {
+        alert("Create or select a project first so tutorial notes can be saved with it.");
+        return;
+      }
+
+      if (tutorialNotesRows.length < 2) return;
+
+      tutorialNotesRows = tutorialNotesRows
+        .map((note, originalIndex) => ({ note, originalIndex }))
+        .sort((a, b) => {
+          const aValue = getTutorialSortValue(a.note.rowRound);
+          const bValue = getTutorialSortValue(b.note.rowRound);
+
+          if (aValue !== bValue) return aValue - bValue;
+          return a.originalIndex - b.originalIndex;
+        })
+        .map(item => item.note);
+
+      saveTutorialNotes();
+      renderTutorialNotes();
+    }
+
+    function clearAllTutorialNotes() {
+      if (!getActiveProject()) {
+        alert("Create or select a project first so tutorial notes can be saved with it.");
+        return;
+      }
+
+      if (!tutorialNotesRows.length) return;
+
+      const shouldClear = confirm("Clear all tutorial notes for this project? This will remove all tutorial note rows.");
+
+      if (!shouldClear) return;
+
+      tutorialNotesRows = [];
+      saveTutorialNotes();
+      renderTutorialNotes();
+    }
 
 
     const TRACKER_KEY = "crochetWorkspacePatternTrackerRows";
@@ -4472,6 +4925,43 @@
     }
 
 
+
+    tutorialNotesToggle.addEventListener("click", () => {
+      tutorialNotesExpanded = !tutorialNotesExpanded;
+      renderTutorialNotes();
+    });
+
+    addTutorialNoteRow.addEventListener("click", addTutorialNote);
+    sortTutorialNotes.addEventListener("click", sortTutorialNotesByRowRound);
+    clearTutorialNotes.addEventListener("click", clearAllTutorialNotes);
+
+    tutorialNotesBodyRows.addEventListener("input", event => {
+      const rowEl = event.target.closest("tr[data-note-index]");
+      const field = event.target.dataset.field;
+
+      if (!rowEl || !field || event.target.type === "checkbox") return;
+
+      updateTutorialNote(Number(rowEl.dataset.noteIndex), field, event.target.value);
+    });
+
+    tutorialNotesBodyRows.addEventListener("change", event => {
+      const rowEl = event.target.closest("tr[data-note-index]");
+
+      if (!rowEl || event.target.type !== "checkbox") return;
+
+      updateTutorialNote(Number(rowEl.dataset.noteIndex), "done", event.target.checked);
+    });
+
+    tutorialNotesBodyRows.addEventListener("click", event => {
+      const deleteButton = event.target.closest(".tutorial-note-delete");
+
+      if (!deleteButton) return;
+
+      const rowEl = deleteButton.closest("tr[data-note-index]");
+      deleteTutorialNote(Number(rowEl.dataset.noteIndex));
+    });
+
+
     pastePatternBtn.addEventListener("click", openPatternImport);
     uncheckRowsBtn.addEventListener("click", uncheckPatternRows);
     deletePatternBtn.addEventListener("click", deletePatternTracker);
@@ -4551,6 +5041,8 @@
     if (timerData.startedAt) {
       timerInterval = window.setInterval(renderTimer, 1000);
     }
+
+    renderTutorialNotes();
 
     setupSpeechRecognition();
   </script>
