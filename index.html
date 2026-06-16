@@ -316,7 +316,9 @@
       align-items: center;
       gap: 7px;
       border-bottom: 3px solid transparent;
+      font-size: 1rem;
       font-weight: 700;
+      line-height: 1;
       padding: 0 2px;
       background: transparent;
       border-radius: 0;
@@ -342,6 +344,146 @@
     .nav-link:active {
       transform: none;
       box-shadow: none;
+    }
+
+    .account-status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      border: 1px solid var(--accent-border);
+      color: var(--cranberry-dark);
+      font-size: 0.7rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .account-summary {
+      border: 1px solid var(--accent-border);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at top left, var(--accent-wash), transparent 42%),
+        var(--accent-light);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .account-summary-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #fffdfb;
+      border: 1px solid var(--line);
+      color: var(--cranberry-dark);
+      font-size: 0.78rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .account-summary h3 {
+      margin: 0 0 6px;
+      color: var(--cranberry-dark);
+      font-size: 1.18rem;
+      line-height: 1.2;
+    }
+
+    .account-summary p,
+    .account-panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.42;
+      font-size: 0.94rem;
+    }
+
+    .account-panel {
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fffdfb;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .account-panel h3 {
+      margin: 0 0 6px;
+      color: var(--text);
+      font-size: 1.02rem;
+      line-height: 1.2;
+    }
+
+    .account-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .account-coming-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      border: 1px solid var(--accent-border);
+      color: var(--cranberry-dark);
+      font-size: 0.72rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .account-panel input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: white;
+      color: var(--text);
+      outline: none;
+      font: inherit;
+      margin-top: 11px;
+    }
+
+    .account-panel input:focus {
+      border-color: var(--cranberry-2);
+      box-shadow: 0 0 0 4px var(--accent-focus);
+    }
+
+    .account-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .account-note {
+      margin: 12px 0 0;
+      padding: 12px 14px;
+      border-radius: 15px;
+      background: var(--accent-light);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    .account-note strong {
+      color: var(--cranberry-dark);
+    }
+
+    @media (max-width: 720px) {
+      .account-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .account-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
 
     .top-actions {
@@ -2162,7 +2304,7 @@
     </div>
     <nav class="nav">
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
-      <button class="nav-link" id="openAccountNav" type="button">👤 Account <span class="account-status-pill" id="accountStatusPill">Local</span></button>
+      <button class="nav-link" id="openAccountNav" type="button">👤 Account</button>
       <button class="nav-link" id="openSettingsNav" type="button">⚙️ Settings</button>
     </nav>
     
@@ -2630,39 +2772,45 @@
   <dialog class="project-dialog getting-started-dialog" id="accountDialog">
     <div class="getting-started-header">
       <div>
-        <h2>👤 Account</h2>
-        <p>Choose how you want Crochet Workspace to save your projects.</p>
+        <h2>👤 Save & Sync</h2>
+        <p>Choose how Crochet Workspace saves your projects.</p>
       </div>
       <button class="close-help-btn" id="closeAccount" type="button" aria-label="Close account">×</button>
     </div>
 
     <div class="getting-started-content">
-      <div class="account-mode-card">
-        <strong id="accountModeTitle">Local Mode</strong>
-        <p id="accountModeDescription">Your projects are currently saved only in this browser. Clearing browser data may remove them, so keep backups for important projects.</p>
-      </div>
+      <section class="account-summary">
+        <span class="account-summary-label">✓ Current save mode</span>
+        <h3 id="accountModeTitle">Local Mode</h3>
+        <p id="accountModeDescription">Your projects are saved in this browser. If you clear browser data or use another device, your projects will not automatically follow you.</p>
+      </section>
 
-      <div class="account-form" aria-label="Account sign in form">
-        <label>Email
-          <input id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
-        </label>
+      <section class="account-panel">
+        <h3>What to do now</h3>
+        <p>Keep using Crochet Workspace locally, and use Backup & Restore for any project you do not want to lose.</p>
+        <div class="account-actions">
+          <button class="primary-btn" id="continueLocalBtn" type="button">Continue Locally</button>
+          <button class="soft-btn" id="openBackupReminderBtn" type="button">I’ll Back Up Manually</button>
+        </div>
+      </section>
 
-        <label>Password
-          <input id="accountPasswordInput" type="password" placeholder="Password" autocomplete="current-password" />
-        </label>
-      </div>
+      <section class="account-panel">
+        <div class="account-panel-header">
+          <h3>Cloud Sync</h3>
+          <span class="account-coming-label">Coming next</span>
+        </div>
+        <p>Later, you’ll be able to sign in with email and sync projects across devices.</p>
+        <input id="accountEmailInput" type="email" placeholder="Email for future sign-in" autocomplete="email" />
+        <div class="account-actions">
+          <button class="soft-btn" id="accountSignInBtn" type="button">Preview Future Sign-In</button>
+        </div>
+      </section>
 
-      <div class="account-actions">
-        <button class="soft-btn" id="continueLocalBtn" type="button">Continue Locally</button>
-        <button class="primary-btn" id="accountSignInBtn" type="button">Sign In / Create Account</button>
-      </div>
-
-      <p class="account-sync-note" id="accountSyncNote">
-        <strong>Coming next:</strong> Supabase login and cloud sync. This modal is the first UI step, so the app still saves locally for now.
+      <p class="account-note" id="accountSyncNote">
+        <strong>No account is being created yet.</strong> This modal is only preparing the login flow. Your workspace still saves locally.
       </p>
     </div>
   </dialog>
-
 
   <dialog class="project-dialog getting-started-dialog" id="settingsDialog">
     <div class="getting-started-header">
@@ -2710,9 +2858,9 @@
 
   <script>
     /*
-      Version: 0.9.6-account-modal
+      Version: 0.9.7-account-modal-cleanup
       Date: 2026-06-15
-      Changes: Adds account/login modal UI and Local Mode status without enabling cloud sync yet.
+      Changes: Simplifies the Save & Sync modal so Local Mode, manual backup, and future Cloud Sync are clearer.
       Previous: 0.9.5 tutorial notes with sort and clear controls.
     */
     /*
@@ -2768,8 +2916,8 @@
     const accountModeTitle = document.getElementById("accountModeTitle");
     const accountModeDescription = document.getElementById("accountModeDescription");
     const accountEmailInput = document.getElementById("accountEmailInput");
-    const accountPasswordInput = document.getElementById("accountPasswordInput");
     const continueLocalBtn = document.getElementById("continueLocalBtn");
+    const openBackupReminderBtn = document.getElementById("openBackupReminderBtn");
     const accountSignInBtn = document.getElementById("accountSignInBtn");
     const accountSyncNote = document.getElementById("accountSyncNote");
     const openSettingsNav = document.getElementById("openSettingsNav");
@@ -2812,13 +2960,17 @@
       }
 
       if (accountModeTitle) {
-        accountModeTitle.textContent = isSynced ? "Signed-In Sync Mode" : "Local Mode";
+        accountModeTitle.textContent = isSynced ? "Cloud Sync Mode" : "Local Mode";
       }
 
       if (accountModeDescription) {
         accountModeDescription.textContent = isSynced
-          ? "Your projects can sync across devices once Supabase is connected."
-          : "Your projects are currently saved only in this browser. Clearing browser data may remove them, so keep backups for important projects.";
+          ? "Your projects will sync across devices once Supabase is connected."
+          : "Your projects are saved in this browser right now. If you clear browser data or switch devices, use Backup & Restore to keep a copy.";
+      }
+
+      if (accountSyncNote && accountMode === "local") {
+        accountSyncNote.innerHTML = "<strong>No account is being created yet.</strong> This modal is only preparing the login flow. Your workspace still saves locally.";
       }
     }
 
@@ -2830,11 +2982,14 @@
     }
 
     function showSyncComingSoon() {
-      if (accountSyncNote) {
-        accountSyncNote.innerHTML = "<strong>Next step:</strong> Supabase has not been connected yet. For now, Crochet Workspace will keep saving locally in this browser.";
-      }
+      const email = accountEmailInput?.value?.trim() || "";
+      const emailMessage = email && email.includes("@")
+        ? ` Email entered: ${email}.`
+        : " Entering an email is optional for this preview.";
 
-      alert("Login UI is ready, but Supabase sync has not been connected yet.");
+      if (accountSyncNote) {
+        accountSyncNote.innerHTML = `<strong>Coming next:</strong> Supabase sign-in is not connected yet.${emailMessage} Your projects are still saving locally in this browser.`;
+      }
     }
 
     function updateThemeSelectLabels(activeTheme) {
@@ -3500,6 +3655,9 @@
     });
 
     continueLocalBtn.addEventListener("click", continueInLocalMode);
+    openBackupReminderBtn.addEventListener("click", () => {
+      accountSyncNote.innerHTML = "<strong>Good plan:</strong> Use Backup & Restore to download project files before clearing browser data or switching devices.";
+    });
     accountSignInBtn.addEventListener("click", showSyncComingSoon);
 
     openSettingsNav.addEventListener("click", () => {
