@@ -654,12 +654,15 @@
 
     .getting-started-dialog {
       width: min(720px, calc(100vw - 34px));
+      max-height: calc(100dvh - 32px);
       padding: 0;
       overflow: hidden;
     }
 
     .getting-started-content {
       padding: 22px;
+      max-height: calc(100dvh - 128px);
+      overflow-y: auto;
     }
 
     .getting-started-header {
@@ -738,6 +741,29 @@
 
     .help-note strong {
       color: var(--cranberry-dark);
+    }
+
+    .storage-warning,
+    .backup-warning {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--accent-border);
+      border-radius: 15px;
+      background: var(--accent-light);
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    .storage-warning strong,
+    .backup-warning strong {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 4px;
+    }
+
+    .backup-warning {
+      margin-top: 10px;
     }
 
     .settings-row {
@@ -2278,6 +2304,8 @@
       .page { padding: 14px; }
       .side { display: flex; }
       .getting-started-grid { grid-template-columns: 1fr; }
+      .getting-started-dialog { max-height: calc(100dvh - 24px); }
+      .getting-started-content { max-height: calc(100dvh - 118px); }
       .welcome-image img { max-height: 130px; }
       .notes-head { flex-direction: column; align-items: flex-start; gap: 3px; }
       .notes-saved-label { white-space: normal; }
@@ -2347,6 +2375,11 @@
 
         <details class="backup-restore">
           <summary>💾 Backup & Restore</summary>
+
+          <div class="backup-warning">
+            <strong>Local storage reminder</strong>
+            Projects are saved in this browser. Clearing browser data, switching browsers, or using a different device may remove or hide your saved workspace. Download backups for projects you want to keep.
+          </div>
 
           <div class="backup-actions">
             <button class="soft-btn" id="downloadBackupBtn" type="button">⬇ Current Project</button>
@@ -2762,6 +2795,11 @@
           <p>Use Backup & Restore to download the current project or all projects as a JSON backup file.</p>
         </div>
       </div>
+
+      <p class="storage-warning">
+        <strong>💾 Storage Notice</strong>
+        Crochet Workspace currently saves projects, notes, row counts, timers, tutorial notes, and pattern data in this browser. If you clear browser data, switch browsers, or use a different device, your saved workspace may not be there. Use Backup & Restore regularly for important projects.
+      </p>
 
       <p class="help-note">
         <strong>Tip:</strong> Row Counter and Pattern Tracker are independent tools. Use either one—or both—depending on how you like to follow a pattern.
