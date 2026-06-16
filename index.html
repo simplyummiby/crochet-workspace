@@ -2162,6 +2162,7 @@
     </div>
     <nav class="nav">
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
+      <button class="nav-link" id="openAccountNav" type="button">👤 Account <span class="account-status-pill" id="accountStatusPill">Local</span></button>
       <button class="nav-link" id="openSettingsNav" type="button">⚙️ Settings</button>
     </nav>
     
@@ -2626,6 +2627,43 @@
     </div>
   </dialog>
 
+  <dialog class="project-dialog getting-started-dialog" id="accountDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>👤 Account</h2>
+        <p>Choose how you want Crochet Workspace to save your projects.</p>
+      </div>
+      <button class="close-help-btn" id="closeAccount" type="button" aria-label="Close account">×</button>
+    </div>
+
+    <div class="getting-started-content">
+      <div class="account-mode-card">
+        <strong id="accountModeTitle">Local Mode</strong>
+        <p id="accountModeDescription">Your projects are currently saved only in this browser. Clearing browser data may remove them, so keep backups for important projects.</p>
+      </div>
+
+      <div class="account-form" aria-label="Account sign in form">
+        <label>Email
+          <input id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
+        </label>
+
+        <label>Password
+          <input id="accountPasswordInput" type="password" placeholder="Password" autocomplete="current-password" />
+        </label>
+      </div>
+
+      <div class="account-actions">
+        <button class="soft-btn" id="continueLocalBtn" type="button">Continue Locally</button>
+        <button class="primary-btn" id="accountSignInBtn" type="button">Sign In / Create Account</button>
+      </div>
+
+      <p class="account-sync-note" id="accountSyncNote">
+        <strong>Coming next:</strong> Supabase login and cloud sync. This modal is the first UI step, so the app still saves locally for now.
+      </p>
+    </div>
+  </dialog>
+
+
   <dialog class="project-dialog getting-started-dialog" id="settingsDialog">
     <div class="getting-started-header">
       <div>
@@ -2672,6 +2710,12 @@
 
   <script>
     /*
+      Version: 0.9.6-account-modal
+      Date: 2026-06-15
+      Changes: Adds account/login modal UI and Local Mode status without enabling cloud sync yet.
+      Previous: 0.9.5 tutorial notes with sort and clear controls.
+    */
+    /*
       Version: Tutorial Notes Sort and Clear
       Date: 2026-06-14
       Changes: Adds Sort by Row/Round and Clear All Notes actions to the Tutorial Notes drawer.
@@ -2717,6 +2761,17 @@
     const yourProjectsDialog = document.getElementById("yourProjectsDialog");
     const closeYourProjects = document.getElementById("closeYourProjects");
     const yourProjectsList = document.getElementById("yourProjectsList");
+    const openAccountNav = document.getElementById("openAccountNav");
+    const accountDialog = document.getElementById("accountDialog");
+    const closeAccount = document.getElementById("closeAccount");
+    const accountStatusPill = document.getElementById("accountStatusPill");
+    const accountModeTitle = document.getElementById("accountModeTitle");
+    const accountModeDescription = document.getElementById("accountModeDescription");
+    const accountEmailInput = document.getElementById("accountEmailInput");
+    const accountPasswordInput = document.getElementById("accountPasswordInput");
+    const continueLocalBtn = document.getElementById("continueLocalBtn");
+    const accountSignInBtn = document.getElementById("accountSignInBtn");
+    const accountSyncNote = document.getElementById("accountSyncNote");
     const openSettingsNav = document.getElementById("openSettingsNav");
     const settingsDialog = document.getElementById("settingsDialog");
     const closeSettings = document.getElementById("closeSettings");
@@ -2737,6 +2792,9 @@
     let timerInterval = null;
     let timerStartedAt = null;
 
+    const ACCOUNT_MODE_KEY = "crochetWorkspaceAccountMode";
+    let accountMode = localStorage.getItem(ACCOUNT_MODE_KEY) || "local";
+
     const THEME_KEY = "crochetWorkspaceTheme";
     const THEME_OPTIONS = {
       rose: "Rose",
@@ -2745,6 +2803,39 @@
       peach: "Peach",
       blue: "Blue"
     };
+
+    function renderAccountStatus() {
+      const isSynced = accountMode === "synced";
+
+      if (accountStatusPill) {
+        accountStatusPill.textContent = isSynced ? "Synced" : "Local";
+      }
+
+      if (accountModeTitle) {
+        accountModeTitle.textContent = isSynced ? "Signed-In Sync Mode" : "Local Mode";
+      }
+
+      if (accountModeDescription) {
+        accountModeDescription.textContent = isSynced
+          ? "Your projects can sync across devices once Supabase is connected."
+          : "Your projects are currently saved only in this browser. Clearing browser data may remove them, so keep backups for important projects.";
+      }
+    }
+
+    function continueInLocalMode() {
+      accountMode = "local";
+      localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+      renderAccountStatus();
+      accountDialog.close();
+    }
+
+    function showSyncComingSoon() {
+      if (accountSyncNote) {
+        accountSyncNote.innerHTML = "<strong>Next step:</strong> Supabase has not been connected yet. For now, Crochet Workspace will keep saving locally in this browser.";
+      }
+
+      alert("Login UI is ready, but Supabase sync has not been connected yet.");
+    }
 
     function updateThemeSelectLabels(activeTheme) {
       if (!themeSelect) return;
@@ -3391,6 +3482,25 @@
         yourProjectsDialog.close();
       }
     });
+
+    openAccountNav.addEventListener("click", () => {
+      renderAccountStatus();
+      accountDialog.showModal();
+      accountEmailInput.focus();
+    });
+
+    closeAccount.addEventListener("click", () => {
+      accountDialog.close();
+    });
+
+    accountDialog.addEventListener("click", event => {
+      if (event.target === accountDialog) {
+        accountDialog.close();
+      }
+    });
+
+    continueLocalBtn.addEventListener("click", continueInLocalMode);
+    accountSignInBtn.addEventListener("click", showSyncComingSoon);
 
     openSettingsNav.addEventListener("click", () => {
       settingsDialog.showModal();
@@ -5025,6 +5135,7 @@
     }
 
 
+    renderAccountStatus();
     applyTheme(localStorage.getItem(THEME_KEY) || "rose");
 
     renderProjectSnapshot();
