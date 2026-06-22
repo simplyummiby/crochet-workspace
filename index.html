@@ -1525,44 +1525,18 @@
 
     .stitch-toolbox {
       display: grid;
-      gap: 14px;
-      background:
-        radial-gradient(circle at top right, var(--accent-wash), transparent 42%),
-        linear-gradient(160deg, rgba(255,253,251,.96), rgba(255,247,250,.95));
-      border-color: var(--line);
-      text-align: left;
-    }
-
-    .stitch-toolbox-art {
-      width: 54px;
-      height: 54px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: var(--accent-wash);
-      border: 1px solid var(--accent-border);
-      box-shadow: 0 8px 18px var(--accent-shadow);
-      font-size: 2rem;
+      gap: 12px;
+      background: rgba(255, 253, 251, 0.95);
     }
 
     .stitch-toolbox .section-title {
       color: var(--cranberry-dark);
-      margin-bottom: 7px;
     }
 
     .stitch-toolbox p {
       margin: 0;
       color: var(--muted);
       line-height: 1.42;
-    }
-
-    .toolbox-eyebrow {
-      color: var(--cranberry) !important;
-      font-size: .76rem;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 5px !important;
     }
 
     .note-save {
@@ -2951,13 +2925,9 @@
       </article>
 
       <section class="card stitch-toolbox">
-        <div class="stitch-toolbox-art" aria-hidden="true">🧶</div>
-        <div>
-          <p class="toolbox-eyebrow">Quick Tool</p>
-          <h2 class="section-title">Stitch Toolbox</h2>
-          <p>Need a reminder while reading a pattern? Open quick stitch steps, abbreviations, and copyable instructions.</p>
-        </div>
-        <button class="primary-btn" id="openStitchReferenceBtn" type="button">Open Stitch Reference</button>
+        <h2 class="section-title">🧶 Stitch Toolbox</h2>
+        <p>Need a quick reminder for how to do a stitch? Search by abbreviation or full stitch name, then copy the numbered steps.</p>
+        <button class="primary-btn" id="openStitchReferenceBtn" type="button">Stitch Toolbox</button>
       </section>
 
 
