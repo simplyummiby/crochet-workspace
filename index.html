@@ -1468,7 +1468,7 @@
     }
 
 
-    .notes, .quick { padding: 18px; }
+    .notes, .quick, .stitch-toolbox { padding: 18px; }
 
     .notes {
       background:
@@ -1515,11 +1515,54 @@
       line-height: 1.45;
     }
 
-    .notes textarea:focus {
+    .notes textarea:focus,
+    .project-notes-drawer textarea:focus {
       outline: none;
       box-shadow:
         0 0 0 4px var(--note-wash),
         inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+
+    .stitch-toolbox {
+      display: grid;
+      gap: 14px;
+      background:
+        radial-gradient(circle at top right, var(--accent-wash), transparent 42%),
+        linear-gradient(160deg, rgba(255,253,251,.96), rgba(255,247,250,.95));
+      border-color: var(--line);
+      text-align: left;
+    }
+
+    .stitch-toolbox-art {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: var(--accent-wash);
+      border: 1px solid var(--accent-border);
+      box-shadow: 0 8px 18px var(--accent-shadow);
+      font-size: 2rem;
+    }
+
+    .stitch-toolbox .section-title {
+      color: var(--cranberry-dark);
+      margin-bottom: 7px;
+    }
+
+    .stitch-toolbox p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .toolbox-eyebrow {
+      color: var(--cranberry) !important;
+      font-size: .76rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 5px !important;
     }
 
     .note-save {
@@ -1979,6 +2022,252 @@
     .import-label { display:inline-block; text-align:center; cursor:pointer; }
     #importBackupInput { display:none; }
     .project-dialog { border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(90,30,50,.22); background:var(--card); padding:20px; width:min(520px, calc(100vw - 34px)); }
+
+    .stitch-dialog {
+      width: min(1180px, calc(100vw - 36px));
+      max-height: calc(100dvh - 28px);
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255, 253, 251, 0.98), rgba(255, 248, 250, 0.98));
+    }
+
+    .stitch-reference-shell {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      max-height: calc(100dvh - 28px);
+    }
+
+    .stitch-reference-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 30px 18px;
+      background:
+        radial-gradient(circle at 22px 16px, var(--accent-wash), transparent 35%),
+        linear-gradient(105deg, #fffdfb, #fff7f8);
+    }
+
+    .stitch-reference-title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stitch-reference-icon {
+      width: 70px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      color: var(--cranberry-2);
+      font-size: 2.7rem;
+      filter: drop-shadow(0 5px 8px var(--accent-shadow));
+    }
+
+    .stitch-reference-header h2 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: clamp(1.55rem, 2.7vw, 2.15rem);
+      line-height: 1.05;
+      font-weight: 900;
+    }
+
+    .stitch-reference-header p {
+      margin: 8px 0 0;
+      color: var(--cranberry-dark);
+      font-weight: 700;
+    }
+
+    .stitch-reference-content {
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0 30px 18px;
+    }
+
+    .stitch-search-wrap {
+      position: relative;
+      margin: 8px 0 18px;
+    }
+
+    .stitch-search-wrap span {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      font-size: 1.05rem;
+    }
+
+    .stitch-search-wrap input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 18px 16px 48px;
+      background: rgba(255,255,255,.86);
+      color: var(--text);
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    .stitch-search-wrap input:focus {
+      border-color: var(--cranberry-2);
+      box-shadow: 0 0 0 4px var(--accent-focus);
+    }
+
+    .stitch-category-chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .stitch-chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      color: var(--cranberry-dark);
+      padding: 12px 22px;
+      border-radius: 16px;
+      font-size: .9rem;
+      box-shadow: 0 6px 14px rgba(157,42,85,.05);
+    }
+
+    .stitch-chip.active {
+      color: white;
+      background: linear-gradient(135deg, var(--cranberry-2), var(--cranberry));
+      border-color: transparent;
+    }
+
+    .stitch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 16px;
+    }
+
+    .stitch-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 275px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 20px 18px 18px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 10px 22px rgba(157,42,85,.08);
+    }
+
+    .stitch-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .stitch-card h3 {
+      margin: 0;
+      color: var(--cranberry-2);
+      font-family: Arial, sans-serif;
+      font-size: 1.55rem;
+      line-height: 1;
+      letter-spacing: .01em;
+    }
+
+    .stitch-card strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--text);
+      font-size: .88rem;
+    }
+
+    .stitch-doodle {
+      color: #8d5c66;
+      font-size: 2rem;
+      line-height: 1;
+      transform: rotate(-12deg);
+      opacity: .92;
+    }
+
+    .stitch-steps {
+      list-style: none;
+      counter-reset: stitch-step;
+      display: grid;
+      gap: 8px;
+      margin: 18px 0 16px;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      font-size: .86rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .stitch-steps li {
+      counter-increment: stitch-step;
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .stitch-steps li::before {
+      content: counter(stitch-step);
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #f8d5df;
+      color: var(--cranberry);
+      font-size: .72rem;
+      font-weight: 900;
+      border: 1px solid #efb7c8;
+    }
+
+    .copy-stitch-btn {
+      justify-self: center;
+      border: 1px solid var(--line);
+      background: rgba(255,248,250,.9);
+      color: var(--cranberry);
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-size: .86rem;
+    }
+
+    .stitch-reference-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding: 14px 30px 18px;
+      background: rgba(255, 247, 250, .92);
+      color: var(--cranberry-dark);
+      font-weight: 700;
+      font-size: .92rem;
+    }
+
+    .stitch-empty {
+      padding: 28px;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+      background: rgba(255,255,255,.65);
+    }
+
+    @media (max-width: 720px) {
+      .stitch-reference-header,
+      .stitch-reference-content,
+      .stitch-reference-footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .stitch-reference-title-row { align-items: flex-start; }
+      .stitch-reference-icon { width: 44px; height: 44px; font-size: 2rem; }
+      .stitch-reference-footer { align-items: stretch; flex-direction: column; }
+      .stitch-reference-footer button { width: 100%; }
+      .stitch-grid { grid-template-columns: 1fr; }
+      .stitch-card { min-height: 0; }
+    }
+
     .project-dialog::backdrop { background:rgba(53,41,45,.22); backdrop-filter:blur(2px); }
     .project-dialog h2 { margin:0 0 14px; color:var(--cranberry-dark); }
     .project-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -2073,13 +2362,26 @@
     @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
 
 
-    .backup-restore {
-      margin-top: 20px;
+    .backup-restore,
+    .project-notes-drawer {
+      margin-top: 16px;
       border-top: 1px solid var(--line);
       padding-top: 14px;
     }
 
-    .backup-restore summary {
+    .project-notes-drawer textarea {
+      margin-top: 12px;
+      min-height: 125px;
+      background:
+        linear-gradient(#fffdfb, #fffdfb) padding-box,
+        linear-gradient(135deg, var(--note-wash), var(--accent-focus)) border-box;
+      border: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+      line-height: 1.45;
+    }
+
+    .backup-restore summary,
+    .project-notes-drawer summary {
       cursor: pointer;
       color: var(--cranberry-dark);
       font-weight: 800;
@@ -2373,6 +2675,11 @@
           </div>
         </div>
 
+        <details class="project-notes-drawer">
+          <summary>📝 Project Notes <span class="notes-saved-label">(saved with this project)</span></summary>
+          <textarea id="projectNotes" placeholder="Add your notes here..."></textarea>
+        </details>
+
         <details class="backup-restore">
           <summary>💾 Backup & Restore</summary>
 
@@ -2641,12 +2948,14 @@
         </div>
       </article>
 
-      <section class="card notes">
-        <div class="notes-head">
-          <h2 class="section-title">📝 Project Notes</h2>
-          <span class="notes-saved-label">(saved with this project)</span>
+      <section class="card stitch-toolbox">
+        <div class="stitch-toolbox-art" aria-hidden="true">🧶</div>
+        <div>
+          <p class="toolbox-eyebrow">Quick Tool</p>
+          <h2 class="section-title">Stitch Toolbox</h2>
+          <p>Need a reminder while reading a pattern? Open quick stitch steps, abbreviations, and copyable instructions.</p>
         </div>
-        <textarea id="projectNotes" placeholder="Add your notes here..."></textarea>
+        <button class="primary-btn" id="openStitchReferenceBtn" type="button">Open Stitch Reference</button>
       </section>
 
 
@@ -2885,6 +3194,39 @@
     </div>
   </dialog>
 
+
+
+  <dialog class="project-dialog stitch-dialog" id="stitchReferenceDialog">
+    <div class="stitch-reference-shell">
+      <div class="stitch-reference-header">
+        <div class="stitch-reference-title-row">
+          <span class="stitch-reference-icon" aria-hidden="true">🧶</span>
+          <div>
+            <h2>Stitch Reference</h2>
+            <p>Quick steps for the stitches you use most.</p>
+          </div>
+        </div>
+        <button class="close-help-btn" id="closeStitchReference" type="button" aria-label="Close stitch reference">×</button>
+      </div>
+
+      <div class="stitch-reference-content">
+        <label class="stitch-search-wrap" for="stitchSearchInput">
+          <span aria-hidden="true">⌕</span>
+          <input id="stitchSearchInput" type="search" placeholder="Search stitches..." autocomplete="off" />
+        </label>
+
+        <div class="stitch-category-chips" id="stitchCategoryChips" aria-label="Filter stitches by category"></div>
+        <div class="stitch-grid" id="stitchReferenceGrid"></div>
+        <div class="stitch-empty" id="stitchReferenceEmpty" hidden>No stitches match your search yet.</div>
+      </div>
+
+      <div class="stitch-reference-footer">
+        <span>💡 Tip: Tap any Copy Steps button to copy the steps to your clipboard.</span>
+        <button class="soft-btn" id="stitchReferenceCloseFooter" type="button">Close</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="jumpDialog">
     <h2 class="dialog-title">Jump to Row</h2>
     <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
@@ -2944,6 +3286,14 @@
     const gettingStartedDialog = document.getElementById("gettingStartedDialog");
     const closeGettingStarted = document.getElementById("closeGettingStarted");
     const openYourProjectsNav = document.getElementById("openYourProjectsNav");
+    const openStitchReferenceBtn = document.getElementById("openStitchReferenceBtn");
+    const stitchReferenceDialog = document.getElementById("stitchReferenceDialog");
+    const closeStitchReference = document.getElementById("closeStitchReference");
+    const stitchReferenceCloseFooter = document.getElementById("stitchReferenceCloseFooter");
+    const stitchSearchInput = document.getElementById("stitchSearchInput");
+    const stitchCategoryChips = document.getElementById("stitchCategoryChips");
+    const stitchReferenceGrid = document.getElementById("stitchReferenceGrid");
+    const stitchReferenceEmpty = document.getElementById("stitchReferenceEmpty");
     const yourProjectsDialog = document.getElementById("yourProjectsDialog");
     const closeYourProjects = document.getElementById("closeYourProjects");
     const yourProjectsList = document.getElementById("yourProjectsList");
@@ -2963,6 +3313,78 @@
     const closeSettings = document.getElementById("closeSettings");
     const themeSelect = document.getElementById("themeSelect");
     const resetThemeBtn = document.getElementById("resetThemeBtn");
+
+
+
+    const STITCH_CATEGORIES = [
+      "All",
+      "Basic Stitches",
+      "Increase / Decrease",
+      "Working in Stitches",
+      "Post Stitches",
+      "Mosaic Crochet"
+    ];
+
+    const STITCH_REFERENCE = [
+      { abbreviation: "CH", name: "Chain", category: "Basic Stitches", steps: ["Yarn over.", "Pull through loop.", "Repeat for the next chain."] },
+      { abbreviation: "SL ST", name: "Slip Stitch", category: "Basic Stitches", steps: ["Insert hook into stitch.", "Yarn over.", "Pull through stitch and loop on hook."] },
+      { abbreviation: "SC", name: "Single Crochet", category: "Basic Stitches", steps: ["Insert hook into stitch.", "Yarn over.", "Pull up a loop (2 loops on hook).", "Yarn over.", "Pull through both loops."] },
+      { abbreviation: "HDC", name: "Half Double Crochet", category: "Basic Stitches", steps: ["Yarn over.", "Insert hook into stitch.", "Yarn over and pull up a loop (3 loops on hook).", "Yarn over.", "Pull through all 3 loops."] },
+      { abbreviation: "DC", name: "Double Crochet", category: "Basic Stitches", steps: ["Yarn over.", "Insert hook into stitch.", "Yarn over and pull up a loop (3 loops on hook).", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
+      { abbreviation: "TR", name: "Treble Crochet", category: "Basic Stitches", steps: ["Yarn over twice.", "Insert hook into stitch.", "Yarn over and pull up a loop (4 loops on hook).", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
+      { abbreviation: "INC", name: "Increase (2 SC)", category: "Increase / Decrease", steps: ["Insert hook into stitch.", "Yarn over, pull up a loop.", "Yarn over, pull through 2 loops.", "Repeat in same stitch."] },
+      { abbreviation: "DEC", name: "Decrease (SC2tog)", category: "Increase / Decrease", steps: ["Insert hook into stitch.", "Insert hook into next stitch.", "Yarn over, pull up a loop.", "Yarn over, pull through all 3 loops."] },
+      { abbreviation: "FLO", name: "Front Loop Only", category: "Working in Stitches", steps: ["Find the front loop closest to you.", "Insert hook under front loop only.", "Work the stitch as written."] },
+      { abbreviation: "BLO", name: "Back Loop Only", category: "Working in Stitches", steps: ["Find the back loop farthest from you.", "Insert hook under back loop only.", "Work the stitch as written."] },
+      { abbreviation: "FPDC", name: "Front Post Double Crochet", category: "Post Stitches", steps: ["Yarn over.", "Insert hook front-to-back-to-front around post.", "Yarn over and pull up a loop.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
+      { abbreviation: "BPDC", name: "Back Post Double Crochet", category: "Post Stitches", steps: ["Yarn over.", "Insert hook back-to-front-to-back around post.", "Yarn over and pull up a loop.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] }
+    ];
+
+    let activeStitchCategory = "All";
+
+    function stitchCopyText(stitch) {
+      return `${stitch.name} (${stitch.abbreviation})\n${stitch.steps.map((step, index) => `${index + 1}. ${step}`).join("\n")}`;
+    }
+
+    async function copyStitchSteps(stitch, button) {
+      await navigator.clipboard.writeText(stitchCopyText(stitch));
+      const originalText = button.textContent;
+      button.textContent = "✓ Copied";
+      window.setTimeout(() => { button.textContent = originalText; }, 1200);
+    }
+
+    function renderStitchCategories() {
+      stitchCategoryChips.innerHTML = STITCH_CATEGORIES.map(category => `
+        <button class="stitch-chip${category === activeStitchCategory ? " active" : ""}" type="button" data-category="${category}">${category}</button>
+      `).join("");
+    }
+
+    function renderStitchReference() {
+      const query = stitchSearchInput.value.trim().toLowerCase();
+      const stitches = STITCH_REFERENCE.filter(stitch => {
+        const matchesCategory = activeStitchCategory === "All" || stitch.category === activeStitchCategory;
+        const matchesSearch = !query || stitch.abbreviation.toLowerCase().includes(query) || stitch.name.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      stitchReferenceGrid.innerHTML = stitches.map((stitch, index) => `
+        <article class="stitch-card">
+          <div class="stitch-card-top">
+            <div>
+              <h3>${stitch.abbreviation}</h3>
+              <strong>${stitch.name}</strong>
+            </div>
+            <span class="stitch-doodle" aria-hidden="true">⌁</span>
+          </div>
+          <ol class="stitch-steps">
+            ${stitch.steps.map(step => `<li>${step}</li>`).join("")}
+          </ol>
+          <button class="copy-stitch-btn" type="button" data-stitch-index="${STITCH_REFERENCE.indexOf(stitch)}">▢ Copy Steps</button>
+        </article>
+      `).join("");
+      stitchReferenceEmpty.hidden = stitches.length > 0;
+      renderStitchCategories();
+    }
 
     const QUICK_ROW_KEY = "crochetWorkspaceQuickCounterRow";
     const COUNTER_MODE_KEY = "crochetWorkspaceCounterMode";
@@ -3659,6 +4081,45 @@
       if (event.target === gettingStartedDialog) {
         gettingStartedDialog.close();
       }
+    });
+
+
+
+    openStitchReferenceBtn.addEventListener("click", () => {
+      renderStitchReference();
+      stitchReferenceDialog.showModal();
+      stitchSearchInput.focus();
+    });
+
+    function closeStitchReferenceDialog() {
+      stitchReferenceDialog.close();
+    }
+
+    closeStitchReference.addEventListener("click", closeStitchReferenceDialog);
+    stitchReferenceCloseFooter.addEventListener("click", closeStitchReferenceDialog);
+
+    stitchReferenceDialog.addEventListener("click", event => {
+      if (event.target === stitchReferenceDialog) {
+        closeStitchReferenceDialog();
+      }
+    });
+
+    stitchSearchInput.addEventListener("input", renderStitchReference);
+
+    stitchCategoryChips.addEventListener("click", event => {
+      const chip = event.target.closest(".stitch-chip");
+      if (!chip) return;
+      activeStitchCategory = chip.dataset.category;
+      renderStitchReference();
+    });
+
+    stitchReferenceGrid.addEventListener("click", event => {
+      const copyButton = event.target.closest(".copy-stitch-btn");
+      if (!copyButton) return;
+      const stitch = STITCH_REFERENCE[Number(copyButton.dataset.stitchIndex)];
+      copyStitchSteps(stitch, copyButton).catch(() => {
+        copyButton.textContent = "Copy failed";
+      });
     });
 
     openYourProjectsNav.addEventListener("click", () => {
@@ -4404,7 +4865,7 @@
             webPatternUrl: localStorage.getItem(SOURCE_KEYS.web) || "",
             pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
           },
-          notes: document.querySelector(".notes textarea")?.value || "",
+          notes: projectNotes?.value || "",
           tutorialNotes: tutorialNotesRows,
           patternTrackerRows: trackerRows,
           patternTrackerCurrentRow: trackerCurrentRow,
