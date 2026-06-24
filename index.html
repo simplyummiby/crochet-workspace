@@ -1524,9 +1524,22 @@
     }
 
     .stitch-toolbox {
+      position: relative;
       display: grid;
       gap: 12px;
-      background: rgba(255, 253, 251, 0.95);
+      background:
+        radial-gradient(circle at 18px 18px, rgba(255, 214, 229, .72), transparent 34%),
+        radial-gradient(circle at calc(100% - 22px) 28px, rgba(255, 238, 207, .82), transparent 32%),
+        linear-gradient(145deg, rgba(255, 253, 251, 0.98), rgba(255, 244, 249, 0.96));
+    }
+
+    .stitch-toolbox::after {
+      content: "✦";
+      position: absolute;
+      right: 18px;
+      top: 14px;
+      color: rgba(157, 42, 85, .25);
+      font-size: 1.35rem;
     }
 
     .stitch-toolbox .section-title {
@@ -1541,8 +1554,30 @@
 
     .toolbox-actions {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
       gap: 10px;
+    }
+
+    .toolbox-card-btn {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 8px;
+      min-height: 52px;
+      padding: 11px 12px;
+      border-radius: 16px;
+      box-shadow: 0 10px 18px rgba(157, 42, 85, .08);
+      text-align: left;
+    }
+
+    .toolbox-card-btn .toolbox-icon {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .62);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
     }
 
     .note-save {
@@ -2232,14 +2267,16 @@
       background: rgba(255,255,255,.65);
     }
 
-    .hook-chart-note {
+    .hook-chart-note,
+    .toolbox-reference-note {
       margin: 8px 0 18px;
       color: var(--muted);
       font-weight: 700;
       line-height: 1.45;
     }
 
-    .hook-chart-wrap {
+    .hook-chart-wrap,
+    .toolbox-reference-wrap {
       overflow-x: auto;
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -2247,7 +2284,8 @@
       box-shadow: 0 10px 22px rgba(157,42,85,.08);
     }
 
-    .hook-chart-table {
+    .hook-chart-table,
+    .toolbox-reference-table {
       width: 100%;
       min-width: 650px;
       border-collapse: collapse;
@@ -2256,14 +2294,17 @@
     }
 
     .hook-chart-table th,
-    .hook-chart-table td {
+    .hook-chart-table td,
+    .toolbox-reference-table th,
+    .toolbox-reference-table td {
       padding: 13px 15px;
       border-bottom: 1px solid var(--line);
       text-align: left;
       vertical-align: top;
     }
 
-    .hook-chart-table th {
+    .hook-chart-table th,
+    .toolbox-reference-table th {
       background: rgba(255, 235, 241, .82);
       color: var(--cranberry-dark);
       font-size: .78rem;
@@ -2271,8 +2312,12 @@
       text-transform: uppercase;
     }
 
-    .hook-chart-table tr:last-child td { border-bottom: 0; }
-    .hook-chart-table td:first-child { color: var(--cranberry); font-weight: 900; }
+    .hook-chart-table tr:last-child td,
+    .toolbox-reference-table tr:last-child td { border-bottom: 0; }
+    .hook-chart-table td:first-child,
+    .toolbox-reference-table td:first-child { color: var(--cranberry); font-weight: 900; }
+    .yarn-weight-star { color: #e9a100; font-weight: 900; }
+    .yarn-weight-featured { background: rgba(255, 247, 250, .82); }
 
     @media (max-width: 720px) {
       .stitch-reference-header,
@@ -2976,10 +3021,12 @@
 
       <section class="card stitch-toolbox">
         <h2 class="section-title">🧶 Crochet Toolbox</h2>
-        <p>Quick references for stitches and hook sizes while you work.</p>
+        <p>Quick references for stitches, hook sizes, yarn weights, and crochet abbreviations while you work.</p>
         <div class="toolbox-actions">
-          <button class="primary-btn" id="openStitchReferenceBtn" type="button">Stitch Reference</button>
-          <button class="soft-btn" id="openHookChartBtn" type="button">Hook Size Chart</button>
+          <button class="primary-btn toolbox-card-btn" id="openStitchReferenceBtn" type="button"><span class="toolbox-icon">🪡</span><span>Stitch Reference</span></button>
+          <button class="soft-btn toolbox-card-btn" id="openHookChartBtn" type="button"><span class="toolbox-icon">🪝</span><span>Hook Size Chart</span></button>
+          <button class="soft-btn toolbox-card-btn" id="openYarnWeightChartBtn" type="button"><span class="toolbox-icon">🧶</span><span>Yarn Weight Chart</span></button>
+          <button class="soft-btn toolbox-card-btn" id="openAbbreviationsBtn" type="button"><span class="toolbox-icon">ABC</span><span>Abbreviations</span></button>
         </div>
       </section>
 
@@ -3294,6 +3341,62 @@
     </div>
   </dialog>
 
+  <dialog class="project-dialog stitch-dialog" id="yarnWeightDialog">
+    <div class="stitch-reference-shell">
+      <div class="stitch-reference-header">
+        <div class="stitch-reference-title-row">
+          <span class="stitch-reference-icon" aria-hidden="true">🧶</span>
+          <div>
+            <h2>Yarn Weight Chart</h2>
+            <p>Weight number, common names, and typical hook ranges.</p>
+          </div>
+        </div>
+        <button class="close-help-btn" id="closeYarnWeightChart" type="button" aria-label="Close yarn weight chart">×</button>
+      </div>
+      <div class="stitch-reference-content">
+        <p class="toolbox-reference-note"><span class="yarn-weight-star">★</span> indicates common crochet project weights. Always check the yarn label and pattern gauge.</p>
+        <div class="toolbox-reference-wrap">
+          <table class="toolbox-reference-table">
+            <thead><tr><th>Weight #</th><th>Yarn Weight Name</th><th>Common Names</th><th>Typical Hook Size</th></tr></thead>
+            <tbody id="yarnWeightChartBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="stitch-reference-footer">
+        <span>💡 Tip: Medium #4 is a great default for many beginner crochet projects.</span>
+        <button class="soft-btn" id="yarnWeightCloseFooter" type="button">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog stitch-dialog" id="abbreviationsDialog">
+    <div class="stitch-reference-shell">
+      <div class="stitch-reference-header">
+        <div class="stitch-reference-title-row">
+          <span class="stitch-reference-icon" aria-hidden="true">📖</span>
+          <div>
+            <h2>Crochet Abbreviations</h2>
+            <p>Common shorthand you’ll see in crochet patterns.</p>
+          </div>
+        </div>
+        <button class="close-help-btn" id="closeAbbreviations" type="button" aria-label="Close crochet abbreviations">×</button>
+      </div>
+      <div class="stitch-reference-content">
+        <p class="toolbox-reference-note">Abbreviations can vary by designer and by US/UK terminology. Follow your pattern’s notes when they define a term differently.</p>
+        <div class="toolbox-reference-wrap">
+          <table class="toolbox-reference-table">
+            <thead><tr><th>Abbrev.</th><th>Meaning</th><th>Quick Note</th></tr></thead>
+            <tbody id="abbreviationsBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="stitch-reference-footer">
+        <span>💡 Tip: US and UK stitch names can mean different stitch heights.</span>
+        <button class="soft-btn" id="abbreviationsCloseFooter" type="button">Close</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="jumpDialog">
     <h2 class="dialog-title">Jump to Row</h2>
     <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
@@ -3355,10 +3458,20 @@
     const openYourProjectsNav = document.getElementById("openYourProjectsNav");
     const openStitchReferenceBtn = document.getElementById("openStitchReferenceBtn");
     const openHookChartBtn = document.getElementById("openHookChartBtn");
+    const openYarnWeightChartBtn = document.getElementById("openYarnWeightChartBtn");
+    const openAbbreviationsBtn = document.getElementById("openAbbreviationsBtn");
     const hookChartDialog = document.getElementById("hookChartDialog");
     const closeHookChart = document.getElementById("closeHookChart");
     const hookChartCloseFooter = document.getElementById("hookChartCloseFooter");
     const hookChartBody = document.getElementById("hookChartBody");
+    const yarnWeightDialog = document.getElementById("yarnWeightDialog");
+    const closeYarnWeightChart = document.getElementById("closeYarnWeightChart");
+    const yarnWeightCloseFooter = document.getElementById("yarnWeightCloseFooter");
+    const yarnWeightChartBody = document.getElementById("yarnWeightChartBody");
+    const abbreviationsDialog = document.getElementById("abbreviationsDialog");
+    const closeAbbreviations = document.getElementById("closeAbbreviations");
+    const abbreviationsCloseFooter = document.getElementById("abbreviationsCloseFooter");
+    const abbreviationsBody = document.getElementById("abbreviationsBody");
     const stitchReferenceDialog = document.getElementById("stitchReferenceDialog");
     const closeStitchReference = document.getElementById("closeStitchReference");
     const stitchReferenceCloseFooter = document.getElementById("stitchReferenceCloseFooter");
@@ -3404,6 +3517,41 @@
       { metric: "9 mm", us: "M/N-13", uk: "00", use: "Super bulky yarn, rugs, statement stitches" },
       { metric: "10 mm", us: "N/P-15", uk: "000", use: "Jumbo yarn, chunky blankets, loose fabric" },
       { metric: "15 mm", us: "P/Q", uk: "—", use: "Jumbo yarn, arm-style crochet looks, extra chunky projects" }
+    ];
+
+    const YARN_WEIGHT_CHART = [
+      { weight: "0", name: "Lace", common: "Thread, Cobweb", hook: "1.5–2.25 mm", featured: false },
+      { weight: "1", name: "Super Fine", common: "Fingering, Sock", hook: "2.25–3.25 mm", featured: false },
+      { weight: "2", name: "Fine", common: "Sport", hook: "3.25–3.75 mm", featured: false },
+      { weight: "3", name: "Light", common: "DK, Light Worsted", hook: "3.75–4.5 mm", featured: true },
+      { weight: "4", name: "Medium", common: "Worsted, Aran", hook: "4.5–5.5 mm", featured: true },
+      { weight: "5", name: "Bulky", common: "Chunky", hook: "5.5–8 mm", featured: true },
+      { weight: "6", name: "Super Bulky", common: "Super Chunky", hook: "8–12 mm", featured: false },
+      { weight: "7", name: "Jumbo", common: "Roving", hook: "12 mm +", featured: false }
+    ];
+
+    const CROCHET_ABBREVIATIONS = [
+      { abbr: "beg", meaning: "beginning", note: "Start of a row, round, or instruction repeat." },
+      { abbr: "BL / BLO", meaning: "back loop / back loop only", note: "Work into the loop farthest from you." },
+      { abbr: "ch", meaning: "chain", note: "Foundation chains or chain spaces." },
+      { abbr: "ch-sp", meaning: "chain space", note: "Work into the space made by chains." },
+      { abbr: "dc", meaning: "double crochet (US)", note: "Called treble crochet in many UK patterns." },
+      { abbr: "dec", meaning: "decrease", note: "Combine stitches to reduce stitch count." },
+      { abbr: "FL / FLO", meaning: "front loop / front loop only", note: "Work into the loop closest to you." },
+      { abbr: "hdc", meaning: "half double crochet (US)", note: "Medium-height basic stitch." },
+      { abbr: "inc", meaning: "increase", note: "Work extra stitches to grow stitch count." },
+      { abbr: "MR", meaning: "magic ring", note: "Adjustable ring often used for amigurumi." },
+      { abbr: "rep", meaning: "repeat", note: "Repeat the instruction sequence as directed." },
+      { abbr: "rnd", meaning: "round", note: "Used when working in circles or spirals." },
+      { abbr: "RS / WS", meaning: "right side / wrong side", note: "Front and back side of the fabric." },
+      { abbr: "sc", meaning: "single crochet (US)", note: "Called double crochet in many UK patterns." },
+      { abbr: "sk", meaning: "skip", note: "Leave a stitch or space unworked." },
+      { abbr: "sl st", meaning: "slip stitch", note: "Join rounds or move across stitches with low height." },
+      { abbr: "sp", meaning: "space", note: "An opening between stitches or chains." },
+      { abbr: "st / sts", meaning: "stitch / stitches", note: "Used in counts and placement instructions." },
+      { abbr: "tog", meaning: "together", note: "Often used in decreases, like sc2tog." },
+      { abbr: "tr", meaning: "treble crochet (US)", note: "Called double treble in many UK patterns." },
+      { abbr: "yo", meaning: "yarn over", note: "Wrap yarn over the hook." }
     ];
 
     const STITCH_CATEGORIES = [
@@ -3453,6 +3601,27 @@
           <td>${size.us}</td>
           <td>${size.uk}</td>
           <td>${size.use}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderYarnWeightChart() {
+      yarnWeightChartBody.innerHTML = YARN_WEIGHT_CHART.map(weight => `
+        <tr class="${weight.featured ? "yarn-weight-featured" : ""}">
+          <td>${weight.featured ? "<span class=\"yarn-weight-star\">★</span> " : ""}${weight.weight}</td>
+          <td>${weight.name}</td>
+          <td>${weight.common}</td>
+          <td>${weight.hook}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderAbbreviations() {
+      abbreviationsBody.innerHTML = CROCHET_ABBREVIATIONS.map(item => `
+        <tr>
+          <td>${item.abbr}</td>
+          <td>${item.meaning}</td>
+          <td>${item.note}</td>
         </tr>
       `).join("");
     }
@@ -4221,6 +4390,42 @@
     hookChartDialog.addEventListener("click", event => {
       if (event.target === hookChartDialog) {
         closeHookChartDialog();
+      }
+    });
+
+    openYarnWeightChartBtn.addEventListener("click", () => {
+      renderYarnWeightChart();
+      yarnWeightDialog.showModal();
+    });
+
+    function closeYarnWeightDialog() {
+      yarnWeightDialog.close();
+    }
+
+    closeYarnWeightChart.addEventListener("click", closeYarnWeightDialog);
+    yarnWeightCloseFooter.addEventListener("click", closeYarnWeightDialog);
+
+    yarnWeightDialog.addEventListener("click", event => {
+      if (event.target === yarnWeightDialog) {
+        closeYarnWeightDialog();
+      }
+    });
+
+    openAbbreviationsBtn.addEventListener("click", () => {
+      renderAbbreviations();
+      abbreviationsDialog.showModal();
+    });
+
+    function closeAbbreviationsDialog() {
+      abbreviationsDialog.close();
+    }
+
+    closeAbbreviations.addEventListener("click", closeAbbreviationsDialog);
+    abbreviationsCloseFooter.addEventListener("click", closeAbbreviationsDialog);
+
+    abbreviationsDialog.addEventListener("click", event => {
+      if (event.target === abbreviationsDialog) {
+        closeAbbreviationsDialog();
       }
     });
 
