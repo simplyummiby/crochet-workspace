@@ -2266,6 +2266,8 @@
 
     .project-form-grid input { width:100%; border:1px solid var(--line); border-radius:13px; padding:11px 12px; background:white; color:var(--text); }
     .project-dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    .pattern-cleanup-actions { align-items:center; justify-content:flex-start; margin-top:10px; }
+    .pattern-cleanup-status { color:var(--muted); font-size:.9rem; }
     .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
     .project-list button { text-align:left; padding:12px; background:var(--accent-light); border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
     .project-list button.active-project { border-color:var(--cranberry-2); background:var(--soft-pink); color:var(--cranberry-dark); }
@@ -3015,6 +3017,11 @@
 
     <textarea id="patternImportText" class="pattern-import-textarea" placeholder="Row 1: Ch 21&#10;Row 2: HDC across&#10;Row 3: Repeat row 2"></textarea>
 
+    <div class="project-dialog-actions pattern-cleanup-actions">
+      <button class="soft-btn" id="cleanupPatternImport" type="button">Clean Up Pattern</button>
+      <span class="pattern-cleanup-status" id="patternCleanupStatus" role="status" aria-live="polite"></span>
+    </div>
+
     <div class="project-dialog-actions">
       <button class="soft-btn" id="cancelPatternImport" type="button">Cancel</button>
       <button class="primary-btn" id="importPatternRows" type="button">Import Rows</button>
@@ -3294,6 +3301,7 @@
       "Increase / Decrease",
       "Working in Stitches",
       "Post Stitches",
+      "Textured Stitches",
       "Mosaic Crochet"
     ];
 
@@ -3301,6 +3309,7 @@
       { abbreviation: "CH", name: "Chain", category: "Basic Stitches", steps: ["Yarn over.", "Pull through loop.", "Repeat for the next chain."] },
       { abbreviation: "SL ST", name: "Slip Stitch", category: "Basic Stitches", steps: ["Insert hook into stitch.", "Yarn over.", "Pull through stitch and loop on hook."] },
       { abbreviation: "SC", name: "Single Crochet", category: "Basic Stitches", steps: ["Insert hook into stitch.", "Yarn over.", "Pull up a loop (2 loops on hook).", "Yarn over.", "Pull through both loops."] },
+      { abbreviation: "Standing SC", name: "Standing Single Crochet", category: "Basic Stitches", steps: ["Make a slip knot on your hook.", "Insert hook into the stitch or space where the new round starts.", "Yarn over and pull up a loop (2 loops on hook).", "Yarn over and pull through both loops.", "Gently snug the starting tail to neaten the stitch."] },
       { abbreviation: "HDC", name: "Half Double Crochet", category: "Basic Stitches", steps: ["Yarn over.", "Insert hook into stitch.", "Yarn over and pull up a loop (3 loops on hook).", "Yarn over.", "Pull through all 3 loops."] },
       { abbreviation: "DC", name: "Double Crochet", category: "Basic Stitches", steps: ["Yarn over.", "Insert hook into stitch.", "Yarn over and pull up a loop (3 loops on hook).", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
       { abbreviation: "TR", name: "Treble Crochet", category: "Basic Stitches", steps: ["Yarn over twice.", "Insert hook into stitch.", "Yarn over and pull up a loop (4 loops on hook).", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
@@ -3309,7 +3318,8 @@
       { abbreviation: "FLO", name: "Front Loop Only", category: "Working in Stitches", steps: ["Find the front loop closest to you.", "Insert hook under front loop only.", "Work the stitch as written."] },
       { abbreviation: "BLO", name: "Back Loop Only", category: "Working in Stitches", steps: ["Find the back loop farthest from you.", "Insert hook under back loop only.", "Work the stitch as written."] },
       { abbreviation: "FPDC", name: "Front Post Double Crochet", category: "Post Stitches", steps: ["Yarn over.", "Insert hook front-to-back-to-front around post.", "Yarn over and pull up a loop.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
-      { abbreviation: "BPDC", name: "Back Post Double Crochet", category: "Post Stitches", steps: ["Yarn over.", "Insert hook back-to-front-to-back around post.", "Yarn over and pull up a loop.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] }
+      { abbreviation: "BPDC", name: "Back Post Double Crochet", category: "Post Stitches", steps: ["Yarn over.", "Insert hook back-to-front-to-back around post.", "Yarn over and pull up a loop.", "Yarn over, pull through 2 loops.", "Yarn over, pull through 2 loops."] },
+      { abbreviation: "PC", name: "Popcorn Stitch", category: "Textured Stitches", steps: ["Work 5 double crochet stitches into the same stitch or space, unless your pattern says otherwise.", "Remove hook from the working loop.", "Insert hook from front to back through the top of the first double crochet in the group.", "Place the dropped loop back on the hook.", "Pull the loop through the first double crochet to pop the stitch forward."] }
     ];
 
     let activeStitchCategory = "All";
@@ -4262,6 +4272,8 @@
     const patternImportDialog = document.getElementById("patternImportDialog");
     const patternImportText = document.getElementById("patternImportText");
     const cancelPatternImport = document.getElementById("cancelPatternImport");
+    const cleanupPatternImport = document.getElementById("cleanupPatternImport");
+    const patternCleanupStatus = document.getElementById("patternCleanupStatus");
     const importPatternRows = document.getElementById("importPatternRows");
     const trackerProgressText = document.getElementById("trackerProgressText");
     const trackerProgressBar = document.getElementById("trackerProgressBar");
@@ -4649,22 +4661,41 @@
           project.id === editingProjectId ? { ...project, ...projectData } : project
         ));
       } else {
+        const shouldCarryCurrentProgress = !getActiveProject();
+        const carriedTrackerRows = shouldCarryCurrentProgress && Array.isArray(trackerRows)
+          ? trackerRows.map(item => ({ ...item }))
+          : [];
+        const carriedTrackerCurrentRow = shouldCarryCurrentProgress
+          ? Number(trackerCurrentRow) || Number(carriedTrackerRows[0]?.rowNumber) || 0
+          : 0;
+        const carriedRowCount = shouldCarryCurrentProgress ? Number(row) || 0 : 0;
+        const carriedTimerData = shouldCarryCurrentProgress
+          ? {
+              currentElapsed: Number(timerData.currentElapsed) || 0,
+              startedAt: timerData.startedAt || null,
+              sessions: Array.isArray(timerData.sessions)
+                ? timerData.sessions.map(session => ({ ...session }))
+                : []
+            }
+          : defaultTimerData();
+
         const newProject = {
           id: makeProjectId(),
           createdAt: new Date().toISOString(),
-          rowCount: 0,
+          rowCount: carriedRowCount,
           sources: { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
           notes: "",
           tutorialNotes: [],
-          patternTrackerRows: [],
-          patternTrackerCurrentRow: 0,
-          timerData: defaultTimerData(),
+          patternTrackerRows: carriedTrackerRows,
+          patternTrackerCurrentRow: carriedTrackerCurrentRow,
+          timerData: carriedTimerData,
           ...projectData
         };
 
         projects.push(newProject);
         activeProjectId = newProject.id;
         counterMode = "project";
+        timerMode = "project";
         row = Number(newProject.rowCount) || 0;
       }
 
@@ -5273,6 +5304,102 @@
       }
     }
 
+
+    function getPatternRowLabelMatch(line) {
+      return normalizePatternLine(line).match(/^(?:row|round|rnd)\s*(?:no\.?\s*)?\d+[a-z]?(?:\s*(?:[-–—:.)]|\())?/i);
+    }
+
+    function isPatternRowLabel(line) {
+      return Boolean(getPatternRowLabelMatch(line));
+    }
+
+    function isPartialPatternRowLabel(line) {
+      return /^(?:row|round|rnd)\s*$/i.test(normalizePatternLine(line));
+    }
+
+    function isStitchCountLine(line) {
+      return /^stitch\s+count\b\s*[:.-]?/i.test(normalizePatternLine(line));
+    }
+
+    function normalizePatternLine(line) {
+      return String(line || "").replace(/\s+/g, " ").trim();
+    }
+
+    function addBreaksBeforeInlinePatternLabels(text) {
+      return String(text || "").replace(
+        /([^\n])\s+((?:ROW|Row|ROUND|Round|RND|Rnd)\s*(?:No\.?\s*)?\d+[a-zA-Z]?(?=\s*(?:[-–—:.)]|\()))/g,
+        "$1\n$2"
+      );
+    }
+
+    function appendPatternSegment(baseLine, nextSegment) {
+      const segment = normalizePatternLine(nextSegment);
+      if (!segment) return baseLine;
+
+      if (!baseLine) return segment;
+
+      const needsSpace = !/[\s([{/]$/.test(baseLine) && !/^[.,;:!?)]/.test(segment);
+      return `${baseLine}${needsSpace ? " " : ""}${segment}`;
+    }
+
+    function splitPatternImportLines(text) {
+      const normalizedLines = addBreaksBeforeInlinePatternLabels(text)
+        .split(/\r?\n/)
+        .map(normalizePatternLine)
+        .filter(Boolean);
+
+      return normalizedLines.reduce((lines, line) => {
+        const previousLine = lines[lines.length - 1];
+        if (previousLine && isPartialPatternRowLabel(previousLine)) {
+          lines[lines.length - 1] = appendPatternSegment(previousLine, line);
+        } else {
+          lines.push(line);
+        }
+        return lines;
+      }, []);
+    }
+
+    function cleanUpPatternImportText(text) {
+      const cleanedRows = [];
+      let currentRow = "";
+
+      splitPatternImportLines(text).forEach(line => {
+        if (isPatternRowLabel(line)) {
+          if (currentRow) cleanedRows.push(currentRow);
+          currentRow = line;
+          return;
+        }
+
+        if (isStitchCountLine(line) && !currentRow && cleanedRows.length) {
+          cleanedRows[cleanedRows.length - 1] = appendPatternSegment(cleanedRows[cleanedRows.length - 1], line);
+          return;
+        }
+
+        if (currentRow) {
+          currentRow = appendPatternSegment(currentRow, line);
+          return;
+        }
+
+        cleanedRows.push(line);
+      });
+
+      if (currentRow) cleanedRows.push(currentRow);
+
+      return cleanedRows.join("\n");
+    }
+
+    function cleanUpPatternImport() {
+      const cleanedText = cleanUpPatternImportText(patternImportText.value);
+      patternImportText.value = cleanedText;
+      if (patternCleanupStatus) {
+        const rowCount = cleanedText ? cleanedText.split(/\r?\n/).filter(Boolean).length : 0;
+        patternCleanupStatus.textContent = rowCount
+          ? `Cleaned into ${rowCount} row${rowCount === 1 ? "" : "s"}. Review, then Import Rows when ready.`
+          : "Paste pattern text first.";
+      }
+      patternImportText.focus();
+    }
+
     function parsePatternRows(text) {
       return text
         .split(/\r?\n/)
@@ -5415,6 +5542,7 @@
       patternImportText.value = trackerRows
         .map(item => `Row ${item.rowNumber}: ${item.instruction}`)
         .join("\n");
+      if (patternCleanupStatus) patternCleanupStatus.textContent = "";
 
       patternImportDialog.showModal();
       patternImportText.focus();
@@ -5716,6 +5844,7 @@
     uncheckRowsBtn.addEventListener("click", uncheckPatternRows);
     deletePatternBtn.addEventListener("click", deletePatternTracker);
     cancelPatternImport.addEventListener("click", () => patternImportDialog.close());
+    cleanupPatternImport.addEventListener("click", cleanUpPatternImport);
     importPatternRows.addEventListener("click", importPatternTrackerRows);
 
     sourceTabs.forEach(tab => {
