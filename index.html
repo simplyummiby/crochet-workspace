@@ -4655,22 +4655,41 @@
           project.id === editingProjectId ? { ...project, ...projectData } : project
         ));
       } else {
+        const shouldCarryCurrentProgress = !getActiveProject();
+        const carriedTrackerRows = shouldCarryCurrentProgress && Array.isArray(trackerRows)
+          ? trackerRows.map(item => ({ ...item }))
+          : [];
+        const carriedTrackerCurrentRow = shouldCarryCurrentProgress
+          ? Number(trackerCurrentRow) || Number(carriedTrackerRows[0]?.rowNumber) || 0
+          : 0;
+        const carriedRowCount = shouldCarryCurrentProgress ? Number(row) || 0 : 0;
+        const carriedTimerData = shouldCarryCurrentProgress
+          ? {
+              currentElapsed: Number(timerData.currentElapsed) || 0,
+              startedAt: timerData.startedAt || null,
+              sessions: Array.isArray(timerData.sessions)
+                ? timerData.sessions.map(session => ({ ...session }))
+                : []
+            }
+          : defaultTimerData();
+
         const newProject = {
           id: makeProjectId(),
           createdAt: new Date().toISOString(),
-          rowCount: 0,
+          rowCount: carriedRowCount,
           sources: { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
           notes: "",
           tutorialNotes: [],
-          patternTrackerRows: [],
-          patternTrackerCurrentRow: 0,
-          timerData: defaultTimerData(),
+          patternTrackerRows: carriedTrackerRows,
+          patternTrackerCurrentRow: carriedTrackerCurrentRow,
+          timerData: carriedTimerData,
           ...projectData
         };
 
         projects.push(newProject);
         activeProjectId = newProject.id;
         counterMode = "project";
+        timerMode = "project";
         row = Number(newProject.rowCount) || 0;
       }
 
