@@ -5325,6 +5325,13 @@
       return String(line || "").replace(/\s+/g, " ").trim();
     }
 
+    function addBreaksBeforeInlinePatternLabels(text) {
+      return String(text || "").replace(
+        /([^\n])\s+((?:ROW|Row|ROUND|Round|RND|Rnd)\s*(?:No\.?\s*)?\d+[a-zA-Z]?(?=\s*(?:[-–—:.)]|\()))/g,
+        "$1\n$2"
+      );
+    }
+
     function appendPatternSegment(baseLine, nextSegment) {
       const segment = normalizePatternLine(nextSegment);
       if (!segment) return baseLine;
@@ -5336,7 +5343,7 @@
     }
 
     function splitPatternImportLines(text) {
-      const normalizedLines = String(text || "")
+      const normalizedLines = addBreaksBeforeInlinePatternLabels(text)
         .split(/\r?\n/)
         .map(normalizePatternLine)
         .filter(Boolean);
