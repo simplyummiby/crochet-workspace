@@ -2266,7 +2266,8 @@
 
     .project-form-grid input { width:100%; border:1px solid var(--line); border-radius:13px; padding:11px 12px; background:white; color:var(--text); }
     .project-dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
-    .pattern-cleanup-actions { justify-content:flex-start; margin-top:10px; }
+    .pattern-cleanup-actions { align-items:center; justify-content:flex-start; margin-top:10px; }
+    .pattern-cleanup-status { color:var(--muted); font-size:.9rem; }
     .project-list { display:grid; gap:9px; margin-top:12px; max-height:320px; overflow:auto; }
     .project-list button { text-align:left; padding:12px; background:var(--accent-light); border:1px solid var(--line); color:var(--text); display:flex; justify-content:space-between; gap:12px; align-items:center; }
     .project-list button.active-project { border-color:var(--cranberry-2); background:var(--soft-pink); color:var(--cranberry-dark); }
@@ -3018,6 +3019,7 @@
 
     <div class="project-dialog-actions pattern-cleanup-actions">
       <button class="soft-btn" id="cleanupPatternImport" type="button">Clean Up Pattern</button>
+      <span class="pattern-cleanup-status" id="patternCleanupStatus" role="status" aria-live="polite"></span>
     </div>
 
     <div class="project-dialog-actions">
@@ -4271,6 +4273,7 @@
     const patternImportText = document.getElementById("patternImportText");
     const cancelPatternImport = document.getElementById("cancelPatternImport");
     const cleanupPatternImport = document.getElementById("cleanupPatternImport");
+    const patternCleanupStatus = document.getElementById("patternCleanupStatus");
     const importPatternRows = document.getElementById("importPatternRows");
     const trackerProgressText = document.getElementById("trackerProgressText");
     const trackerProgressBar = document.getElementById("trackerProgressBar");
@@ -5302,16 +5305,24 @@
     }
 
 
+    function getPatternRowLabelMatch(line) {
+      return normalizePatternLine(line).match(/^(?:row|round|rnd)\s*(?:no\.?\s*)?\d+[a-z]?(?:\s*(?:[-–—:.)]|\())?/i);
+    }
+
     function isPatternRowLabel(line) {
-      return /^(?:row|round)\s*\d+\b/i.test(line.trim());
+      return Boolean(getPatternRowLabelMatch(line));
+    }
+
+    function isPartialPatternRowLabel(line) {
+      return /^(?:row|round|rnd)\s*$/i.test(normalizePatternLine(line));
     }
 
     function isStitchCountLine(line) {
-      return /^stitch\s+count\b\s*:?/i.test(line.trim());
+      return /^stitch\s+count\b\s*[:.-]?/i.test(normalizePatternLine(line));
     }
 
     function normalizePatternLine(line) {
-      return line.replace(/\s+/g, " ").trim();
+      return String(line || "").replace(/\s+/g, " ").trim();
     }
 
     function appendPatternSegment(baseLine, nextSegment) {
@@ -5320,31 +5331,45 @@
 
       if (!baseLine) return segment;
 
-      const needsSpace = !/[\s([{/-]$/.test(baseLine) && !/^[.,;:!?)]/.test(segment);
+      const needsSpace = !/[\s([{/]$/.test(baseLine) && !/^[.,;:!?)]/.test(segment);
       return `${baseLine}${needsSpace ? " " : ""}${segment}`;
+    }
+
+    function splitPatternImportLines(text) {
+      const normalizedLines = String(text || "")
+        .split(/\r?\n/)
+        .map(normalizePatternLine)
+        .filter(Boolean);
+
+      return normalizedLines.reduce((lines, line) => {
+        const previousLine = lines[lines.length - 1];
+        if (previousLine && isPartialPatternRowLabel(previousLine)) {
+          lines[lines.length - 1] = appendPatternSegment(previousLine, line);
+        } else {
+          lines.push(line);
+        }
+        return lines;
+      }, []);
     }
 
     function cleanUpPatternImportText(text) {
       const cleanedRows = [];
       let currentRow = "";
 
-      text.split(/\r?\n/).forEach(rawLine => {
-        const line = normalizePatternLine(rawLine);
-        if (!line) return;
-
+      splitPatternImportLines(text).forEach(line => {
         if (isPatternRowLabel(line)) {
           if (currentRow) cleanedRows.push(currentRow);
           currentRow = line;
           return;
         }
 
-        if (currentRow) {
-          currentRow = appendPatternSegment(currentRow, line);
+        if (isStitchCountLine(line) && !currentRow && cleanedRows.length) {
+          cleanedRows[cleanedRows.length - 1] = appendPatternSegment(cleanedRows[cleanedRows.length - 1], line);
           return;
         }
 
-        if (isStitchCountLine(line) && cleanedRows.length) {
-          cleanedRows[cleanedRows.length - 1] = appendPatternSegment(cleanedRows[cleanedRows.length - 1], line);
+        if (currentRow) {
+          currentRow = appendPatternSegment(currentRow, line);
           return;
         }
 
@@ -5357,7 +5382,14 @@
     }
 
     function cleanUpPatternImport() {
-      patternImportText.value = cleanUpPatternImportText(patternImportText.value);
+      const cleanedText = cleanUpPatternImportText(patternImportText.value);
+      patternImportText.value = cleanedText;
+      if (patternCleanupStatus) {
+        const rowCount = cleanedText ? cleanedText.split(/\r?\n/).filter(Boolean).length : 0;
+        patternCleanupStatus.textContent = rowCount
+          ? `Cleaned into ${rowCount} row${rowCount === 1 ? "" : "s"}. Review, then Import Rows when ready.`
+          : "Paste pattern text first.";
+      }
       patternImportText.focus();
     }
 
@@ -5503,6 +5535,7 @@
       patternImportText.value = trackerRows
         .map(item => `Row ${item.rowNumber}: ${item.instruction}`)
         .join("\n");
+      if (patternCleanupStatus) patternCleanupStatus.textContent = "";
 
       patternImportDialog.showModal();
       patternImportText.focus();
