@@ -1539,6 +1539,12 @@
       line-height: 1.42;
     }
 
+    .toolbox-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
     .note-save {
       color: var(--muted);
       font-size: 0.82rem;
@@ -2225,6 +2231,48 @@
       color: var(--muted);
       background: rgba(255,255,255,.65);
     }
+
+    .hook-chart-note {
+      margin: 8px 0 18px;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .hook-chart-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 10px 22px rgba(157,42,85,.08);
+    }
+
+    .hook-chart-table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+      font-size: .9rem;
+    }
+
+    .hook-chart-table th,
+    .hook-chart-table td {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .hook-chart-table th {
+      background: rgba(255, 235, 241, .82);
+      color: var(--cranberry-dark);
+      font-size: .78rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .hook-chart-table tr:last-child td { border-bottom: 0; }
+    .hook-chart-table td:first-child { color: var(--cranberry); font-weight: 900; }
 
     @media (max-width: 720px) {
       .stitch-reference-header,
@@ -2927,9 +2975,12 @@
       </article>
 
       <section class="card stitch-toolbox">
-        <h2 class="section-title">🧶 Stitch Toolbox</h2>
-        <p>Need a quick reminder for how to do a stitch? Search by abbreviation or full stitch name, then copy the numbered steps.</p>
-        <button class="primary-btn" id="openStitchReferenceBtn" type="button">Stitch Toolbox</button>
+        <h2 class="section-title">🧶 Crochet Toolbox</h2>
+        <p>Quick references for stitches and hook sizes while you work.</p>
+        <div class="toolbox-actions">
+          <button class="primary-btn" id="openStitchReferenceBtn" type="button">Stitch Reference</button>
+          <button class="soft-btn" id="openHookChartBtn" type="button">Hook Size Chart</button>
+        </div>
       </section>
 
 
@@ -3206,6 +3257,43 @@
     </div>
   </dialog>
 
+  <dialog class="project-dialog stitch-dialog" id="hookChartDialog">
+    <div class="stitch-reference-shell">
+      <div class="stitch-reference-header">
+        <div class="stitch-reference-title-row">
+          <span class="stitch-reference-icon" aria-hidden="true">🪝</span>
+          <div>
+            <h2>Hook Size Chart</h2>
+            <p>Metric, US, UK, and common project uses.</p>
+          </div>
+        </div>
+        <button class="close-help-btn" id="closeHookChart" type="button" aria-label="Close hook size chart">×</button>
+      </div>
+
+      <div class="stitch-reference-content">
+        <p class="hook-chart-note">Hook sizing can vary by brand and older UK numbering systems. When in doubt, match the metric millimeter size and make a gauge swatch.</p>
+        <div class="hook-chart-wrap">
+          <table class="hook-chart-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>US Size</th>
+                <th>UK Size</th>
+                <th>Common Use</th>
+              </tr>
+            </thead>
+            <tbody id="hookChartBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="stitch-reference-footer">
+        <span>💡 Tip: Pattern gauge matters most—change hook size if your stitches are too tight or loose.</span>
+        <button class="soft-btn" id="hookChartCloseFooter" type="button">Close</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="jumpDialog">
     <h2 class="dialog-title">Jump to Row</h2>
     <input class="jump-input" id="jumpInput" type="number" min="0" placeholder="Enter row number" />
@@ -3266,6 +3354,11 @@
     const closeGettingStarted = document.getElementById("closeGettingStarted");
     const openYourProjectsNav = document.getElementById("openYourProjectsNav");
     const openStitchReferenceBtn = document.getElementById("openStitchReferenceBtn");
+    const openHookChartBtn = document.getElementById("openHookChartBtn");
+    const hookChartDialog = document.getElementById("hookChartDialog");
+    const closeHookChart = document.getElementById("closeHookChart");
+    const hookChartCloseFooter = document.getElementById("hookChartCloseFooter");
+    const hookChartBody = document.getElementById("hookChartBody");
     const stitchReferenceDialog = document.getElementById("stitchReferenceDialog");
     const closeStitchReference = document.getElementById("closeStitchReference");
     const stitchReferenceCloseFooter = document.getElementById("stitchReferenceCloseFooter");
@@ -3294,6 +3387,24 @@
     const resetThemeBtn = document.getElementById("resetThemeBtn");
 
 
+
+    const HOOK_SIZE_CHART = [
+      { metric: "2.25 mm", us: "B-1", uk: "13", use: "Fine yarn, lace details, lightweight amigurumi" },
+      { metric: "2.75 mm", us: "C-2", uk: "12", use: "Sport weight yarn, small motifs, tighter fabric" },
+      { metric: "3.25 mm", us: "D-3", uk: "10", use: "Sport/DK yarn, baby items, neat stitch definition" },
+      { metric: "3.5 mm", us: "E-4", uk: "9", use: "DK yarn, light garments, accessories" },
+      { metric: "3.75 mm", us: "F-5", uk: "—", use: "DK/light worsted yarn, toys, denser fabric" },
+      { metric: "4 mm", us: "G-6", uk: "8", use: "DK/worsted yarn, hats, scarves, granny squares" },
+      { metric: "4.5 mm", us: "7", uk: "7", use: "Worsted yarn, blankets, drapier accessories" },
+      { metric: "5 mm", us: "H-8", uk: "6", use: "Worsted/aran yarn, blankets, sweaters" },
+      { metric: "5.5 mm", us: "I-9", uk: "5", use: "Aran/bulky yarn, looser drape, quick accessories" },
+      { metric: "6 mm", us: "J-10", uk: "4", use: "Bulky yarn, hats, cowls, plush fabric" },
+      { metric: "6.5 mm", us: "K-10½", uk: "3", use: "Bulky yarn, baskets, chunky scarves" },
+      { metric: "8 mm", us: "L-11", uk: "0", use: "Super bulky yarn, fast blankets, oversized texture" },
+      { metric: "9 mm", us: "M/N-13", uk: "00", use: "Super bulky yarn, rugs, statement stitches" },
+      { metric: "10 mm", us: "N/P-15", uk: "000", use: "Jumbo yarn, chunky blankets, loose fabric" },
+      { metric: "15 mm", us: "P/Q", uk: "—", use: "Jumbo yarn, arm-style crochet looks, extra chunky projects" }
+    ];
 
     const STITCH_CATEGORIES = [
       "All",
@@ -3334,6 +3445,17 @@
     }
 
     removeLegacyStitchReferenceNavLinks();
+
+    function renderHookChart() {
+      hookChartBody.innerHTML = HOOK_SIZE_CHART.map(size => `
+        <tr>
+          <td>${size.metric}</td>
+          <td>${size.us}</td>
+          <td>${size.uk}</td>
+          <td>${size.use}</td>
+        </tr>
+      `).join("");
+    }
 
     function stitchCopyText(stitch) {
       return `${stitch.name} (${stitch.abbreviation})\n${stitch.steps.map((step, index) => `${index + 1}. ${step}`).join("\n")}`;
@@ -4082,6 +4204,24 @@
       renderStitchReference();
       stitchReferenceDialog.showModal();
       stitchSearchInput.focus();
+    });
+
+    openHookChartBtn.addEventListener("click", () => {
+      renderHookChart();
+      hookChartDialog.showModal();
+    });
+
+    function closeHookChartDialog() {
+      hookChartDialog.close();
+    }
+
+    closeHookChart.addEventListener("click", closeHookChartDialog);
+    hookChartCloseFooter.addEventListener("click", closeHookChartDialog);
+
+    hookChartDialog.addEventListener("click", event => {
+      if (event.target === hookChartDialog) {
+        closeHookChartDialog();
+      }
     });
 
     function closeStitchReferenceDialog() {
