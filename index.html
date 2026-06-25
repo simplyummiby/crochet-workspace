@@ -3246,17 +3246,19 @@
       <section class="account-panel">
         <div class="account-panel-header">
           <h3>Cloud Sync</h3>
-          <span class="account-coming-label">Coming next</span>
+          <span class="account-coming-label" id="accountCloudLabel">Supabase</span>
         </div>
-        <p>Later, you’ll be able to sign in with email and sync projects across devices.</p>
-        <input id="accountEmailInput" type="email" placeholder="Email for future sign-in" autocomplete="email" />
+        <p>Sign in by email to save and sync your projects across devices.</p>
+        <input id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
         <div class="account-actions">
-          <button class="soft-btn" id="accountSignInBtn" type="button">Preview Future Sign-In</button>
+          <button class="primary-btn" id="accountSignInBtn" type="button">Email Magic Link</button>
+          <button class="soft-btn" id="syncNowBtn" type="button">Sync Now</button>
+          <button class="soft-btn" id="accountSignOutBtn" type="button">Sign Out</button>
         </div>
       </section>
 
       <p class="account-note" id="accountSyncNote">
-        <strong>No account is being created yet.</strong> This modal is only preparing the login flow. Your workspace still saves locally.
+        <strong>Cloud sync is optional.</strong> Configure Supabase, then email yourself a magic link to sync projects across devices.
       </p>
     </div>
   </dialog>
@@ -3431,6 +3433,8 @@
     </div>
   </dialog>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     /*
       Version: 0.9.7-account-modal-cleanup
@@ -3517,6 +3521,9 @@
     const continueLocalBtn = document.getElementById("continueLocalBtn");
     const openBackupReminderBtn = document.getElementById("openBackupReminderBtn");
     const accountSignInBtn = document.getElementById("accountSignInBtn");
+    const syncNowBtn = document.getElementById("syncNowBtn");
+    const accountSignOutBtn = document.getElementById("accountSignOutBtn");
+    const accountCloudLabel = document.getElementById("accountCloudLabel");
     const accountSyncNote = document.getElementById("accountSyncNote");
     const openSettingsNav = document.getElementById("openSettingsNav");
     const settingsDialog = document.getElementById("settingsDialog");
@@ -3710,19 +3717,50 @@
     let timerStartedAt = null;
 
     const ACCOUNT_MODE_KEY = "crochetWorkspaceAccountMode";
-    let accountMode = localStorage.getItem(ACCOUNT_MODE_KEY) || "local";
+    const CLOUD_UPDATED_AT_KEY = "crochetWorkspaceCloudUpdatedAt";
+    const SUPABASE_SYNC_TABLE = "crochet_workspaces";
+    const SUPABASE_URL = window.CROCHET_SUPABASE_URL || "";
+    const SUPABASE_ANON_KEY = window.CROCHET_SUPABASE_ANON_KEY || "";
 
-    const THEME_KEY = "crochetWorkspaceTheme";
-    const THEME_OPTIONS = {
-      rose: "Rose",
-      sage: "Sage",
-      lavender: "Lavender",
-      peach: "Peach",
-      blue: "Blue"
-    };
+    let accountMode = localStorage.getItem(ACCOUNT_MODE_KEY) || "local";
+    let supabaseClient = null;
+    let currentCloudUser = null;
+    let cloudSyncTimer = null;
+    let suppressCloudSync = false;
+
+    function isSupabaseConfigured() {
+      return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase?.createClient);
+    }
+
+    function getSupabaseClient() {
+      if (supabaseClient) return supabaseClient;
+      if (!isSupabaseConfigured()) return null;
+
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+
+      return supabaseClient;
+    }
+
+    function getCloudStatusMessage() {
+      if (!isSupabaseConfigured()) {
+        return "Supabase is not configured yet. Add your project URL and publishable anon key in index.html, then run the SQL setup in Supabase.";
+      }
+
+      if (currentCloudUser?.email) {
+        return `Signed in as ${currentCloudUser.email}. Projects sync whenever you save changes.`;
+      }
+
+      return "Enter your email and click Email Magic Link to sign in and sync projects.";
+    }
 
     function renderAccountStatus() {
-      const isSynced = accountMode === "synced";
+      const isSynced = accountMode === "synced" && currentCloudUser;
 
       if (accountStatusPill) {
         accountStatusPill.textContent = isSynced ? "Synced" : "Local";
@@ -3734,12 +3772,20 @@
 
       if (accountModeDescription) {
         accountModeDescription.textContent = isSynced
-          ? "Your projects will sync across devices once Supabase is connected."
-          : "Your projects are saved in this browser right now. If you clear browser data or switch devices, use Backup & Restore to keep a copy.";
+          ? "Your projects are saved to Supabase and can sync across signed-in devices."
+          : "Your projects are saved in this browser. Sign in with email to sync them across devices.";
       }
 
-      if (accountSyncNote && accountMode === "local") {
-        accountSyncNote.innerHTML = "<strong>No account is being created yet.</strong> This modal is only preparing the login flow. Your workspace still saves locally.";
+      if (accountCloudLabel) {
+        accountCloudLabel.textContent = isSupabaseConfigured() ? "Ready" : "Needs setup";
+      }
+
+      if (accountSignInBtn) accountSignInBtn.disabled = !isSupabaseConfigured();
+      if (syncNowBtn) syncNowBtn.disabled = !currentCloudUser;
+      if (accountSignOutBtn) accountSignOutBtn.disabled = !currentCloudUser;
+
+      if (accountSyncNote) {
+        accountSyncNote.innerHTML = `<strong>${isSynced ? "Cloud sync is on." : "Cloud sync status:"}</strong> ${getCloudStatusMessage()}`;
       }
     }
 
@@ -3750,15 +3796,207 @@
       accountDialog.close();
     }
 
-    function showSyncComingSoon() {
+    async function requestEmailMagicLink() {
+      const client = getSupabaseClient();
       const email = accountEmailInput?.value?.trim() || "";
-      const emailMessage = email && email.includes("@")
-        ? ` Email entered: ${email}.`
-        : " Entering an email is optional for this preview.";
 
-      if (accountSyncNote) {
-        accountSyncNote.innerHTML = `<strong>Coming next:</strong> Supabase sign-in is not connected yet.${emailMessage} Your projects are still saving locally in this browser.`;
+      if (!client) {
+        renderAccountStatus();
+        return;
       }
+
+      if (!email || !email.includes("@")) {
+        accountSyncNote.innerHTML = "<strong>Email needed:</strong> Enter your email address first.";
+        return;
+      }
+
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.href.split("#")[0]
+        }
+      });
+
+      if (error) {
+        accountSyncNote.innerHTML = `<strong>Sign-in error:</strong> ${error.message}`;
+        return;
+      }
+
+      accountSyncNote.innerHTML = `<strong>Check your email:</strong> We sent a magic link to ${email}. Open it on any device to sign in and sync.`;
+    }
+
+    function buildCloudWorkspacePayload() {
+      return {
+        version: 1,
+        savedAt: localStorage.getItem(CLOUD_UPDATED_AT_KEY) || new Date().toISOString(),
+        projects,
+        activeProjectId,
+        counterMode,
+        timerMode,
+        quickRow: localStorage.getItem(QUICK_ROW_KEY) || "0",
+        quickTimerData: JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null"),
+        trackerRows,
+        trackerCurrentRow,
+        tutorialNotesRows,
+        sources: {
+          videoUrl: localStorage.getItem(SOURCE_KEYS.video) || "",
+          webPatternUrl: localStorage.getItem(SOURCE_KEYS.web) || "",
+          pdfPatternUrl: localStorage.getItem(SOURCE_KEYS.pdf) || ""
+        }
+      };
+    }
+
+    function applyCloudWorkspacePayload(payload = {}) {
+      suppressCloudSync = true;
+
+      projects = Array.isArray(payload.projects) ? payload.projects : [];
+      activeProjectId = payload.activeProjectId || "";
+      counterMode = payload.counterMode || "quick";
+      timerMode = payload.timerMode || "quick";
+      trackerRows = Array.isArray(payload.trackerRows) ? payload.trackerRows : [];
+      trackerCurrentRow = Number(payload.trackerCurrentRow) || 0;
+      tutorialNotesRows = Array.isArray(payload.tutorialNotesRows) ? payload.tutorialNotesRows : [];
+
+      localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+      localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
+      localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      localStorage.setItem(TIMER_MODE_KEY, timerMode);
+      localStorage.setItem(QUICK_ROW_KEY, String(payload.quickRow || "0"));
+      if (payload.quickTimerData) localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(payload.quickTimerData));
+      localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
+      localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
+
+      const sources = payload.sources || {};
+      Object.entries({
+        [SOURCE_KEYS.video]: sources.videoUrl || "",
+        [SOURCE_KEYS.web]: sources.webPatternUrl || "",
+        [SOURCE_KEYS.pdf]: sources.pdfPatternUrl || ""
+      }).forEach(([key, value]) => {
+        if (value) localStorage.setItem(key, value);
+        else localStorage.removeItem(key);
+      });
+
+      if (payload.savedAt) localStorage.setItem(CLOUD_UPDATED_AT_KEY, payload.savedAt);
+
+      timerData = getTimerDataForCurrentMode();
+
+      if (getActiveProject()) {
+        loadWorkspaceFromActiveProject();
+      } else {
+        clearProjectWorkspaceDisplay();
+      }
+
+      renderProjectSnapshot();
+      renderProjectList();
+      renderYourProjectsList();
+      renderAccountStatus();
+
+      suppressCloudSync = false;
+    }
+
+    async function pushWorkspaceToCloud() {
+      const client = getSupabaseClient();
+      if (!client || !currentCloudUser) return;
+
+      saveWorkspaceToActiveProject();
+      const payload = buildCloudWorkspacePayload();
+      const { error } = await client
+        .from(SUPABASE_SYNC_TABLE)
+        .upsert({
+          user_id: currentCloudUser.id,
+          payload,
+          updated_at: payload.savedAt
+        }, { onConflict: "user_id" });
+
+      if (error) throw error;
+      accountMode = "synced";
+      localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+      renderAccountStatus();
+    }
+
+    function scheduleCloudSync() {
+      if (suppressCloudSync || !currentCloudUser) return;
+      window.clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = window.setTimeout(() => {
+        pushWorkspaceToCloud().catch(error => {
+          if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
+        });
+      }, 900);
+    }
+
+    function markWorkspaceDirty() {
+      if (suppressCloudSync) return;
+      localStorage.setItem(CLOUD_UPDATED_AT_KEY, new Date().toISOString());
+      scheduleCloudSync();
+    }
+
+    async function pullWorkspaceFromCloud() {
+      const client = getSupabaseClient();
+      if (!client || !currentCloudUser) return;
+
+      const { data, error } = await client
+        .from(SUPABASE_SYNC_TABLE)
+        .select("payload, updated_at")
+        .eq("user_id", currentCloudUser.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      const remotePayload = data?.payload || null;
+      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || "";
+      const remoteUpdatedAt = data?.updated_at || remotePayload?.savedAt || "";
+
+      if (remotePayload && (!localUpdatedAt || remoteUpdatedAt > localUpdatedAt)) {
+        applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt });
+      } else {
+        await pushWorkspaceToCloud();
+      }
+    }
+
+    async function syncWorkspaceNow() {
+      try {
+        await pullWorkspaceFromCloud();
+        if (accountSyncNote) accountSyncNote.innerHTML = "<strong>Synced:</strong> Your projects are up to date.";
+      } catch (error) {
+        if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
+      }
+    }
+
+    async function signOutOfCloudSync() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      await client.auth.signOut();
+      currentCloudUser = null;
+      accountMode = "local";
+      localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+      renderAccountStatus();
+    }
+
+    async function initializeCloudSync() {
+      const client = getSupabaseClient();
+      if (!client) {
+        renderAccountStatus();
+        return;
+      }
+
+      const { data } = await client.auth.getSession();
+      currentCloudUser = data.session?.user || null;
+      if (currentCloudUser) {
+        accountMode = "synced";
+        localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+        syncWorkspaceNow();
+      }
+
+      client.auth.onAuthStateChange((_event, session) => {
+        currentCloudUser = session?.user || null;
+        accountMode = currentCloudUser ? "synced" : "local";
+        localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+        renderAccountStatus();
+        if (currentCloudUser) syncWorkspaceNow();
+      });
+
+      renderAccountStatus();
     }
 
     function updateThemeSelectLabels(activeTheme) {
@@ -3806,6 +4044,7 @@
       }
 
       localStorage.setItem(COUNTER_MODE_KEY, counterMode);
+      markWorkspaceDirty();
       updateCounterModeDisplay();
     }
 
@@ -4073,6 +4312,7 @@
       }
 
       localStorage.setItem(TIMER_MODE_KEY, timerMode);
+      markWorkspaceDirty();
 
       if (typeof renderProjectSnapshot === "function") {
         renderProjectSnapshot();
@@ -4520,7 +4760,17 @@
     openBackupReminderBtn.addEventListener("click", () => {
       accountSyncNote.innerHTML = "<strong>Good plan:</strong> Use Backup & Restore to download project files before clearing browser data or switching devices.";
     });
-    accountSignInBtn.addEventListener("click", showSyncComingSoon);
+    accountSignInBtn.addEventListener("click", () => {
+      requestEmailMagicLink().catch(error => {
+        accountSyncNote.innerHTML = `<strong>Sign-in error:</strong> ${error.message}`;
+      });
+    });
+    syncNowBtn.addEventListener("click", syncWorkspaceNow);
+    accountSignOutBtn.addEventListener("click", () => {
+      signOutOfCloudSync().catch(error => {
+        accountSyncNote.innerHTML = `<strong>Sign-out error:</strong> ${error.message}`;
+      });
+    });
 
     openSettingsNav.addEventListener("click", () => {
       settingsDialog.showModal();
@@ -4717,6 +4967,7 @@
     function saveProjects() {
       localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
       localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
+      markWorkspaceDirty();
     }
 
     function getActiveProject() {
@@ -6274,6 +6525,7 @@
     }
 
 
+    initializeCloudSync();
     renderAccountStatus();
     applyTheme(localStorage.getItem(THEME_KEY) || "rose");
 
