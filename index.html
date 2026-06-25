@@ -347,7 +347,7 @@
     }
 
     .account-dialog {
-      width: min(980px, calc(100vw - 34px));
+      width: min(1120px, calc(100vw - 28px));
     }
 
     .account-status-pill {
@@ -408,8 +408,8 @@
 
     .account-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(230px, .85fr);
-      gap: 14px;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, .85fr);
+      gap: 18px;
       align-items: stretch;
     }
 
@@ -477,13 +477,19 @@
 
     .account-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 10px;
       margin-top: 12px;
     }
 
     .account-sync-actions {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .account-actions button {
+      min-width: 0;
+      white-space: normal;
+      line-height: 1.2;
     }
 
     .account-local-actions {
@@ -2317,6 +2323,7 @@
     .import-label { display:inline-block; text-align:center; cursor:pointer; }
     #importBackupInput { display:none; }
     .project-dialog { border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(90,30,50,.22); background:var(--card); padding:20px; width:min(520px, calc(100vw - 34px)); }
+    .project-dialog.account-dialog { width:min(1120px, calc(100vw - 28px)); }
 
     .stitch-dialog {
       width: min(1180px, calc(100vw - 36px));
