@@ -3085,17 +3085,6 @@
         </div>
       </section>
 
-      <section class="card start-here-card" aria-label="Start here checklist">
-        <div class="start-here-checklist">
-          <strong>Start Here</strong>
-          <ol>
-            <li>Create your first project.</li>
-            <li>Add a video, web pattern, or PDF.</li>
-            <li>Track rows and time as you crochet.</li>
-          </ol>
-        </div>
-      </section>
-
       <section class="card project-card" id="projectCard">
         <div class="project-card-head">
           <div>
@@ -4790,23 +4779,30 @@
       };
     }
 
+    function normalizeTimerData(data) {
+      const normalized = {
+        ...defaultTimerData(),
+        ...(data || {})
+      };
+
+      normalized.currentElapsed = Number(normalized.currentElapsed) || 0;
+      normalized.startedAt = normalized.startedAt || null;
+      normalized.sessions = Array.isArray(normalized.sessions) ? normalized.sessions : [];
+
+      return normalized;
+    }
+
     function getTimerDataForCurrentMode() {
       const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
 
       if (timerMode === "project" && activeProject) {
-        return {
-          ...defaultTimerData(),
-          ...(activeProject.timerData || {})
-        };
+        return normalizeTimerData(activeProject.timerData);
       }
 
       timerMode = "quick";
 
       try {
-        return {
-          ...defaultTimerData(),
-          ...(JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null") || {})
-        };
+        return normalizeTimerData(JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null"));
       } catch (error) {
         return defaultTimerData();
       }
@@ -4814,6 +4810,7 @@
 
     function saveTimerData() {
       const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+      timerData = normalizeTimerData(timerData);
 
       if (timerMode === "project" && activeProject) {
         activeProject.timerData = timerData;
@@ -4919,6 +4916,7 @@
     }
 
     function renderTimer() {
+      timerData = normalizeTimerData(timerData);
       const currentElapsed = getCurrentTimerElapsed();
       const totalSaved = getTotalTimerTime();
       const sessionTotal = timerData.sessions.length;
@@ -5600,7 +5598,7 @@
       trackerRows = Array.isArray(project.patternTrackerRows) ? project.patternTrackerRows : [];
       trackerCurrentRow = Number(project.patternTrackerCurrentRow) || Number(trackerRows[0]?.rowNumber) || 0;
       tutorialNotesRows = Array.isArray(project.tutorialNotes) ? project.tutorialNotes : [];
-      timerData = project.timerData || defaultTimerData();
+      timerData = normalizeTimerData(project.timerData);
 
       if (projectNotes) {
         projectNotes.value = project.notes || "";
