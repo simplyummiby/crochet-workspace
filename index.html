@@ -4280,8 +4280,13 @@
     function applyCloudWorkspacePayload(payload = {}) {
       suppressCloudSync = true;
 
-      projects = Array.isArray(payload.projects) ? payload.projects : [];
+      projects = (Array.isArray(payload.projects) ? payload.projects : [])
+        .map(normalizeProjectRecord)
+        .filter(Boolean);
       activeProjectId = payload.activeProjectId || "";
+      if (activeProjectId && !projects.some(project => project.id === activeProjectId)) {
+        activeProjectId = projects[0]?.id || "";
+      }
       counterMode = payload.counterMode || "quick";
       timerMode = payload.timerMode || "quick";
       trackerRows = Array.isArray(payload.trackerRows) ? payload.trackerRows : [];
@@ -5486,8 +5491,31 @@
     const PROJECTS_KEY = "crochetWorkspaceProjects";
     const ACTIVE_PROJECT_KEY = "crochetWorkspaceActiveProjectId";
 
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || "[]");
+    function parseStoredProjects() {
+      try {
+        const parsedProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || "[]");
+        return Array.isArray(parsedProjects) ? parsedProjects : [];
+      } catch (error) {
+        console.warn("Could not read saved projects.", error);
+        return [];
+      }
+    }
+
+    function normalizeProjectRecord(project) {
+      if (!project || typeof project !== "object") return null;
+
+      return {
+        ...project,
+        timerData: normalizeTimerData(project?.timerData)
+      };
+    }
+
+    let projects = parseStoredProjects().map(normalizeProjectRecord).filter(Boolean);
     let activeProjectId = localStorage.getItem(ACTIVE_PROJECT_KEY) || "";
+    if (activeProjectId && !projects.some(project => project.id === activeProjectId)) {
+      activeProjectId = projects[0]?.id || "";
+      localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
+    }
     let editingProjectId = "";
 
     // Timer data needs projects/activeProjectId to exist before loading project timer data.
@@ -5702,7 +5730,7 @@
       updateGettingStartedProgress();
 
       if (!project) {
-        projectSubtitle.textContent = "Start here: create your first project.";
+        projectSubtitle.textContent = "No active project selected.";
         createProjectBtn.textContent = "➕ Create First Project";
         projectSnapshot.innerHTML = `
           <div class="empty-project">
