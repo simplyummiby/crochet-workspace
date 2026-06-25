@@ -1809,6 +1809,11 @@
       line-height: 1.4;
     }
 
+    .source-intro {
+      margin-top: 6px;
+      max-width: 620px;
+    }
+
 
     .source-help.warning {
       color: var(--cranberry-dark);
@@ -2065,6 +2070,9 @@
     .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
     .project-card-actions { justify-content:flex-end; }
     .project-snapshot { border:1px solid var(--line); background:var(--accent-light); border-radius:16px; padding:15px; }
+    .start-here-checklist { margin-top:12px; border:1px solid #f1dbe1; background:#fffdfb; border-radius:14px; padding:12px 14px; }
+    .start-here-checklist strong { display:block; color:var(--cranberry-dark); margin-bottom:6px; }
+    .start-here-checklist ol { margin:0; padding-left:20px; color:var(--muted); font-size:.9rem; line-height:1.45; }
     .empty-project strong { display:block; color:var(--cranberry-dark); margin-bottom:5px; }
     .empty-project span { display:block; color:var(--muted); line-height:1.4; }
     .snapshot-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:stretch; }
@@ -2763,7 +2771,6 @@
     </div>
     <nav class="nav">
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
-      <button class="nav-link" id="openStitchReferenceNav" type="button">🧶 Stitch Reference</button>
       <button class="nav-link" id="openAccountNav" type="button">👤 Account</button>
       <button class="nav-link" id="openSettingsNav" type="button">⚙️ Settings</button>
     </nav>
@@ -2788,13 +2795,13 @@
         <div class="project-card-head">
           <div>
             <h2 class="section-title">🧺 Current Project</h2>
-            <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
+            <p class="project-subtitle" id="projectSubtitle">Start here: create your first project.</p>
           </div>
 
           <div class="project-card-actions">
-            <button class="outline-btn" id="createProjectBtn" type="button">➕ New</button>
-            <button class="outline-btn" id="editProjectBtn" type="button">✏️ Edit</button>
-            <button class="outline-btn" id="switchProjectBtn" type="button">🔄 Switch</button>
+            <button class="outline-btn" id="createProjectBtn" type="button">➕ Create First Project</button>
+            <button class="outline-btn" id="editProjectBtn" type="button">✏️ Edit Project</button>
+            <button class="outline-btn" id="switchProjectBtn" type="button">🔄 Switch Project</button>
           </div>
         </div>
 
@@ -2805,13 +2812,22 @@
           </div>
         </div>
 
+        <div class="start-here-checklist" aria-label="Start here checklist">
+          <strong>Start Here</strong>
+          <ol>
+            <li>Create your first project.</li>
+            <li>Add a video, web pattern, or PDF.</li>
+            <li>Track rows and time as you crochet.</li>
+          </ol>
+        </div>
+
         <details class="project-notes-drawer">
           <summary>📝 Project Notes <span class="notes-saved-label">(saved with this project)</span></summary>
           <textarea id="projectNotes" placeholder="Add your notes here..."></textarea>
         </details>
 
         <details class="backup-restore">
-          <summary>💾 Backup & Restore</summary>
+          <summary>💾 Advanced: Backup &amp; Restore</summary>
 
           <div class="backup-warning">
             <strong>Local storage reminder</strong>
@@ -2830,6 +2846,7 @@
       <section class="card viewer">
         <div class="section-head">
           <h2 class="section-title">🔗 Pattern Source</h2>
+          <p class="source-help source-intro">Optional: keep the video, webpage, or PDF you are following beside your project.</p>
         </div>
 
         <div class="source-tabs" role="tablist" aria-label="Pattern source options">
@@ -2949,11 +2966,11 @@
         <div class="tracker-head">
           <div>
             <h2 class="section-title">🌺 Pattern Tracker</h2>
-            <p class="tracker-subtitle">Paste pattern rows, check them off, and keep your place in the pattern.</p>
+            <p class="tracker-subtitle">Paste pattern rows, then check off each row as you finish it. This tracker is separate from the Row Counter.</p>
           </div>
 
           <div class="tracker-actions">
-            <button class="outline-btn" id="openStitchReferenceNav" type="button">🧶 Stitch Reference</button>
+            <button class="outline-btn" id="openStitchReferenceTracker" type="button">🧶 Stitch Reference</button>
             <button class="outline-btn" id="pastePatternBtn" type="button">Paste Pattern</button>
             <button class="outline-btn" id="uncheckRowsBtn" type="button">Uncheck Rows</button>
             <button class="outline-btn danger-outline-btn" id="deletePatternBtn" type="button">Delete Pattern</button>
@@ -2970,7 +2987,7 @@
 
         <div class="tracker-empty" id="trackerEmpty">
           <strong>No pattern rows yet</strong>
-          <span>Click “Paste Pattern” and paste one row per line.</span>
+          <span>Click “Paste Pattern” and paste one row per line. Then mark each row done as you crochet.</span>
         </div>
 
         <div class="tracker-table-wrap" id="trackerTableWrap" hidden>
@@ -3000,8 +3017,8 @@
         </div>
 
         <div class="counter-mode-row">
-          <p class="counter-mode-text" id="counterModeText">Quick Counter Mode</p>
-          <button class="counter-mode-btn" id="counterModeToggle" type="button">Use Project Counter</button>
+          <p class="counter-mode-text" id="counterModeText">Quick Counter: one-off row count</p>
+          <button class="counter-mode-btn" id="counterModeToggle" type="button">Save rows to project</button>
         </div>
 
         <div class="row-number" id="rowCount" aria-live="polite">0</div>
@@ -3043,8 +3060,8 @@
         </div>
 
         <div class="timer-mode-row">
-          <p class="timer-mode-text" id="timerModeText">Quick Timer Mode</p>
-          <button class="timer-mode-btn" id="timerModeToggle" type="button">Use Project Timer</button>
+          <p class="timer-mode-text" id="timerModeText">Quick Timer: general crochet time</p>
+          <button class="timer-mode-btn" id="timerModeToggle" type="button">Save time to project</button>
         </div>
 
         <div class="timer-block">
@@ -3096,7 +3113,7 @@
 
 
   <dialog class="project-dialog" id="projectFormDialog">
-    <h2 id="projectFormTitle">Create Project</h2>
+    <h2 id="projectFormTitle">Create First Project</h2>
 
     <div class="project-form-grid">
       <label class="full">Project Name
@@ -3238,13 +3255,13 @@
 
         <div class="help-step">
           <strong>6. Back up your work</strong>
-          <p>Use Backup & Restore to download the current project or all projects as a JSON backup file.</p>
+          <p>Use Advanced: Backup &amp; Restore to download the current project or all projects as a JSON backup file.</p>
         </div>
       </div>
 
       <p class="storage-warning">
         <strong>💾 Storage Notice</strong>
-        Crochet Workspace currently saves projects, notes, row counts, timers, tutorial notes, and pattern data in this browser. If you clear browser data, switch browsers, or use a different device, your saved workspace may not be there. Use Backup & Restore regularly for important projects.
+        Crochet Workspace currently saves projects, notes, row counts, timers, tutorial notes, and pattern data in this browser. If you clear browser data, switch browsers, or use a different device, your saved workspace may not be there. Use Advanced: Backup &amp; Restore regularly for important projects.
       </p>
 
       <p class="help-note">
@@ -3530,6 +3547,7 @@
     const closeGettingStarted = document.getElementById("closeGettingStarted");
     const openYourProjectsNav = document.getElementById("openYourProjectsNav");
     const openStitchReferenceBtn = document.getElementById("openStitchReferenceBtn");
+    const openStitchReferenceTracker = document.getElementById("openStitchReferenceTracker");
     const openHookChartBtn = document.getElementById("openHookChartBtn");
     const openYarnWeightChartBtn = document.getElementById("openYarnWeightChartBtn");
     const openAbbreviationsBtn = document.getElementById("openAbbreviationsBtn");
@@ -3662,16 +3680,6 @@
 
     let activeStitchCategory = "All";
 
-    function removeLegacyStitchReferenceNavLinks() {
-      document.querySelectorAll(".nav .nav-link").forEach(link => {
-        const isLegacyStitchReference = link.id === "openStitchReferenceNav" || link.textContent.includes("Stitch Reference");
-        if (isLegacyStitchReference) {
-          link.remove();
-        }
-      });
-    }
-
-    removeLegacyStitchReferenceNavLinks();
 
     function renderHookChart() {
       hookChartBody.innerHTML = HOOK_SIZE_CHART.map(size => `
@@ -4190,7 +4198,7 @@
 
       if (!activeProject) {
         counterMode = "quick";
-        counterModeText.textContent = "Quick Counter Mode";
+        counterModeText.textContent = "Quick Counter: one-off row count";
         counterModeToggle.hidden = true;
         return;
       }
@@ -4198,11 +4206,11 @@
       counterModeToggle.hidden = false;
 
       if (counterMode === "project") {
-        counterModeText.textContent = `Project Counter: ${activeProject.name || "Untitled Project"}`;
-        counterModeToggle.textContent = "Use Quick Counter";
+        counterModeText.textContent = `Project Counter: saving rows to ${activeProject.name || "Untitled Project"}`;
+        counterModeToggle.textContent = "Use quick row count";
       } else {
-        counterModeText.textContent = "Quick Counter Mode";
-        counterModeToggle.textContent = "Use Project Counter";
+        counterModeText.textContent = "Quick Counter: one-off row count";
+        counterModeToggle.textContent = "Save rows to project";
       }
     }
 
@@ -4501,7 +4509,7 @@
 
       if (!activeProject) {
         timerMode = "quick";
-        timerModeText.textContent = "Quick Timer Mode";
+        timerModeText.textContent = "Quick Timer: general crochet time";
         timerModeToggle.hidden = true;
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
         return;
@@ -4510,12 +4518,12 @@
       timerModeToggle.hidden = false;
 
       if (timerMode === "project") {
-        timerModeText.textContent = `Project Timer: ${activeProject.name || "Untitled Project"}`;
-        timerModeToggle.textContent = "Use Quick Timer";
+        timerModeText.textContent = `Project Timer: saving time to ${activeProject.name || "Untitled Project"}`;
+        timerModeToggle.textContent = "Use quick timer";
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Project Time";
       } else {
-        timerModeText.textContent = "Quick Timer Mode";
-        timerModeToggle.textContent = "Use Project Timer";
+        timerModeText.textContent = "Quick Timer: general crochet time";
+        timerModeToggle.textContent = "Save time to project";
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
       }
     }
@@ -4747,11 +4755,14 @@
 
 
 
-    openStitchReferenceBtn.addEventListener("click", () => {
+    function openStitchReferenceDialog() {
       renderStitchReference();
       stitchReferenceDialog.showModal();
       stitchSearchInput.focus();
-    });
+    }
+
+    openStitchReferenceBtn.addEventListener("click", openStitchReferenceDialog);
+    openStitchReferenceTracker.addEventListener("click", openStitchReferenceDialog);
 
     openHookChartBtn.addEventListener("click", () => {
       renderHookChart();
@@ -5299,7 +5310,8 @@
       const project = getActiveProject();
 
       if (!project) {
-        projectSubtitle.textContent = "No active project selected.";
+        projectSubtitle.textContent = "Start here: create your first project.";
+        createProjectBtn.textContent = "➕ Create First Project";
         projectSnapshot.innerHTML = `
           <div class="empty-project">
             <strong>No project selected</strong>
@@ -5312,6 +5324,7 @@
       }
 
       projectSubtitle.textContent = "This snapshot can be backed up and restored later.";
+      createProjectBtn.textContent = "➕ New Project";
       editProjectBtn.disabled = false;
       downloadBackupBtn.disabled = false;
 
@@ -5381,7 +5394,7 @@
 
     function openProjectForm(mode, project = null) {
       editingProjectId = project?.id || "";
-      projectFormTitle.textContent = mode === "edit" ? "Edit Project" : "Create Project";
+      projectFormTitle.textContent = mode === "edit" ? "Edit Project" : (projects.length ? "New Project" : "Create First Project");
       deleteProjectBtn.hidden = mode !== "edit";
 
       projectNameInput.value = project?.name || "";
