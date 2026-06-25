@@ -4155,7 +4155,6 @@
         accountSyncNote.innerHTML = `<strong>${isSynced ? "Cloud sync is on." : "Cloud sync status:"}</strong> ${getCloudStatusMessage()}`;
       }
 
-      updateGettingStartedProgress();
     }
 
     async function continueInLocalMode() {
@@ -4484,7 +4483,6 @@
       const savedCollapsed = localStorage.getItem(GETTING_STARTED_COLLAPSED_KEY);
       const shouldOpen = savedCollapsed === null ? !projects.length : savedCollapsed !== "true";
       setGettingStartedOpen(shouldOpen, false);
-      updateGettingStartedProgress();
     }
 
     function setGettingStartedStepComplete(step, isComplete) {
@@ -5517,6 +5515,7 @@
       localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
     }
     let editingProjectId = "";
+    let isSavingProjectForm = false;
 
     // Timer data needs projects/activeProjectId to exist before loading project timer data.
     timerData = getTimerDataForCurrentMode();
@@ -5727,7 +5726,6 @@
     function renderProjectSnapshot() {
       const project = getActiveProject();
 
-      updateGettingStartedProgress();
 
       if (!project) {
         projectSubtitle.textContent = "No active project selected.";
@@ -5828,71 +5826,81 @@
     }
 
     function saveProjectFromForm() {
-      saveWorkspaceToActiveProject();
+      if (isSavingProjectForm) return;
 
-      const projectData = {
-        name: projectNameInput.value.trim() || "Untitled Project",
-        hook: getHookValue(),
-        materials: projectMaterialsInput.value.trim(),
-        started: projectStartedInput.value,
-        status: projectStatusSelect.value || "In Progress"
-      };
+      isSavingProjectForm = true;
+      saveProjectForm.disabled = true;
 
-      if (editingProjectId) {
-        projects = projects.map(project => (
-          project.id === editingProjectId ? { ...project, ...projectData } : project
-        ));
-      } else {
-        const shouldCarryCurrentProgress = !getActiveProject();
-        const carriedTrackerRows = shouldCarryCurrentProgress && Array.isArray(trackerRows)
-          ? trackerRows.map(item => ({ ...item }))
-          : [];
-        const carriedTrackerCurrentRow = shouldCarryCurrentProgress
-          ? Number(trackerCurrentRow) || Number(carriedTrackerRows[0]?.rowNumber) || 0
-          : 0;
-        const carriedRowCount = shouldCarryCurrentProgress ? Number(row) || 0 : 0;
-        const carriedTimerData = shouldCarryCurrentProgress
-          ? {
-              currentElapsed: Number(timerData.currentElapsed) || 0,
-              startedAt: timerData.startedAt || null,
-              sessions: Array.isArray(timerData.sessions)
-                ? timerData.sessions.map(session => ({ ...session }))
-                : []
-            }
-          : defaultTimerData();
+      try {
+        saveWorkspaceToActiveProject();
 
-        const newProject = {
-          id: makeProjectId(),
-          createdAt: new Date().toISOString(),
-          rowCount: carriedRowCount,
-          sources: { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
-          notes: "",
-          tutorialNotes: [],
-          patternTrackerRows: carriedTrackerRows,
-          patternTrackerCurrentRow: carriedTrackerCurrentRow,
-          timerData: carriedTimerData,
-          ...projectData
+        const projectData = {
+          name: projectNameInput.value.trim() || "Untitled Project",
+          hook: getHookValue(),
+          materials: projectMaterialsInput.value.trim(),
+          started: projectStartedInput.value,
+          status: projectStatusSelect.value || "In Progress"
         };
 
-        projects.push(newProject);
-        activeProjectId = newProject.id;
-        counterMode = "project";
-        timerMode = "project";
-        row = Number(newProject.rowCount) || 0;
+        if (editingProjectId) {
+          projects = projects.map(project => (
+            project.id === editingProjectId ? { ...project, ...projectData } : project
+          ));
+        } else {
+          const shouldCarryCurrentProgress = !getActiveProject();
+          const carriedTrackerRows = shouldCarryCurrentProgress && Array.isArray(trackerRows)
+            ? trackerRows.map(item => ({ ...item }))
+            : [];
+          const carriedTrackerCurrentRow = shouldCarryCurrentProgress
+            ? Number(trackerCurrentRow) || Number(carriedTrackerRows[0]?.rowNumber) || 0
+            : 0;
+          const carriedRowCount = shouldCarryCurrentProgress ? Number(row) || 0 : 0;
+          const carriedTimerData = shouldCarryCurrentProgress
+            ? {
+                currentElapsed: Number(timerData.currentElapsed) || 0,
+                startedAt: timerData.startedAt || null,
+                sessions: Array.isArray(timerData.sessions)
+                  ? timerData.sessions.map(session => ({ ...session }))
+                  : []
+              }
+            : defaultTimerData();
+
+          const newProject = {
+            id: makeProjectId(),
+            createdAt: new Date().toISOString(),
+            rowCount: carriedRowCount,
+            sources: { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
+            notes: "",
+            tutorialNotes: [],
+            patternTrackerRows: carriedTrackerRows,
+            patternTrackerCurrentRow: carriedTrackerCurrentRow,
+            timerData: carriedTimerData,
+            ...projectData
+          };
+
+          projects.push(newProject);
+          activeProjectId = newProject.id;
+          counterMode = "project";
+          timerMode = "project";
+          row = Number(newProject.rowCount) || 0;
+        }
+
+        saveProjects();
+        renderProjectSnapshot();
+        renderProjectList();
+
+        if (!editingProjectId && activeProjectId) {
+          loadWorkspaceFromActiveProject();
+        } else {
+          loadRowForCurrentMode();
+          renderTimer();
+        }
+
+        projectFormDialog.close();
+      } finally {
+        isSavingProjectForm = false;
+        saveProjectForm.disabled = false;
       }
-
-      saveProjects();
-      renderProjectSnapshot();
-      renderProjectList();
-
-      if (!editingProjectId && activeProjectId) {
-        loadWorkspaceFromActiveProject();
-      } else {
-        loadRowForCurrentMode();
-        renderTimer();
-      }
-
-      projectFormDialog.close();
     }
 
     function getStatusOrder() {
@@ -5908,6 +5916,14 @@
     }
 
     function openProjectById(projectId) {
+      const nextProject = projects.find(project => project.id === projectId);
+
+      if (!nextProject) {
+        alert("That project could not be found. Refreshing the project list.");
+        renderProjectList();
+        return;
+      }
+
       saveWorkspaceToActiveProject();
       activeProjectId = projectId;
       counterMode = "project";
