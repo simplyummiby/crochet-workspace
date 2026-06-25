@@ -2281,6 +2281,10 @@
     .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
     .project-card-actions { justify-content:flex-end; }
     .project-snapshot { border:1px solid var(--line); background:var(--accent-light); border-radius:16px; padding:15px; }
+    .start-here-card { padding:16px 20px; }
+    .start-here-checklist { display:grid; gap:10px; }
+    .start-here-checklist strong { display:block; color:var(--cranberry-dark); font-size:1.05rem; }
+    .start-here-checklist ol { display:grid; gap:6px; margin:0; padding-left:20px; color:var(--muted); font-size:.9rem; line-height:1.45; }
     .empty-project strong { display:block; color:var(--cranberry-dark); margin-bottom:5px; }
     .empty-project span { display:block; color:var(--muted); line-height:1.4; }
     .snapshot-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:stretch; }
@@ -3085,7 +3089,7 @@
         <div class="project-card-head">
           <div>
             <h2 class="section-title">🧺 Current Project</h2>
-            <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
+            <p class="project-subtitle" id="projectSubtitle">Start here: create your first project.</p>
           </div>
 
           <div class="project-card-actions">
@@ -3100,6 +3104,15 @@
             <strong>No project selected</strong>
             <span>Create a project to save your hook size, rows, timer, pattern links, and notes.</span>
           </div>
+        </div>
+
+        <div class="start-here-checklist" aria-label="Start here checklist">
+          <strong>Start Here</strong>
+          <ol>
+            <li>Create your first project.</li>
+            <li>Add a video, web pattern, or PDF.</li>
+            <li>Track rows and time as you crochet.</li>
+          </ol>
         </div>
 
         <details class="project-notes-drawer">
