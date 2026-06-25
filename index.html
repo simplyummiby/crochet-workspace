@@ -674,6 +674,135 @@
       width: max-content;
     }
 
+    .getting-started-accordion {
+      margin-top: 14px;
+      max-width: 820px;
+    }
+
+    .getting-started-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .getting-started-chevron {
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform 0.2s ease;
+    }
+
+    .getting-started-toggle[aria-expanded="true"] .getting-started-chevron {
+      transform: rotate(180deg);
+    }
+
+    .getting-started-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      margin-top: 0;
+      transition: grid-template-rows 0.24s ease, opacity 0.2s ease, margin-top 0.24s ease;
+    }
+
+    .getting-started-panel:not([hidden]) {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      margin-top: 12px;
+    }
+
+    .getting-started-panel-inner {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 253, 251, 0.94);
+      box-shadow: 0 14px 32px rgba(119, 54, 79, 0.12);
+      padding: 18px;
+    }
+
+    .getting-started-intro h2 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1.28rem;
+    }
+
+    .getting-started-intro p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .getting-started-subtitle {
+      color: var(--cranberry-dark) !important;
+      font-weight: 800;
+    }
+
+    .getting-started-sections {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .getting-started-section {
+      border: 1px solid #f1dbe1;
+      border-radius: 16px;
+      background: #fffdfb;
+      padding: 14px;
+    }
+
+    .getting-started-section-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .getting-started-check {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.82rem;
+      flex: 0 0 auto;
+    }
+
+    .getting-started-section.is-complete .getting-started-check {
+      background: var(--accent-light);
+      color: var(--green);
+    }
+
+    .getting-started-section h3 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1rem;
+    }
+
+    .getting-started-section p,
+    .getting-started-section li {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.42;
+    }
+
+    .getting-started-section p {
+      margin: 8px 0 0;
+    }
+
+    .getting-started-section ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .quick-mode-note {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--accent-light);
+      padding: 10px;
+    }
+
     .welcome-image {
       display: flex;
       justify-content: center;
@@ -2499,7 +2628,12 @@
       color: var(--muted);
       background: var(--accent-light);
     }
-    @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr 1fr;} .snapshot-main{grid-column:span 2;} .snapshot-item{border-right:0;} }
+    @media(max-width:900px){
+      .getting-started-sections{grid-template-columns:1fr;}
+      .snapshot-grid{grid-template-columns:1fr 1fr 1fr;}
+      .snapshot-main{grid-column:span 2;}
+      .snapshot-item{border-right:0;}
+    }
     @media(max-width:650px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} }
     @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
 
@@ -2788,7 +2922,70 @@
         <div class="welcome-copy">
           <h1>Your Crochet Project Companion</h1>
           <p>Keep track of projects, patterns, rows, time, and notes—all in one place.</p>
-          <button class="outline-btn getting-started-btn" id="openGettingStarted" type="button">📖 How to Use</button>
+          <div class="getting-started-accordion" id="gettingStartedAccordion">
+            <button
+              class="outline-btn getting-started-btn getting-started-toggle"
+              id="openGettingStarted"
+              type="button"
+              aria-expanded="false"
+              aria-controls="gettingStartedPanel">
+              <span id="gettingStartedToggleText">🌸 Getting Started</span>
+              <span class="getting-started-chevron" id="gettingStartedChevron" aria-hidden="true">⌄</span>
+            </button>
+
+            <div class="getting-started-panel" id="gettingStartedPanel" hidden>
+              <div class="getting-started-panel-inner">
+                <div class="getting-started-intro">
+                  <h2>Welcome to Crochet Workspace</h2>
+                  <p class="getting-started-subtitle">A dedicated workspace for crocheters.</p>
+                  <p>Keep your projects, pattern notes, row counters, timers, and tutorial resources together in one calm place.</p>
+                </div>
+
+                <div class="getting-started-sections">
+                  <section class="getting-started-section" id="gettingStartedProjectStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>🌸 Start a Project</h3>
+                    </div>
+                    <p>Create a project to keep your hook size, materials, notes, rows, timer, pattern sources, and pattern tracker together.</p>
+                    <p class="quick-mode-note"><strong>Quick Mode:</strong> Need to count rows or time a quick project? Use Quick Mode without creating a project. Quick Mode is great for small projects, practice swatches, or one-off tracking.</p>
+                  </section>
+
+                  <section class="getting-started-section" id="gettingStartedPatternStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>📚 Add Your Pattern</h3>
+                    </div>
+                    <p>Keep the original video, webpage, or PDF you are following beside your project while you crochet.</p>
+                    <ul>
+                      <li><strong>Video Tutorial:</strong> keep a YouTube tutorial nearby.</li>
+                      <li><strong>Web Pattern:</strong> keep an online pattern open without switching tabs.</li>
+                      <li><strong>PDF Pattern:</strong> view a PDF pattern while you work.</li>
+                    </ul>
+                    <p><strong>Pattern Tracker:</strong> Paste row-by-row instructions into the Pattern Tracker, then check off each row as you complete it. Your place is saved with your project.</p>
+                  </section>
+
+                  <section class="getting-started-section" id="gettingStartedCrochetStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>🧶 Start Crocheting</h3>
+                    </div>
+                    <p>Use the tools while you work: Row Counter, Project Timer, Tutorial Notes, Stitch Reference, and Crochet Toolbox.</p>
+                  </section>
+
+                  <section class="getting-started-section" id="gettingStartedSaveStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>☁️ Save Your Work</h3>
+                    </div>
+                    <p><strong>Local Storage:</strong> No account required. Your workspace saves in this browser on this device.</p>
+                    <p><strong>Cloud Sync:</strong> Create an account to sign in and sync your projects across devices.</p>
+                    <p>You can start locally today and switch to Cloud Sync later whenever you’re ready.</p>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="welcome-image">
@@ -3557,6 +3754,12 @@
     const timerClearAllBtn = document.getElementById("timerClearAllBtn");
     const projectNotes = document.getElementById("projectNotes");
     const openGettingStarted = document.getElementById("openGettingStarted");
+    const gettingStartedPanel = document.getElementById("gettingStartedPanel");
+    const gettingStartedToggleText = document.getElementById("gettingStartedToggleText");
+    const gettingStartedProjectStep = document.getElementById("gettingStartedProjectStep");
+    const gettingStartedPatternStep = document.getElementById("gettingStartedPatternStep");
+    const gettingStartedCrochetStep = document.getElementById("gettingStartedCrochetStep");
+    const gettingStartedSaveStep = document.getElementById("gettingStartedSaveStep");
     const gettingStartedDialog = document.getElementById("gettingStartedDialog");
     const closeGettingStarted = document.getElementById("closeGettingStarted");
     const openYourProjectsNav = document.getElementById("openYourProjectsNav");
@@ -3787,6 +3990,15 @@
     let timerStartedAt = null;
 
     const ACCOUNT_MODE_KEY = "crochetWorkspaceAccountMode";
+    const GETTING_STARTED_COLLAPSED_KEY = "crochetWorkspaceGettingStartedCollapsed";
+    const THEME_KEY = "crochetWorkspaceTheme";
+    const THEME_OPTIONS = {
+      rose: "Rose",
+      sage: "Sage",
+      lavender: "Lavender",
+      peach: "Peach",
+      blue: "Blue"
+    };
     const CLOUD_UPDATED_AT_KEY = "crochetWorkspaceCloudUpdatedAt";
     const SUPABASE_SYNC_TABLE = "crochet_workspaces";
     const SUPABASE_URL = window.CROCHET_SUPABASE_URL || "https://reokevjoihiizzbolqsd.supabase.co";
@@ -3860,6 +4072,8 @@
       if (accountSyncNote) {
         accountSyncNote.innerHTML = `<strong>${isSynced ? "Cloud sync is on." : "Cloud sync status:"}</strong> ${getCloudStatusMessage()}`;
       }
+
+      updateGettingStartedProgress();
     }
 
     async function continueInLocalMode() {
@@ -4162,6 +4376,74 @@
       applyTheme("rose");
     }
 
+    function setGettingStartedOpen(isOpen, persist = true) {
+      if (!openGettingStarted || !gettingStartedPanel || !gettingStartedToggleText) return;
+
+      openGettingStarted.setAttribute("aria-expanded", String(isOpen));
+      gettingStartedToggleText.textContent = isOpen ? "Hide Getting Started" : "🌸 Getting Started";
+      gettingStartedPanel.hidden = !isOpen;
+
+      if (persist) {
+        localStorage.setItem(GETTING_STARTED_COLLAPSED_KEY, String(!isOpen));
+      }
+    }
+
+    function toggleGettingStartedAccordion() {
+      const isOpen = openGettingStarted.getAttribute("aria-expanded") === "true";
+      setGettingStartedOpen(!isOpen);
+    }
+
+    function initializeGettingStartedAccordion() {
+      const savedCollapsed = localStorage.getItem(GETTING_STARTED_COLLAPSED_KEY);
+      const shouldOpen = savedCollapsed === null ? !projects.length : savedCollapsed !== "true";
+      setGettingStartedOpen(shouldOpen, false);
+      updateGettingStartedProgress();
+    }
+
+    function setGettingStartedStepComplete(step, isComplete) {
+      if (!step) return;
+      step.classList.toggle("is-complete", Boolean(isComplete));
+      const check = step.querySelector(".getting-started-check");
+      if (check) check.textContent = isComplete ? "✓" : "○";
+    }
+
+    function projectHasPatternSource(project) {
+      const sources = project?.sources || {};
+      return Boolean(sources.videoUrl || sources.webPatternUrl || sources.pdfPatternUrl)
+        || Boolean(project?.videoUrl || project?.webPatternUrl || project?.pdfPatternUrl)
+        || (Array.isArray(project?.patternTrackerRows) && project.patternTrackerRows.length > 0);
+    }
+
+    function projectHasCrochetProgress(project) {
+      const sessions = Array.isArray(project?.timerData?.sessions) ? project.timerData.sessions : [];
+      return (Number(project?.rowCount) || 0) > 0 || sessions.length > 0;
+    }
+
+    function updateGettingStartedProgress() {
+      if (!gettingStartedProjectStep) return;
+
+      const hasProject = Array.isArray(projects) && projects.length > 0;
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+      const currentSources = {
+        videoUrl: videoUrl?.value || localStorage.getItem(VIDEO_KEY) || "",
+        webPatternUrl: webUrl?.value || localStorage.getItem(WEB_PATTERN_KEY) || "",
+        pdfPatternUrl: pdfUrl?.value || localStorage.getItem(PDF_PATTERN_KEY) || ""
+      };
+      const hasPattern = Boolean(currentSources.videoUrl || currentSources.webPatternUrl || currentSources.pdfPatternUrl)
+        || (Array.isArray(trackerRows) && trackerRows.length > 0)
+        || projects.some(projectHasPatternSource);
+      const hasCrochetProgress = (Number(row) || 0) > 0
+        || (Array.isArray(timerData?.sessions) && timerData.sessions.length > 0)
+        || projects.some(projectHasCrochetProgress);
+      const hasSavedWork = (accountMode === "synced" && Boolean(currentCloudUser))
+        || Boolean(localStorage.getItem(PROJECTS_KEY));
+
+      setGettingStartedStepComplete(gettingStartedProjectStep, hasProject || Boolean(activeProject));
+      setGettingStartedStepComplete(gettingStartedPatternStep, hasPattern);
+      setGettingStartedStepComplete(gettingStartedCrochetStep, hasCrochetProgress);
+      setGettingStartedStepComplete(gettingStartedSaveStep, hasSavedWork);
+    }
+
     let recognition = null;
     let voiceActive = false;
     let shouldRestartVoice = false;
@@ -4181,6 +4463,7 @@
       localStorage.setItem(COUNTER_MODE_KEY, counterMode);
       markWorkspaceDirty();
       updateCounterModeDisplay();
+      updateGettingStartedProgress();
     }
 
     function renderRow() {
@@ -4753,9 +5036,7 @@
       };
     }
 
-    openGettingStarted.addEventListener("click", () => {
-      gettingStartedDialog.showModal();
-    });
+    openGettingStarted.addEventListener("click", toggleGettingStartedAccordion);
 
     closeGettingStarted.addEventListener("click", () => {
       gettingStartedDialog.close();
@@ -5325,6 +5606,8 @@
 
     function renderProjectSnapshot() {
       const project = getActiveProject();
+
+      updateGettingStartedProgress();
 
       if (!project) {
         projectSubtitle.textContent = "Start here: create your first project.";
@@ -6687,6 +6970,7 @@
     renderAccountStatus();
     applyTheme(localStorage.getItem(THEME_KEY) || "rose");
 
+    initializeGettingStartedAccordion();
     renderProjectSnapshot();
     renderProjectList();
 
