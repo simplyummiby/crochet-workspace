@@ -347,7 +347,7 @@
     }
 
     .account-dialog {
-      width: min(820px, calc(100vw - 34px));
+      width: min(980px, calc(100vw - 34px));
     }
 
     .account-status-pill {
@@ -507,7 +507,7 @@
     }
 
     @media (max-width: 720px) {
-      .account-dialog { width: min(560px, calc(100vw - 24px)); }
+      .account-dialog { width: min(680px, calc(100vw - 24px)); }
       .account-layout,
       .account-field-grid,
       .account-actions,
@@ -674,6 +674,135 @@
       width: max-content;
     }
 
+    .getting-started-accordion {
+      margin-top: 14px;
+      max-width: 820px;
+    }
+
+    .getting-started-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .getting-started-chevron {
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform 0.2s ease;
+    }
+
+    .getting-started-toggle[aria-expanded="true"] .getting-started-chevron {
+      transform: rotate(180deg);
+    }
+
+    .getting-started-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      margin-top: 0;
+      transition: grid-template-rows 0.24s ease, opacity 0.2s ease, margin-top 0.24s ease;
+    }
+
+    .getting-started-panel:not([hidden]) {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      margin-top: 12px;
+    }
+
+    .getting-started-panel-inner {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 253, 251, 0.94);
+      box-shadow: 0 14px 32px rgba(119, 54, 79, 0.12);
+      padding: 18px;
+    }
+
+    .getting-started-intro h2 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1.28rem;
+    }
+
+    .getting-started-intro p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .getting-started-subtitle {
+      color: var(--cranberry-dark) !important;
+      font-weight: 800;
+    }
+
+    .getting-started-sections {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .getting-started-section {
+      border: 1px solid #f1dbe1;
+      border-radius: 16px;
+      background: #fffdfb;
+      padding: 14px;
+    }
+
+    .getting-started-section-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .getting-started-check {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.82rem;
+      flex: 0 0 auto;
+    }
+
+    .getting-started-section.is-complete .getting-started-check {
+      background: var(--accent-light);
+      color: var(--green);
+    }
+
+    .getting-started-section h3 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1rem;
+    }
+
+    .getting-started-section p,
+    .getting-started-section li {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.42;
+    }
+
+    .getting-started-section p {
+      margin: 8px 0 0;
+    }
+
+    .getting-started-section ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .quick-mode-note {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--accent-light);
+      padding: 10px;
+    }
+
     .welcome-image {
       display: flex;
       justify-content: center;
@@ -738,15 +867,30 @@
 
     .getting-started-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
 
     .help-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
       border: 1px solid #f1dbe1;
       background: #fffdfb;
       border-radius: 16px;
       padding: 14px;
+    }
+
+    .help-step-number {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.86rem;
     }
 
     .help-step strong {
@@ -1559,26 +1703,15 @@
     }
 
     .stitch-toolbox {
-      position: relative;
       display: grid;
       gap: 12px;
-      background:
-        radial-gradient(circle at 18px 18px, rgba(255, 214, 229, .72), transparent 34%),
-        radial-gradient(circle at calc(100% - 22px) 28px, rgba(255, 238, 207, .82), transparent 32%),
-        linear-gradient(145deg, rgba(255, 253, 251, 0.98), rgba(255, 244, 249, 0.96));
-    }
-
-    .stitch-toolbox::after {
-      content: "✦";
-      position: absolute;
-      right: 18px;
-      top: 14px;
-      color: rgba(157, 42, 85, .25);
-      font-size: 1.35rem;
+      padding: 18px;
+      background: rgba(255, 253, 251, 0.95);
     }
 
     .stitch-toolbox .section-title {
       color: var(--cranberry-dark);
+      margin-bottom: 0;
     }
 
     .stitch-toolbox p {
@@ -1602,10 +1735,10 @@
       min-height: 72px;
       padding: 10px 8px;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255,248,250,.92);
+      border-radius: 14px;
+      background: var(--accent-light);
       color: var(--cranberry-dark);
-      box-shadow: 0 10px 18px rgba(157, 42, 85, .08);
+      box-shadow: none;
       font-size: .82rem;
       text-align: center;
     }
@@ -1807,6 +1940,11 @@
       color: var(--muted);
       font-size: 0.84rem;
       line-height: 1.4;
+    }
+
+    .source-intro {
+      margin-top: 6px;
+      max-width: 620px;
     }
 
 
@@ -2486,7 +2624,12 @@
       color: var(--muted);
       background: var(--accent-light);
     }
-    @media(max-width:900px){ .snapshot-grid{grid-template-columns:1fr 1fr 1fr;} .snapshot-main{grid-column:span 2;} .snapshot-item{border-right:0;} }
+    @media(max-width:900px){
+      .getting-started-sections{grid-template-columns:1fr;}
+      .snapshot-grid{grid-template-columns:1fr 1fr 1fr;}
+      .snapshot-main{grid-column:span 2;}
+      .snapshot-item{border-right:0;}
+    }
     @media(max-width:650px){ .snapshot-grid{grid-template-columns:1fr 1fr;} .snapshot-main{grid-column:1/-1;} }
     @media(max-width:600px){ .simple-welcome{grid-template-columns:1fr;} .project-card-head{flex-direction:column;} .project-card-actions,.project-backup-actions{width:100%;} .project-card-actions button,.project-backup-actions button,.project-backup-actions label{flex:1 1 100%;} .project-form-grid{grid-template-columns:1fr;} }
 
@@ -2763,8 +2906,7 @@
     </div>
     <nav class="nav">
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
-      <button class="nav-link" id="openStitchReferenceNav" type="button">🧶 Stitch Reference</button>
-      <button class="nav-link" id="openAccountNav" type="button">👤 Account</button>
+      <button class="nav-link" id="openAccountNav" type="button">💾 Save &amp; Sync</button>
       <button class="nav-link" id="openSettingsNav" type="button">⚙️ Settings</button>
     </nav>
     
@@ -2776,7 +2918,70 @@
         <div class="welcome-copy">
           <h1>Your Crochet Project Companion</h1>
           <p>Keep track of projects, patterns, rows, time, and notes—all in one place.</p>
-          <button class="outline-btn getting-started-btn" id="openGettingStarted" type="button">📖 How to Use</button>
+          <div class="getting-started-accordion" id="gettingStartedAccordion">
+            <button
+              class="outline-btn getting-started-btn getting-started-toggle"
+              id="openGettingStarted"
+              type="button"
+              aria-expanded="false"
+              aria-controls="gettingStartedPanel">
+              <span id="gettingStartedToggleText">🌸 Getting Started</span>
+              <span class="getting-started-chevron" id="gettingStartedChevron" aria-hidden="true">⌄</span>
+            </button>
+
+            <div class="getting-started-panel" id="gettingStartedPanel" hidden>
+              <div class="getting-started-panel-inner">
+                <div class="getting-started-intro">
+                  <h2>Welcome to Crochet Workspace</h2>
+                  <p class="getting-started-subtitle">A dedicated workspace for crocheters.</p>
+                  <p>Keep your projects, pattern notes, row counters, timers, and tutorial resources together in one calm place.</p>
+                </div>
+
+                <div class="getting-started-sections">
+                  <section class="getting-started-section" id="gettingStartedProjectStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>🌸 Start a Project</h3>
+                    </div>
+                    <p>Create a project to keep your hook size, materials, notes, rows, timer, pattern sources, and pattern tracker together.</p>
+                    <p class="quick-mode-note"><strong>Quick Mode:</strong> Need to count rows or time a quick project? Use Quick Mode without creating a project. Quick Mode is great for small projects, practice swatches, or one-off tracking.</p>
+                  </section>
+
+                  <section class="getting-started-section" id="gettingStartedPatternStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>📚 Add Your Pattern</h3>
+                    </div>
+                    <p>Keep the original video, webpage, or PDF you are following beside your project while you crochet.</p>
+                    <ul>
+                      <li><strong>Video Tutorial:</strong> keep a YouTube tutorial nearby.</li>
+                      <li><strong>Web Pattern:</strong> keep an online pattern open without switching tabs.</li>
+                      <li><strong>PDF Pattern:</strong> view a PDF pattern while you work.</li>
+                    </ul>
+                    <p><strong>Pattern Tracker:</strong> Paste row-by-row instructions into the Pattern Tracker, then check off each row as you complete it. Your place is saved with your project.</p>
+                  </section>
+
+                  <section class="getting-started-section" id="gettingStartedCrochetStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>🧶 Start Crocheting</h3>
+                    </div>
+                    <p>Use the tools while you work: Row Counter, Project Timer, Tutorial Notes, Stitch Reference, and Crochet Toolbox.</p>
+                  </section>
+
+                  <section class="getting-started-section" id="gettingStartedSaveStep">
+                    <div class="getting-started-section-head">
+                      <span class="getting-started-check" aria-hidden="true">○</span>
+                      <h3>☁️ Save Your Work</h3>
+                    </div>
+                    <p><strong>Local Storage:</strong> No account required. Your workspace saves in this browser on this device.</p>
+                    <p><strong>Cloud Sync:</strong> Create an account to sign in and sync your projects across devices.</p>
+                    <p>You can start locally today and switch to Cloud Sync later whenever you’re ready.</p>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="welcome-image">
@@ -2788,13 +2993,13 @@
         <div class="project-card-head">
           <div>
             <h2 class="section-title">🧺 Current Project</h2>
-            <p class="project-subtitle" id="projectSubtitle">No active project selected.</p>
+            <p class="project-subtitle" id="projectSubtitle">Start here: create your first project.</p>
           </div>
 
           <div class="project-card-actions">
-            <button class="outline-btn" id="createProjectBtn" type="button">➕ New</button>
-            <button class="outline-btn" id="editProjectBtn" type="button">✏️ Edit</button>
-            <button class="outline-btn" id="switchProjectBtn" type="button">🔄 Switch</button>
+            <button class="outline-btn" id="createProjectBtn" type="button">➕ Create First Project</button>
+            <button class="outline-btn" id="editProjectBtn" type="button">✏️ Edit Project</button>
+            <button class="outline-btn" id="switchProjectBtn" type="button">🔄 Switch Project</button>
           </div>
         </div>
 
@@ -2811,7 +3016,7 @@
         </details>
 
         <details class="backup-restore">
-          <summary>💾 Backup & Restore</summary>
+          <summary>💾 Advanced: Backup &amp; Restore</summary>
 
           <div class="backup-warning">
             <strong>Local storage reminder</strong>
@@ -2830,6 +3035,7 @@
       <section class="card viewer">
         <div class="section-head">
           <h2 class="section-title">🔗 Pattern Source</h2>
+          <p class="source-help source-intro">Optional: keep the video, webpage, or PDF you are following beside your project.</p>
         </div>
 
         <div class="source-tabs" role="tablist" aria-label="Pattern source options">
@@ -2949,11 +3155,11 @@
         <div class="tracker-head">
           <div>
             <h2 class="section-title">🌺 Pattern Tracker</h2>
-            <p class="tracker-subtitle">Paste pattern rows, check them off, and keep your place in the pattern.</p>
+            <p class="tracker-subtitle">Paste pattern rows, then check off each row as you finish it. This tracker is separate from the Row Counter.</p>
           </div>
 
           <div class="tracker-actions">
-            <button class="outline-btn" id="openStitchReferenceNav" type="button">🧶 Stitch Reference</button>
+            <button class="outline-btn" id="openStitchReferenceTracker" type="button">🧶 Stitch Reference</button>
             <button class="outline-btn" id="pastePatternBtn" type="button">Paste Pattern</button>
             <button class="outline-btn" id="uncheckRowsBtn" type="button">Uncheck Rows</button>
             <button class="outline-btn danger-outline-btn" id="deletePatternBtn" type="button">Delete Pattern</button>
@@ -2970,7 +3176,7 @@
 
         <div class="tracker-empty" id="trackerEmpty">
           <strong>No pattern rows yet</strong>
-          <span>Click “Paste Pattern” and paste one row per line.</span>
+          <span>Click “Paste Pattern” and paste one row per line. Then mark each row done as you crochet.</span>
         </div>
 
         <div class="tracker-table-wrap" id="trackerTableWrap" hidden>
@@ -3000,8 +3206,8 @@
         </div>
 
         <div class="counter-mode-row">
-          <p class="counter-mode-text" id="counterModeText">Quick Counter Mode</p>
-          <button class="counter-mode-btn" id="counterModeToggle" type="button">Use Project Counter</button>
+          <p class="counter-mode-text" id="counterModeText">Quick Counter: one-off row count</p>
+          <button class="counter-mode-btn" id="counterModeToggle" type="button">Save rows to project</button>
         </div>
 
         <div class="row-number" id="rowCount" aria-live="polite">0</div>
@@ -3043,8 +3249,8 @@
         </div>
 
         <div class="timer-mode-row">
-          <p class="timer-mode-text" id="timerModeText">Quick Timer Mode</p>
-          <button class="timer-mode-btn" id="timerModeToggle" type="button">Use Project Timer</button>
+          <p class="timer-mode-text" id="timerModeText">Quick Timer: general crochet time</p>
+          <button class="timer-mode-btn" id="timerModeToggle" type="button">Save time to project</button>
         </div>
 
         <div class="timer-block">
@@ -3096,7 +3302,7 @@
 
 
   <dialog class="project-dialog" id="projectFormDialog">
-    <h2 id="projectFormTitle">Create Project</h2>
+    <h2 id="projectFormTitle">Create First Project</h2>
 
     <div class="project-form-grid">
       <label class="full">Project Name
@@ -3204,7 +3410,7 @@
     <div class="getting-started-header">
       <div>
         <h2>🧶 How to Use Crochet Workspace</h2>
-        <p>A quick guide to projects, patterns, rows, time, notes, and backups.</p>
+        <p>Three simple steps: start a project, keep your pattern nearby, then track rows and time.</p>
       </div>
       <button class="close-help-btn" id="closeGettingStarted" type="button" aria-label="Close help">×</button>
     </div>
@@ -3212,43 +3418,37 @@
     <div class="getting-started-content">
       <div class="getting-started-grid">
         <div class="help-step">
-          <strong>1. Create a project</strong>
-          <p>Save the project name, hook size, materials, status, notes, rows, timer data, and pattern sources.</p>
+          <span class="help-step-number">1</span>
+          <div>
+            <strong>Create or open a project</strong>
+            <p>Use Current Project to save the project name, hook, materials, notes, row count, timer history, and pattern links.</p>
+          </div>
         </div>
 
         <div class="help-step">
-          <strong>2. Add a pattern source</strong>
-          <p>Use 🎥 Video Tutorial, 🌐 Web Pattern, or 📄 PDF Pattern to keep your instructions nearby.</p>
+          <span class="help-step-number">2</span>
+          <div>
+            <strong>Add the pattern you are following</strong>
+            <p>Use Pattern Source for a video, webpage, or PDF. If you have written rows, paste them into Pattern Tracker.</p>
+          </div>
         </div>
 
         <div class="help-step">
-          <strong>3. Track your rows</strong>
-          <p>Use the Row Counter for manual tracking, or paste rows into the Pattern Tracker and check them off.</p>
-        </div>
-
-        <div class="help-step">
-          <strong>4. Track your time</strong>
-          <p>Start a Project Timer session when you crochet. End the session to save it to the project history.</p>
-        </div>
-
-        <div class="help-step">
-          <strong>5. Keep notes</strong>
-          <p>Use Project Notes for yarn changes, modifications, reminders, sizing notes, or anything you want to remember.</p>
-        </div>
-
-        <div class="help-step">
-          <strong>6. Back up your work</strong>
-          <p>Use Backup & Restore to download the current project or all projects as a JSON backup file.</p>
+          <span class="help-step-number">3</span>
+          <div>
+            <strong>Track progress as you crochet</strong>
+            <p>Use Quick modes for one-off counting or timing. Switch to Project modes when you want rows and time saved with the active project.</p>
+          </div>
         </div>
       </div>
 
       <p class="storage-warning">
         <strong>💾 Storage Notice</strong>
-        Crochet Workspace currently saves projects, notes, row counts, timers, tutorial notes, and pattern data in this browser. If you clear browser data, switch browsers, or use a different device, your saved workspace may not be there. Use Backup & Restore regularly for important projects.
+        Crochet Workspace currently saves projects, notes, row counts, timers, tutorial notes, and pattern data in this browser. If you clear browser data, switch browsers, or use a different device, your saved workspace may not be there. Use Advanced: Backup &amp; Restore regularly for important projects.
       </p>
 
       <p class="help-note">
-        <strong>Tip:</strong> Row Counter and Pattern Tracker are independent tools. Use either one—or both—depending on how you like to follow a pattern.
+        <strong>Tip:</strong> Row Counter and Pattern Tracker are independent. Use Row Counter for a simple number, Pattern Tracker for row-by-row instructions, or both.
       </p>
     </div>
   </dialog>
@@ -3338,6 +3538,10 @@
         <span class="theme-dot theme-dot-main"></span>
         <span class="theme-dot theme-dot-soft"></span>
         <span class="theme-dot theme-dot-line"></span>
+      </div>
+
+      <div class="project-dialog-actions">
+        <button class="soft-btn" id="settingsCloseFooter" type="button">Close</button>
       </div>
     </div>
   </dialog>
@@ -3526,10 +3730,17 @@
     const timerClearAllBtn = document.getElementById("timerClearAllBtn");
     const projectNotes = document.getElementById("projectNotes");
     const openGettingStarted = document.getElementById("openGettingStarted");
+    const gettingStartedPanel = document.getElementById("gettingStartedPanel");
+    const gettingStartedToggleText = document.getElementById("gettingStartedToggleText");
+    const gettingStartedProjectStep = document.getElementById("gettingStartedProjectStep");
+    const gettingStartedPatternStep = document.getElementById("gettingStartedPatternStep");
+    const gettingStartedCrochetStep = document.getElementById("gettingStartedCrochetStep");
+    const gettingStartedSaveStep = document.getElementById("gettingStartedSaveStep");
     const gettingStartedDialog = document.getElementById("gettingStartedDialog");
     const closeGettingStarted = document.getElementById("closeGettingStarted");
     const openYourProjectsNav = document.getElementById("openYourProjectsNav");
     const openStitchReferenceBtn = document.getElementById("openStitchReferenceBtn");
+    const openStitchReferenceTracker = document.getElementById("openStitchReferenceTracker");
     const openHookChartBtn = document.getElementById("openHookChartBtn");
     const openYarnWeightChartBtn = document.getElementById("openYarnWeightChartBtn");
     const openAbbreviationsBtn = document.getElementById("openAbbreviationsBtn");
@@ -3575,6 +3786,7 @@
     const openSettingsNav = document.getElementById("openSettingsNav");
     const settingsDialog = document.getElementById("settingsDialog");
     const closeSettings = document.getElementById("closeSettings");
+    const settingsCloseFooter = document.getElementById("settingsCloseFooter");
     const themeSelect = document.getElementById("themeSelect");
     const resetThemeBtn = document.getElementById("resetThemeBtn");
 
@@ -3662,16 +3874,6 @@
 
     let activeStitchCategory = "All";
 
-    function removeLegacyStitchReferenceNavLinks() {
-      document.querySelectorAll(".nav .nav-link").forEach(link => {
-        const isLegacyStitchReference = link.id === "openStitchReferenceNav" || link.textContent.includes("Stitch Reference");
-        if (isLegacyStitchReference) {
-          link.remove();
-        }
-      });
-    }
-
-    removeLegacyStitchReferenceNavLinks();
 
     function renderHookChart() {
       hookChartBody.innerHTML = HOOK_SIZE_CHART.map(size => `
@@ -3764,6 +3966,15 @@
     let timerStartedAt = null;
 
     const ACCOUNT_MODE_KEY = "crochetWorkspaceAccountMode";
+    const GETTING_STARTED_COLLAPSED_KEY = "crochetWorkspaceGettingStartedCollapsed";
+    const THEME_KEY = "crochetWorkspaceTheme";
+    const THEME_OPTIONS = {
+      rose: "Rose",
+      sage: "Sage",
+      lavender: "Lavender",
+      peach: "Peach",
+      blue: "Blue"
+    };
     const CLOUD_UPDATED_AT_KEY = "crochetWorkspaceCloudUpdatedAt";
     const SUPABASE_SYNC_TABLE = "crochet_workspaces";
     const SUPABASE_URL = window.CROCHET_SUPABASE_URL || "https://reokevjoihiizzbolqsd.supabase.co";
@@ -3837,6 +4048,8 @@
       if (accountSyncNote) {
         accountSyncNote.innerHTML = `<strong>${isSynced ? "Cloud sync is on." : "Cloud sync status:"}</strong> ${getCloudStatusMessage()}`;
       }
+
+      updateGettingStartedProgress();
     }
 
     async function continueInLocalMode() {
@@ -3887,7 +4100,6 @@
         accountSyncNote.innerHTML = "<strong>Email needed:</strong> Enter your email address first.";
         return null;
       }
-    }
 
       if (!password || password.length < 6) {
         accountSyncNote.innerHTML = "<strong>Password needed:</strong> Enter a password with at least 6 characters.";
@@ -4140,6 +4352,74 @@
       applyTheme("rose");
     }
 
+    function setGettingStartedOpen(isOpen, persist = true) {
+      if (!openGettingStarted || !gettingStartedPanel || !gettingStartedToggleText) return;
+
+      openGettingStarted.setAttribute("aria-expanded", String(isOpen));
+      gettingStartedToggleText.textContent = isOpen ? "Hide Getting Started" : "🌸 Getting Started";
+      gettingStartedPanel.hidden = !isOpen;
+
+      if (persist) {
+        localStorage.setItem(GETTING_STARTED_COLLAPSED_KEY, String(!isOpen));
+      }
+    }
+
+    function toggleGettingStartedAccordion() {
+      const isOpen = openGettingStarted.getAttribute("aria-expanded") === "true";
+      setGettingStartedOpen(!isOpen);
+    }
+
+    function initializeGettingStartedAccordion() {
+      const savedCollapsed = localStorage.getItem(GETTING_STARTED_COLLAPSED_KEY);
+      const shouldOpen = savedCollapsed === null ? !projects.length : savedCollapsed !== "true";
+      setGettingStartedOpen(shouldOpen, false);
+      updateGettingStartedProgress();
+    }
+
+    function setGettingStartedStepComplete(step, isComplete) {
+      if (!step) return;
+      step.classList.toggle("is-complete", Boolean(isComplete));
+      const check = step.querySelector(".getting-started-check");
+      if (check) check.textContent = isComplete ? "✓" : "○";
+    }
+
+    function projectHasPatternSource(project) {
+      const sources = project?.sources || {};
+      return Boolean(sources.videoUrl || sources.webPatternUrl || sources.pdfPatternUrl)
+        || Boolean(project?.videoUrl || project?.webPatternUrl || project?.pdfPatternUrl)
+        || (Array.isArray(project?.patternTrackerRows) && project.patternTrackerRows.length > 0);
+    }
+
+    function projectHasCrochetProgress(project) {
+      const sessions = Array.isArray(project?.timerData?.sessions) ? project.timerData.sessions : [];
+      return (Number(project?.rowCount) || 0) > 0 || sessions.length > 0;
+    }
+
+    function updateGettingStartedProgress() {
+      if (!gettingStartedProjectStep) return;
+
+      const hasProject = Array.isArray(projects) && projects.length > 0;
+      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+      const currentSources = {
+        videoUrl: videoUrl?.value || localStorage.getItem(VIDEO_KEY) || "",
+        webPatternUrl: webUrl?.value || localStorage.getItem(WEB_PATTERN_KEY) || "",
+        pdfPatternUrl: pdfUrl?.value || localStorage.getItem(PDF_PATTERN_KEY) || ""
+      };
+      const hasPattern = Boolean(currentSources.videoUrl || currentSources.webPatternUrl || currentSources.pdfPatternUrl)
+        || (Array.isArray(trackerRows) && trackerRows.length > 0)
+        || projects.some(projectHasPatternSource);
+      const hasCrochetProgress = (Number(row) || 0) > 0
+        || (Array.isArray(timerData?.sessions) && timerData.sessions.length > 0)
+        || projects.some(projectHasCrochetProgress);
+      const hasSavedWork = (accountMode === "synced" && Boolean(currentCloudUser))
+        || Boolean(localStorage.getItem(PROJECTS_KEY));
+
+      setGettingStartedStepComplete(gettingStartedProjectStep, hasProject || Boolean(activeProject));
+      setGettingStartedStepComplete(gettingStartedPatternStep, hasPattern);
+      setGettingStartedStepComplete(gettingStartedCrochetStep, hasCrochetProgress);
+      setGettingStartedStepComplete(gettingStartedSaveStep, hasSavedWork);
+    }
+
     let recognition = null;
     let voiceActive = false;
     let shouldRestartVoice = false;
@@ -4159,6 +4439,7 @@
       localStorage.setItem(COUNTER_MODE_KEY, counterMode);
       markWorkspaceDirty();
       updateCounterModeDisplay();
+      updateGettingStartedProgress();
     }
 
     function renderRow() {
@@ -4190,7 +4471,7 @@
 
       if (!activeProject) {
         counterMode = "quick";
-        counterModeText.textContent = "Quick Counter Mode";
+        counterModeText.textContent = "Quick Counter: one-off row count";
         counterModeToggle.hidden = true;
         return;
       }
@@ -4198,11 +4479,11 @@
       counterModeToggle.hidden = false;
 
       if (counterMode === "project") {
-        counterModeText.textContent = `Project Counter: ${activeProject.name || "Untitled Project"}`;
-        counterModeToggle.textContent = "Use Quick Counter";
+        counterModeText.textContent = `Project Counter: saving rows to ${activeProject.name || "Untitled Project"}`;
+        counterModeToggle.textContent = "Use quick row count";
       } else {
-        counterModeText.textContent = "Quick Counter Mode";
-        counterModeToggle.textContent = "Use Project Counter";
+        counterModeText.textContent = "Quick Counter: one-off row count";
+        counterModeToggle.textContent = "Save rows to project";
       }
     }
 
@@ -4501,7 +4782,7 @@
 
       if (!activeProject) {
         timerMode = "quick";
-        timerModeText.textContent = "Quick Timer Mode";
+        timerModeText.textContent = "Quick Timer: general crochet time";
         timerModeToggle.hidden = true;
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
         return;
@@ -4510,12 +4791,12 @@
       timerModeToggle.hidden = false;
 
       if (timerMode === "project") {
-        timerModeText.textContent = `Project Timer: ${activeProject.name || "Untitled Project"}`;
-        timerModeToggle.textContent = "Use Quick Timer";
+        timerModeText.textContent = `Project Timer: saving time to ${activeProject.name || "Untitled Project"}`;
+        timerModeToggle.textContent = "Use quick timer";
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Project Time";
       } else {
-        timerModeText.textContent = "Quick Timer Mode";
-        timerModeToggle.textContent = "Use Project Timer";
+        timerModeText.textContent = "Quick Timer: general crochet time";
+        timerModeToggle.textContent = "Save time to project";
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
       }
     }
@@ -4731,9 +5012,7 @@
       };
     }
 
-    openGettingStarted.addEventListener("click", () => {
-      gettingStartedDialog.showModal();
-    });
+    openGettingStarted.addEventListener("click", toggleGettingStartedAccordion);
 
     closeGettingStarted.addEventListener("click", () => {
       gettingStartedDialog.close();
@@ -4747,11 +5026,14 @@
 
 
 
-    openStitchReferenceBtn.addEventListener("click", () => {
+    function openStitchReferenceDialog() {
       renderStitchReference();
       stitchReferenceDialog.showModal();
       stitchSearchInput.focus();
-    });
+    }
+
+    openStitchReferenceBtn.addEventListener("click", openStitchReferenceDialog);
+    openStitchReferenceTracker.addEventListener("click", openStitchReferenceDialog);
 
     openHookChartBtn.addEventListener("click", () => {
       renderHookChart();
@@ -4904,9 +5186,12 @@
       settingsDialog.showModal();
     });
 
-    closeSettings.addEventListener("click", () => {
+    function closeSettingsDialog() {
       settingsDialog.close();
-    });
+    }
+
+    closeSettings.addEventListener("click", closeSettingsDialog);
+    settingsCloseFooter.addEventListener("click", closeSettingsDialog);
 
     settingsDialog.addEventListener("click", event => {
       if (event.target === settingsDialog) {
@@ -5298,8 +5583,11 @@
     function renderProjectSnapshot() {
       const project = getActiveProject();
 
+      updateGettingStartedProgress();
+
       if (!project) {
-        projectSubtitle.textContent = "No active project selected.";
+        projectSubtitle.textContent = "Start here: create your first project.";
+        createProjectBtn.textContent = "➕ Create First Project";
         projectSnapshot.innerHTML = `
           <div class="empty-project">
             <strong>No project selected</strong>
@@ -5312,6 +5600,7 @@
       }
 
       projectSubtitle.textContent = "This snapshot can be backed up and restored later.";
+      createProjectBtn.textContent = "➕ New Project";
       editProjectBtn.disabled = false;
       downloadBackupBtn.disabled = false;
 
@@ -5381,7 +5670,7 @@
 
     function openProjectForm(mode, project = null) {
       editingProjectId = project?.id || "";
-      projectFormTitle.textContent = mode === "edit" ? "Edit Project" : "Create Project";
+      projectFormTitle.textContent = mode === "edit" ? "Edit Project" : (projects.length ? "New Project" : "Create First Project");
       deleteProjectBtn.hidden = mode !== "edit";
 
       projectNameInput.value = project?.name || "";
@@ -6657,6 +6946,7 @@
     renderAccountStatus();
     applyTheme(localStorage.getItem(THEME_KEY) || "rose");
 
+    initializeGettingStartedAccordion();
     renderProjectSnapshot();
     renderProjectList();
 
