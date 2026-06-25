@@ -346,6 +346,10 @@
       box-shadow: none;
     }
 
+    .account-dialog {
+      width: min(820px, calc(100vw - 34px));
+    }
+
     .account-status-pill {
       display: inline-flex;
       align-items: center;
@@ -361,56 +365,68 @@
     }
 
     .account-summary {
+      display: grid;
+      gap: 8px;
       border: 1px solid var(--accent-border);
-      border-radius: 18px;
+      border-radius: 22px;
       background:
         radial-gradient(circle at top left, var(--accent-wash), transparent 42%),
-        var(--accent-light);
-      padding: 16px;
-      margin-bottom: 14px;
+        linear-gradient(135deg, rgba(255,253,251,.98), rgba(255,244,249,.95));
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 24px rgba(157, 42, 85, .08);
     }
 
     .account-summary-label {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 9px;
+      justify-self: start;
+      padding: 4px 10px;
       border-radius: 999px;
       background: #fffdfb;
       border: 1px solid var(--line);
       color: var(--cranberry-dark);
       font-size: 0.78rem;
       font-weight: 900;
-      margin-bottom: 10px;
     }
 
     .account-summary h3 {
-      margin: 0 0 6px;
+      margin: 0;
       color: var(--cranberry-dark);
-      font-size: 1.18rem;
-      line-height: 1.2;
+      font-size: 1.35rem;
+      line-height: 1.15;
     }
 
     .account-summary p,
     .account-panel p {
       margin: 0;
       color: var(--muted);
-      line-height: 1.42;
+      line-height: 1.45;
       font-size: 0.94rem;
     }
 
+    .account-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(230px, .85fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
     .account-panel {
+      display: flex;
+      flex-direction: column;
       border: 1px solid var(--line);
-      border-radius: 17px;
-      background: #fffdfb;
-      padding: 15px;
-      margin-bottom: 12px;
+      border-radius: 20px;
+      background: rgba(255,253,251,.96);
+      padding: 18px;
+      box-shadow: 0 10px 20px rgba(157, 42, 85, .06);
     }
 
     .account-panel h3 {
-      margin: 0 0 6px;
+      margin: 0 0 7px;
       color: var(--text);
-      font-size: 1.02rem;
+      font-size: 1.08rem;
       line-height: 1.2;
     }
 
@@ -419,14 +435,14 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }
 
     .account-coming-label {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 3px 8px;
+      padding: 4px 9px;
       border-radius: 999px;
       background: var(--accent-wash);
       border: 1px solid var(--accent-border);
@@ -434,6 +450,13 @@
       font-size: 0.72rem;
       font-weight: 900;
       white-space: nowrap;
+    }
+
+    .account-field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
     }
 
     .account-panel input {
@@ -445,7 +468,6 @@
       color: var(--text);
       outline: none;
       font: inherit;
-      margin-top: 11px;
     }
 
     .account-panel input:focus {
@@ -460,10 +482,19 @@
       margin-top: 12px;
     }
 
+    .account-sync-actions {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .account-local-actions {
+      margin-top: auto;
+      grid-template-columns: 1fr;
+    }
+
     .account-note {
-      margin: 12px 0 0;
-      padding: 12px 14px;
-      border-radius: 15px;
+      margin: 14px 0 0;
+      padding: 13px 15px;
+      border-radius: 16px;
       background: var(--accent-light);
       border: 1px solid var(--line);
       color: var(--muted);
@@ -476,7 +507,11 @@
     }
 
     @media (max-width: 720px) {
-      .account-actions {
+      .account-dialog { width: min(560px, calc(100vw - 24px)); }
+      .account-layout,
+      .account-field-grid,
+      .account-actions,
+      .account-sync-actions {
         grid-template-columns: 1fr;
       }
 
@@ -3218,7 +3253,7 @@
     </div>
   </dialog>
 
-  <dialog class="project-dialog getting-started-dialog" id="accountDialog">
+  <dialog class="project-dialog getting-started-dialog account-dialog" id="accountDialog">
     <div class="getting-started-header">
       <div>
         <h2>👤 Save & Sync</h2>
@@ -3234,31 +3269,37 @@
         <p id="accountModeDescription">Your projects are saved in this browser. If you clear browser data or use another device, your projects will not automatically follow you.</p>
       </section>
 
-      <section class="account-panel">
-        <h3>Local Backup</h3>
-        <p>Download a JSON backup file if you want a manual copy outside of cloud sync.</p>
-        <div class="account-actions">
-          <button class="primary-btn" id="continueLocalBtn" type="button">Continue Locally</button>
-          <button class="soft-btn" id="openBackupReminderBtn" type="button">Download Backup File</button>
-        </div>
-      </section>
+      <div class="account-layout">
+        <section class="account-panel account-cloud-panel">
+          <div class="account-panel-header">
+            <h3>Cloud Sync</h3>
+            <span class="account-coming-label" id="accountCloudLabel">Supabase</span>
+          </div>
+          <p>Use a magic link for passwordless login, or sign in with email and password.</p>
+          <div class="account-field-grid">
+            <input id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
+            <input id="accountPasswordInput" type="password" placeholder="Password (optional)" autocomplete="current-password" />
+          </div>
+          <div class="account-actions">
+            <button class="primary-btn" id="accountSignInBtn" type="button">Email Magic Link</button>
+            <button class="soft-btn" id="accountPasswordSignInBtn" type="button">Sign In with Password</button>
+            <button class="soft-btn" id="accountPasswordSignUpBtn" type="button">Create Password Account</button>
+          </div>
+          <div class="account-actions account-sync-actions">
+            <button class="soft-btn" id="syncNowBtn" type="button">Sync Now</button>
+            <button class="soft-btn" id="accountSignOutBtn" type="button">Sign Out</button>
+          </div>
+        </section>
 
-      <section class="account-panel">
-        <div class="account-panel-header">
-          <h3>Cloud Sync</h3>
-          <span class="account-coming-label" id="accountCloudLabel">Supabase</span>
-        </div>
-        <p>Sign in with a magic link or email/password to save and sync your projects across devices.</p>
-        <input id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
-        <input id="accountPasswordInput" type="password" placeholder="Password (optional)" autocomplete="current-password" />
-        <div class="account-actions">
-          <button class="primary-btn" id="accountSignInBtn" type="button">Email Magic Link</button>
-          <button class="soft-btn" id="accountPasswordSignInBtn" type="button">Sign In with Password</button>
-          <button class="soft-btn" id="accountPasswordSignUpBtn" type="button">Create Password Account</button>
-          <button class="soft-btn" id="syncNowBtn" type="button">Sync Now</button>
-          <button class="soft-btn" id="accountSignOutBtn" type="button">Sign Out</button>
-        </div>
-      </section>
+        <section class="account-panel account-local-panel">
+          <h3>Local Backup</h3>
+          <p>Prefer a file copy? Download a JSON backup you can store anywhere.</p>
+          <div class="account-actions account-local-actions">
+            <button class="soft-btn" id="openBackupReminderBtn" type="button">Download Backup File</button>
+            <button class="soft-btn" id="continueLocalBtn" type="button">Continue Locally</button>
+          </div>
+        </section>
+      </div>
 
       <p class="account-note" id="accountSyncNote">
         <strong>Cloud sync is optional.</strong> Configure Supabase, then email yourself a magic link to sync projects across devices.
@@ -3846,6 +3887,7 @@
         accountSyncNote.innerHTML = "<strong>Email needed:</strong> Enter your email address first.";
         return null;
       }
+    }
 
       if (!password || password.length < 6) {
         accountSyncNote.innerHTML = "<strong>Password needed:</strong> Enter a password with at least 6 characters.";
