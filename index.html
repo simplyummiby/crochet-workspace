@@ -3113,14 +3113,7 @@
           </div>
         </div>
 
-        <div class="start-here-checklist" aria-label="Start here checklist">
-          <strong>Start Here</strong>
-          <ol>
-            <li>Create your first project.</li>
-            <li>Add a video, web pattern, or PDF.</li>
-            <li>Track rows and time as you crochet.</li>
-          </ol>
-        </div>
+      
 
         <details class="project-notes-drawer">
           <summary>📝 Project Notes <span class="notes-saved-label">(saved with this project)</span></summary>
@@ -4516,11 +4509,11 @@
 
       const hasProject = Array.isArray(projects) && projects.length > 0;
       const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
-      const currentSources = {
-        videoUrl: videoUrl?.value || localStorage.getItem(VIDEO_KEY) || "",
-        webPatternUrl: webUrl?.value || localStorage.getItem(WEB_PATTERN_KEY) || "",
-        pdfPatternUrl: pdfUrl?.value || localStorage.getItem(PDF_PATTERN_KEY) || ""
-      };
+     const currentSources = {
+  videoUrl: videoUrl?.value || localStorage.getItem(SOURCE_KEYS.video) || "",
+  webPatternUrl: webUrl?.value || localStorage.getItem(SOURCE_KEYS.web) || "",
+  pdfPatternUrl: pdfUrl?.value || localStorage.getItem(SOURCE_KEYS.pdf) || ""
+};
       const hasPattern = Boolean(currentSources.videoUrl || currentSources.webPatternUrl || currentSources.pdfPatternUrl)
         || (Array.isArray(trackerRows) && trackerRows.length > 0)
         || projects.some(projectHasPatternSource);
@@ -4545,14 +4538,7 @@
     function saveRow() {
       const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
 
-console.log("saveRow:", {
-  counterMode,
-  row,
-  activeProjectId,
-  activeProject: activeProject?.name,
-  savedRow: activeProject?.rowCount
-});
-      
+  
 
       if (counterMode === "project" && activeProject) {
         activeProject.rowCount = row;
