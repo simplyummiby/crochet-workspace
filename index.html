@@ -675,8 +675,9 @@
     }
 
     .getting-started-accordion {
-      margin-top: 16px;
-      max-width: 780px;
+      grid-column: 1 / -1;
+      margin-top: 10px;
+      width: 100%;
     }
 
     .getting-started-toggle {
@@ -719,19 +720,26 @@
 
     .getting-started-panel-inner {
       overflow: hidden;
-      max-width: 720px;
+      width: 100%;
       color: var(--text);
+    }
+
+    .getting-started-intro {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
     }
 
     .getting-started-intro h2 {
       margin: 0;
       color: var(--cranberry-dark);
-      font-size: 1.34rem;
+      font-size: 1.38rem;
       line-height: 1.15;
     }
 
     .getting-started-intro p {
-      margin: 8px 0 0;
+      margin: 8px auto 0;
+      max-width: 680px;
       color: var(--muted);
       line-height: 1.48;
     }
@@ -768,21 +776,25 @@
 
     .getting-started-section p {
       margin: 8px 0 0;
+      max-width: 720px;
       color: var(--muted);
       font-size: 0.94rem;
       line-height: 1.48;
     }
 
     .guide-check-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, max-content));
-      column-gap: 18px;
-      row-gap: 5px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 10px;
       margin: 12px 0 0;
       padding: 0;
       list-style: none;
       color: var(--muted);
       font-size: 0.9rem;
+    }
+
+    .guide-check-list li {
+      min-width: 142px;
     }
 
     .guide-line-list {
@@ -798,6 +810,10 @@
 
     .guide-tip {
       margin-top: 14px;
+      max-width: 720px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 244, 249, 0.55);
       color: var(--muted);
       line-height: 1.45;
     }
@@ -810,7 +826,11 @@
     }
 
     .guide-best {
-      margin-top: 9px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-top: 10px;
       color: var(--muted);
       font-size: 0.86rem;
       line-height: 1.45;
@@ -818,6 +838,43 @@
 
     .guide-best strong {
       color: var(--cranberry-dark);
+      margin-right: 2px;
+    }
+
+    .guide-tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--accent-light);
+      border: 1px solid var(--line);
+      color: var(--cranberry-dark);
+      padding: 3px 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .guide-action-row {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .hide-guide-btn {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      color: var(--cranberry-dark);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .hide-guide-btn:hover {
+      color: var(--cranberry);
+      transform: none;
+      box-shadow: none;
     }
 
     .welcome-image {
@@ -2217,6 +2274,7 @@
 
     .simple-welcome { grid-template-columns: 1fr auto; }
     .simple-welcome.welcome-refined { grid-template-columns: minmax(0, 1fr) 280px; align-items: start; }
+    .simple-welcome.welcome-refined .getting-started-accordion { grid-column: 1 / -1; }
     .project-card { padding: 18px 20px; }
     .project-card-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px; }
     .project-subtitle { margin:8px 0 0; color:var(--muted); font-size:.94rem; line-height:1.35; }
@@ -2942,83 +3000,88 @@
         <div class="welcome-copy">
           <h1>Your Crochet Project Companion</h1>
           <p>Keep track of projects, patterns, rows, time, and notes—all in one place.</p>
-          <div class="getting-started-accordion" id="gettingStartedAccordion">
-            <button
-              class="getting-started-toggle"
-              id="openGettingStarted"
-              type="button"
-              aria-expanded="false"
-              aria-controls="gettingStartedPanel">
-              <span id="gettingStartedToggleText">▸ Welcome &amp; Guide</span>
-            </button>
-
-            <div class="getting-started-panel" id="gettingStartedPanel" hidden>
-              <div class="getting-started-panel-inner">
-                <div class="getting-started-intro">
-                  <h2>Welcome to Crochet Workspace</h2>
-                  <p class="getting-started-subtitle">A dedicated workspace for crocheters.</p>
-                  <p>Keep your projects, pattern notes, row counters, timers, and tutorial resources together in one calm place.</p>
-                </div>
-
-                <div class="getting-started-sections">
-                  <section class="getting-started-section" id="gettingStartedProjectStep">
-                    <h3>🌸 Start a Project</h3>
-                    <p>Create a project to keep everything together while you crochet.</p>
-                    <ul class="guide-check-list" aria-label="Project items kept together">
-                      <li>✓ Pattern sources</li>
-                      <li>✓ Pattern tracker</li>
-                      <li>✓ Notes</li>
-                      <li>✓ Timer</li>
-                      <li>✓ Row counter</li>
-                      <li>✓ Hook &amp; materials</li>
-                    </ul>
-                    <p class="guide-tip"><strong>💡 Quick Tip</strong>Just counting rows or timing a small project? Use Quick Mode without creating a project.</p>
-                  </section>
-
-                  <section class="getting-started-section" id="gettingStartedPatternStep">
-                    <h3>📚 Add Your Pattern</h3>
-                    <p>Crochet Workspace gives you two ways to work with patterns.</p>
-
-                    <h4>Pattern Sources</h4>
-                    <p>Keep the original video, webpage, or PDF you're following beside your project while you crochet.</p>
-                    <ul class="guide-line-list">
-                      <li>🎥 <strong>Video Tutorial</strong> — keep a YouTube tutorial nearby.</li>
-                      <li>🌐 <strong>Web Pattern</strong> — keep an online pattern open while you work.</li>
-                      <li>📄 <strong>PDF Pattern</strong> — view a PDF pattern beside your project.</li>
-                    </ul>
-                    <p class="guide-best"><strong>Best with:</strong> ✓ Row Counter · ✓ Project Timer · ✓ Tutorial Notes</p>
-
-                    <h4>Pattern Tracker</h4>
-                    <p>Paste row-by-row instructions into the Pattern Tracker, then check off each row as you complete it.</p>
-                    <p>Your place is saved with your project.</p>
-                    <p class="guide-best"><strong>Best with:</strong> ✓ Project Timer · ✓ Stitch Reference · ✓ Project Notes</p>
-                  </section>
-
-                  <section class="getting-started-section" id="gettingStartedCrochetStep">
-                    <h3>🧶 Start Crocheting</h3>
-                    <p>Use the tools that fit how you're working today.</p>
-                    <ul class="guide-line-list">
-                      <li><strong>Counting rows manually?</strong> Use the Row Counter.</li>
-                      <li><strong>Following pasted row instructions?</strong> Use the Pattern Tracker.</li>
-                      <li><strong>Want to know how long your project took?</strong> Start the Project Timer.</li>
-                      <li><strong>Need a quick reminder?</strong> Open the Stitch Reference or Crochet Toolbox.</li>
-                    </ul>
-                  </section>
-
-                  <section class="getting-started-section" id="gettingStartedSaveStep">
-                    <h3>☁ Save Your Work</h3>
-                    <p><span class="guide-save-label">This Device</span>No account required. Your workspace saves in this browser on this device.</p>
-                    <p><span class="guide-save-label">Cloud Sync</span>Create an account to sign in and sync your projects across devices.</p>
-                    <p>You can start locally today and switch to Cloud Sync later whenever you're ready.</p>
-                  </section>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="welcome-image">
           <img src="assets/yarn-basket.png" alt="Crochet workspace illustration" />
+        </div>
+
+        <div class="getting-started-accordion" id="gettingStartedAccordion">
+          <button
+            class="getting-started-toggle"
+            id="openGettingStarted"
+            type="button"
+            aria-expanded="false"
+            aria-controls="gettingStartedPanel">
+            <span id="gettingStartedToggleText">▸ Welcome &amp; Guide</span>
+          </button>
+
+          <div class="getting-started-panel" id="gettingStartedPanel" hidden>
+            <div class="getting-started-panel-inner">
+              <div class="getting-started-intro">
+                <h2>Welcome to Crochet Workspace</h2>
+                <p class="getting-started-subtitle">A dedicated workspace for crocheters.</p>
+                <p>Keep your projects, pattern notes, row counters, timers, and tutorial resources together in one calm place.</p>
+              </div>
+
+              <div class="getting-started-sections">
+                <section class="getting-started-section" id="gettingStartedProjectStep">
+                  <h3>🌸 Start a Project</h3>
+                  <p>Create a project to keep everything together while you crochet.</p>
+                  <ul class="guide-check-list" aria-label="Project items kept together">
+                    <li>✓ Pattern sources</li>
+                    <li>✓ Pattern tracker</li>
+                    <li>✓ Notes</li>
+                    <li>✓ Timer</li>
+                    <li>✓ Row counter</li>
+                    <li>✓ Hook &amp; materials</li>
+                  </ul>
+                  <p class="guide-tip"><strong>💡 Quick Tip</strong>Just counting rows or timing a small project? Use Quick Mode without creating a project.</p>
+                </section>
+
+                <section class="getting-started-section" id="gettingStartedPatternStep">
+                  <h3>📚 Add Your Pattern</h3>
+                  <p>Crochet Workspace gives you two ways to work with patterns.</p>
+
+                  <h4>Pattern Sources</h4>
+                  <p>Keep the original video, webpage, or PDF you're following beside your project while you crochet.</p>
+                  <ul class="guide-line-list">
+                    <li>🎥 <strong>Video Tutorial</strong> — keep a YouTube tutorial nearby.</li>
+                    <li>🌐 <strong>Web Pattern</strong> — keep an online pattern open while you work.</li>
+                    <li>📄 <strong>PDF Pattern</strong> — view a PDF pattern beside your project.</li>
+                  </ul>
+                  <p class="guide-best"><strong>Best with:</strong> <span class="guide-tag">✓ Row Counter</span> <span class="guide-tag">✓ Project Timer</span> <span class="guide-tag">✓ Tutorial Notes</span></p>
+
+                  <h4>Pattern Tracker</h4>
+                  <p>Paste row-by-row instructions into the Pattern Tracker, then check off each row as you complete it.</p>
+                  <p>Your place is saved with your project.</p>
+                  <p class="guide-best"><strong>Best with:</strong> <span class="guide-tag">✓ Project Timer</span> <span class="guide-tag">✓ Stitch Reference</span> <span class="guide-tag">✓ Project Notes</span></p>
+                </section>
+
+                <section class="getting-started-section" id="gettingStartedCrochetStep">
+                  <h3>🧶 Start Crocheting</h3>
+                  <p>Use the tools that fit how you're working today.</p>
+                  <ul class="guide-line-list">
+                    <li><strong>Counting rows manually?</strong> Use the Row Counter.</li>
+                    <li><strong>Following pasted row instructions?</strong> Use the Pattern Tracker.</li>
+                    <li><strong>Want to know how long your project took?</strong> Start the Project Timer.</li>
+                    <li><strong>Need a quick reminder?</strong> Open the Stitch Reference or Crochet Toolbox.</li>
+                  </ul>
+                </section>
+
+                <section class="getting-started-section" id="gettingStartedSaveStep">
+                  <h3>☁ Save Your Work</h3>
+                  <p><span class="guide-save-label">This Device</span>No account required. Your workspace saves in this browser on this device.</p>
+                  <p><span class="guide-save-label">Cloud Sync</span>Create an account to sign in and sync your projects across devices.</p>
+                  <p>You can start locally today and switch to Cloud Sync later whenever you're ready.</p>
+                </section>
+              </div>
+
+              <div class="guide-action-row">
+                <button class="hide-guide-btn" id="hideWelcomeGuide" type="button">Hide Welcome &amp; Guide</button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -3785,6 +3848,7 @@
     const openGettingStarted = document.getElementById("openGettingStarted");
     const gettingStartedPanel = document.getElementById("gettingStartedPanel");
     const gettingStartedToggleText = document.getElementById("gettingStartedToggleText");
+    const hideWelcomeGuide = document.getElementById("hideWelcomeGuide");
     const gettingStartedProjectStep = document.getElementById("gettingStartedProjectStep");
     const gettingStartedPatternStep = document.getElementById("gettingStartedPatternStep");
     const gettingStartedCrochetStep = document.getElementById("gettingStartedCrochetStep");
@@ -5066,6 +5130,7 @@
     }
 
     openGettingStarted.addEventListener("click", toggleGettingStartedAccordion);
+    hideWelcomeGuide.addEventListener("click", () => setGettingStartedOpen(false));
 
     closeGettingStarted.addEventListener("click", () => {
       gettingStartedDialog.close();
