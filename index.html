@@ -3235,11 +3235,11 @@
       </section>
 
       <section class="account-panel">
-        <h3>What to do now</h3>
-        <p>Keep using Crochet Workspace locally, and use Backup & Restore for any project you do not want to lose.</p>
+        <h3>Local Backup</h3>
+        <p>Download a JSON backup file if you want a manual copy outside of cloud sync.</p>
         <div class="account-actions">
           <button class="primary-btn" id="continueLocalBtn" type="button">Continue Locally</button>
-          <button class="soft-btn" id="openBackupReminderBtn" type="button">I’ll Back Up Manually</button>
+          <button class="soft-btn" id="openBackupReminderBtn" type="button">Download Backup File</button>
         </div>
       </section>
 
@@ -3248,10 +3248,13 @@
           <h3>Cloud Sync</h3>
           <span class="account-coming-label" id="accountCloudLabel">Supabase</span>
         </div>
-        <p>Sign in by email to save and sync your projects across devices.</p>
+        <p>Sign in with a magic link or email/password to save and sync your projects across devices.</p>
         <input id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
+        <input id="accountPasswordInput" type="password" placeholder="Password (optional)" autocomplete="current-password" />
         <div class="account-actions">
           <button class="primary-btn" id="accountSignInBtn" type="button">Email Magic Link</button>
+          <button class="soft-btn" id="accountPasswordSignInBtn" type="button">Sign In with Password</button>
+          <button class="soft-btn" id="accountPasswordSignUpBtn" type="button">Create Password Account</button>
           <button class="soft-btn" id="syncNowBtn" type="button">Sync Now</button>
           <button class="soft-btn" id="accountSignOutBtn" type="button">Sign Out</button>
         </div>
@@ -3518,9 +3521,12 @@
     const accountModeTitle = document.getElementById("accountModeTitle");
     const accountModeDescription = document.getElementById("accountModeDescription");
     const accountEmailInput = document.getElementById("accountEmailInput");
+    const accountPasswordInput = document.getElementById("accountPasswordInput");
     const continueLocalBtn = document.getElementById("continueLocalBtn");
     const openBackupReminderBtn = document.getElementById("openBackupReminderBtn");
     const accountSignInBtn = document.getElementById("accountSignInBtn");
+    const accountPasswordSignInBtn = document.getElementById("accountPasswordSignInBtn");
+    const accountPasswordSignUpBtn = document.getElementById("accountPasswordSignUpBtn");
     const syncNowBtn = document.getElementById("syncNowBtn");
     const accountSignOutBtn = document.getElementById("accountSignOutBtn");
     const accountCloudLabel = document.getElementById("accountCloudLabel");
@@ -3780,7 +3786,10 @@
         accountCloudLabel.textContent = isSupabaseConfigured() ? "Ready" : "Needs setup";
       }
 
+      if (continueLocalBtn) continueLocalBtn.textContent = currentCloudUser ? "Sign Out & Use Local Only" : "Continue Locally";
       if (accountSignInBtn) accountSignInBtn.disabled = !isSupabaseConfigured();
+      if (accountPasswordSignInBtn) accountPasswordSignInBtn.disabled = !isSupabaseConfigured();
+      if (accountPasswordSignUpBtn) accountPasswordSignUpBtn.disabled = !isSupabaseConfigured();
       if (syncNowBtn) syncNowBtn.disabled = !currentCloudUser;
       if (accountSignOutBtn) accountSignOutBtn.disabled = !currentCloudUser;
 
@@ -3789,10 +3798,14 @@
       }
     }
 
-    function continueInLocalMode() {
-      accountMode = "local";
-      localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
-      renderAccountStatus();
+    async function continueInLocalMode() {
+      if (currentCloudUser) {
+        await signOutOfCloudSync();
+      } else {
+        accountMode = "local";
+        localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+        renderAccountStatus();
+      }
       accountDialog.close();
     }
 
@@ -3823,6 +3836,64 @@
       }
 
       accountSyncNote.innerHTML = `<strong>Check your email:</strong> We sent a magic link to ${email}. Open it on any device to sign in and sync.`;
+    }
+
+    function getAccountCredentials() {
+      const email = accountEmailInput?.value?.trim() || "";
+      const password = accountPasswordInput?.value || "";
+
+      if (!email || !email.includes("@")) {
+        accountSyncNote.innerHTML = "<strong>Email needed:</strong> Enter your email address first.";
+        return null;
+      }
+
+      if (!password || password.length < 6) {
+        accountSyncNote.innerHTML = "<strong>Password needed:</strong> Enter a password with at least 6 characters.";
+        return null;
+      }
+
+      return { email, password };
+    }
+
+    async function signInWithPassword() {
+      const client = getSupabaseClient();
+      const credentials = getAccountCredentials();
+      if (!client || !credentials) return;
+
+      const { error } = await client.auth.signInWithPassword(credentials);
+
+      if (error) {
+        accountSyncNote.innerHTML = `<strong>Password sign-in error:</strong> ${error.message}`;
+        return;
+      }
+
+      accountSyncNote.innerHTML = "<strong>Signed in:</strong> Syncing your workspace now.";
+      await syncWorkspaceNow();
+    }
+
+    async function signUpWithPassword() {
+      const client = getSupabaseClient();
+      const credentials = getAccountCredentials();
+      if (!client || !credentials) return;
+
+      const { data, error } = await client.auth.signUp({
+        ...credentials,
+        options: {
+          emailRedirectTo: window.location.href.split("#")[0]
+        }
+      });
+
+      if (error) {
+        accountSyncNote.innerHTML = `<strong>Account creation error:</strong> ${error.message}`;
+        return;
+      }
+
+      if (data.session) {
+        accountSyncNote.innerHTML = "<strong>Account created:</strong> Syncing your workspace now.";
+        await syncWorkspaceNow();
+      } else {
+        accountSyncNote.innerHTML = "<strong>Check your email:</strong> Confirm your email address, then return here to sign in.";
+      }
     }
 
     function buildCloudWorkspacePayload() {
@@ -4756,13 +4827,28 @@
       }
     });
 
-    continueLocalBtn.addEventListener("click", continueInLocalMode);
+    continueLocalBtn.addEventListener("click", () => {
+      continueInLocalMode().catch(error => {
+        accountSyncNote.innerHTML = `<strong>Local mode error:</strong> ${error.message}`;
+      });
+    });
     openBackupReminderBtn.addEventListener("click", () => {
-      accountSyncNote.innerHTML = "<strong>Good plan:</strong> Use Backup & Restore to download project files before clearing browser data or switching devices.";
+      downloadAllProjectsBackup();
+      accountSyncNote.innerHTML = "<strong>Backup downloaded:</strong> A JSON file with all projects was saved by your browser.";
     });
     accountSignInBtn.addEventListener("click", () => {
       requestEmailMagicLink().catch(error => {
         accountSyncNote.innerHTML = `<strong>Sign-in error:</strong> ${error.message}`;
+      });
+    });
+    accountPasswordSignInBtn.addEventListener("click", () => {
+      signInWithPassword().catch(error => {
+        accountSyncNote.innerHTML = `<strong>Password sign-in error:</strong> ${error.message}`;
+      });
+    });
+    accountPasswordSignUpBtn.addEventListener("click", () => {
+      signUpWithPassword().catch(error => {
+        accountSyncNote.innerHTML = `<strong>Account creation error:</strong> ${error.message}`;
       });
     });
     syncNowBtn.addEventListener("click", syncWorkspaceNow);
