@@ -5296,7 +5296,10 @@
         accountSyncNote.innerHTML = `<strong>Account creation error:</strong> ${error.message}`;
       });
     });
-    syncNowBtn.addEventListener("click", syncWorkspaceNow);
+   syncNowBtn.addEventListener("click", async () => {
+  accountSyncNote.innerHTML = "<strong>Syncing:</strong> Checking cloud data...";
+  await syncWorkspaceNow();
+});
     accountSignOutBtn.addEventListener("click", () => {
       signOutOfCloudSync().catch(error => {
         accountSyncNote.innerHTML = `<strong>Sign-out error:</strong> ${error.message}`;
