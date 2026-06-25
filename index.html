@@ -347,7 +347,7 @@
     }
 
     .account-dialog {
-      width: min(820px, calc(100vw - 34px));
+      width: min(980px, calc(100vw - 34px));
     }
 
     .account-status-pill {
@@ -507,7 +507,7 @@
     }
 
     @media (max-width: 720px) {
-      .account-dialog { width: min(560px, calc(100vw - 24px)); }
+      .account-dialog { width: min(680px, calc(100vw - 24px)); }
       .account-layout,
       .account-field-grid,
       .account-actions,
@@ -738,15 +738,30 @@
 
     .getting-started-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
 
     .help-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
       border: 1px solid #f1dbe1;
       background: #fffdfb;
       border-radius: 16px;
       padding: 14px;
+    }
+
+    .help-step-number {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      color: var(--cranberry-dark);
+      font-weight: 900;
+      font-size: 0.86rem;
     }
 
     .help-step strong {
@@ -1559,26 +1574,15 @@
     }
 
     .stitch-toolbox {
-      position: relative;
       display: grid;
       gap: 12px;
-      background:
-        radial-gradient(circle at 18px 18px, rgba(255, 214, 229, .72), transparent 34%),
-        radial-gradient(circle at calc(100% - 22px) 28px, rgba(255, 238, 207, .82), transparent 32%),
-        linear-gradient(145deg, rgba(255, 253, 251, 0.98), rgba(255, 244, 249, 0.96));
-    }
-
-    .stitch-toolbox::after {
-      content: "✦";
-      position: absolute;
-      right: 18px;
-      top: 14px;
-      color: rgba(157, 42, 85, .25);
-      font-size: 1.35rem;
+      padding: 18px;
+      background: rgba(255, 253, 251, 0.95);
     }
 
     .stitch-toolbox .section-title {
       color: var(--cranberry-dark);
+      margin-bottom: 0;
     }
 
     .stitch-toolbox p {
@@ -1602,10 +1606,10 @@
       min-height: 72px;
       padding: 10px 8px;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255,248,250,.92);
+      border-radius: 14px;
+      background: var(--accent-light);
       color: var(--cranberry-dark);
-      box-shadow: 0 10px 18px rgba(157, 42, 85, .08);
+      box-shadow: none;
       font-size: .82rem;
       text-align: center;
     }
@@ -2070,9 +2074,10 @@
     .project-card-actions, .project-backup-actions { display:flex; gap:10px; flex-wrap:wrap; }
     .project-card-actions { justify-content:flex-end; }
     .project-snapshot { border:1px solid var(--line); background:var(--accent-light); border-radius:16px; padding:15px; }
-    .start-here-checklist { margin-top:12px; border:1px solid #f1dbe1; background:#fffdfb; border-radius:14px; padding:12px 14px; }
-    .start-here-checklist strong { display:block; color:var(--cranberry-dark); margin-bottom:6px; }
-    .start-here-checklist ol { margin:0; padding-left:20px; color:var(--muted); font-size:.9rem; line-height:1.45; }
+    .start-here-card { padding:16px 20px; }
+    .start-here-checklist { display:grid; gap:10px; }
+    .start-here-checklist strong { display:block; color:var(--cranberry-dark); font-size:1.05rem; }
+    .start-here-checklist ol { display:grid; gap:6px; margin:0; padding-left:20px; color:var(--muted); font-size:.9rem; line-height:1.45; }
     .empty-project strong { display:block; color:var(--cranberry-dark); margin-bottom:5px; }
     .empty-project span { display:block; color:var(--muted); line-height:1.4; }
     .snapshot-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:stretch; }
@@ -2771,7 +2776,7 @@
     </div>
     <nav class="nav">
       <button class="nav-link" id="openYourProjectsNav" type="button">🎯 My Projects</button>
-      <button class="nav-link" id="openAccountNav" type="button">👤 Account</button>
+      <button class="nav-link" id="openAccountNav" type="button">💾 Save &amp; Sync</button>
       <button class="nav-link" id="openSettingsNav" type="button">⚙️ Settings</button>
     </nav>
     
@@ -2788,6 +2793,17 @@
 
         <div class="welcome-image">
           <img src="assets/yarn-basket.png" alt="Crochet workspace illustration" />
+        </div>
+      </section>
+
+      <section class="card start-here-card" aria-label="Start here checklist">
+        <div class="start-here-checklist">
+          <strong>Start Here</strong>
+          <ol>
+            <li>Create your first project.</li>
+            <li>Add a video, web pattern, or PDF.</li>
+            <li>Track rows and time as you crochet.</li>
+          </ol>
         </div>
       </section>
 
@@ -3221,7 +3237,7 @@
     <div class="getting-started-header">
       <div>
         <h2>🧶 How to Use Crochet Workspace</h2>
-        <p>A quick guide to projects, patterns, rows, time, notes, and backups.</p>
+        <p>Three simple steps: start a project, keep your pattern nearby, then track rows and time.</p>
       </div>
       <button class="close-help-btn" id="closeGettingStarted" type="button" aria-label="Close help">×</button>
     </div>
@@ -3229,33 +3245,27 @@
     <div class="getting-started-content">
       <div class="getting-started-grid">
         <div class="help-step">
-          <strong>1. Create a project</strong>
-          <p>Save the project name, hook size, materials, status, notes, rows, timer data, and pattern sources.</p>
+          <span class="help-step-number">1</span>
+          <div>
+            <strong>Create or open a project</strong>
+            <p>Use Current Project to save the project name, hook, materials, notes, row count, timer history, and pattern links.</p>
+          </div>
         </div>
 
         <div class="help-step">
-          <strong>2. Add a pattern source</strong>
-          <p>Use 🎥 Video Tutorial, 🌐 Web Pattern, or 📄 PDF Pattern to keep your instructions nearby.</p>
+          <span class="help-step-number">2</span>
+          <div>
+            <strong>Add the pattern you are following</strong>
+            <p>Use Pattern Source for a video, webpage, or PDF. If you have written rows, paste them into Pattern Tracker.</p>
+          </div>
         </div>
 
         <div class="help-step">
-          <strong>3. Track your rows</strong>
-          <p>Use the Row Counter for manual tracking, or paste rows into the Pattern Tracker and check them off.</p>
-        </div>
-
-        <div class="help-step">
-          <strong>4. Track your time</strong>
-          <p>Start a Project Timer session when you crochet. End the session to save it to the project history.</p>
-        </div>
-
-        <div class="help-step">
-          <strong>5. Keep notes</strong>
-          <p>Use Project Notes for yarn changes, modifications, reminders, sizing notes, or anything you want to remember.</p>
-        </div>
-
-        <div class="help-step">
-          <strong>6. Back up your work</strong>
-          <p>Use Advanced: Backup &amp; Restore to download the current project or all projects as a JSON backup file.</p>
+          <span class="help-step-number">3</span>
+          <div>
+            <strong>Track progress as you crochet</strong>
+            <p>Use Quick modes for one-off counting or timing. Switch to Project modes when you want rows and time saved with the active project.</p>
+          </div>
         </div>
       </div>
 
@@ -3265,7 +3275,7 @@
       </p>
 
       <p class="help-note">
-        <strong>Tip:</strong> Row Counter and Pattern Tracker are independent tools. Use either one—or both—depending on how you like to follow a pattern.
+        <strong>Tip:</strong> Row Counter and Pattern Tracker are independent. Use Row Counter for a simple number, Pattern Tracker for row-by-row instructions, or both.
       </p>
     </div>
   </dialog>
@@ -3355,6 +3365,10 @@
         <span class="theme-dot theme-dot-main"></span>
         <span class="theme-dot theme-dot-soft"></span>
         <span class="theme-dot theme-dot-line"></span>
+      </div>
+
+      <div class="project-dialog-actions">
+        <button class="soft-btn" id="settingsCloseFooter" type="button">Close</button>
       </div>
     </div>
   </dialog>
@@ -3593,6 +3607,7 @@
     const openSettingsNav = document.getElementById("openSettingsNav");
     const settingsDialog = document.getElementById("settingsDialog");
     const closeSettings = document.getElementById("closeSettings");
+    const settingsCloseFooter = document.getElementById("settingsCloseFooter");
     const themeSelect = document.getElementById("themeSelect");
     const resetThemeBtn = document.getElementById("resetThemeBtn");
 
@@ -4914,9 +4929,12 @@
       settingsDialog.showModal();
     });
 
-    closeSettings.addEventListener("click", () => {
+    function closeSettingsDialog() {
       settingsDialog.close();
-    });
+    }
+
+    closeSettings.addEventListener("click", closeSettingsDialog);
+    settingsCloseFooter.addEventListener("click", closeSettingsDialog);
 
     settingsDialog.addEventListener("click", event => {
       if (event.target === settingsDialog) {
