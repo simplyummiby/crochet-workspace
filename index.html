@@ -671,7 +671,163 @@
 
     .getting-started-btn {
       margin-top: 14px;
-      width: max-content;
+    }
+
+    .getting-started-accordion {
+      margin-top: 16px;
+      max-width: 780px;
+    }
+
+    .getting-started-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--cranberry-dark);
+      box-shadow: none;
+      font: inherit;
+      font-weight: 900;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .getting-started-toggle:hover,
+    .getting-started-toggle:active {
+      transform: none;
+      box-shadow: none;
+      color: var(--cranberry);
+    }
+
+    .getting-started-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      margin-top: 0;
+      transition: grid-template-rows 0.24s ease, opacity 0.2s ease, margin-top 0.24s ease;
+    }
+
+    .getting-started-panel:not([hidden]) {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      margin-top: 14px;
+    }
+
+    .getting-started-panel-inner {
+      overflow: hidden;
+      max-width: 720px;
+      color: var(--text);
+    }
+
+    .getting-started-intro h2 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1.34rem;
+      line-height: 1.15;
+    }
+
+    .getting-started-intro p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.48;
+    }
+
+    .getting-started-subtitle {
+      color: var(--cranberry-dark) !important;
+      font-weight: 800;
+    }
+
+    .getting-started-sections {
+      display: grid;
+      gap: 0;
+      margin-top: 18px;
+    }
+
+    .getting-started-section {
+      padding: 18px 0;
+      border-top: 1px dashed var(--line);
+    }
+
+    .getting-started-section h3 {
+      margin: 0;
+      color: var(--cranberry-dark);
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .getting-started-section h4 {
+      margin: 18px 0 7px;
+      color: var(--cranberry-dark);
+      font-size: 0.92rem;
+      letter-spacing: 0.01em;
+    }
+
+    .getting-started-section p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.48;
+    }
+
+    .guide-check-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      column-gap: 18px;
+      row-gap: 5px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .guide-line-list {
+      display: grid;
+      gap: 7px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.42;
+    }
+
+    .guide-tip {
+      margin-top: 14px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: rgba(255, 244, 249, 0.7);
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .guide-tip strong,
+    .guide-save-label {
+      display: block;
+      color: var(--cranberry-dark);
+      margin-bottom: 3px;
+    }
+
+    .guide-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .guide-tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--accent-light);
+      color: var(--cranberry-dark);
+      border: 1px solid var(--line);
+      padding: 4px 9px;
+      font-size: 0.78rem;
+      font-weight: 800;
     }
 
     .getting-started-accordion {
@@ -2924,13 +3080,12 @@
           <p>Keep track of projects, patterns, rows, time, and notes—all in one place.</p>
           <div class="getting-started-accordion" id="gettingStartedAccordion">
             <button
-              class="outline-btn getting-started-btn getting-started-toggle"
+              class="getting-started-toggle"
               id="openGettingStarted"
               type="button"
               aria-expanded="false"
               aria-controls="gettingStartedPanel">
-              <span id="gettingStartedToggleText">🌸 Getting Started</span>
-              <span class="getting-started-chevron" id="gettingStartedChevron" aria-hidden="true">⌄</span>
+              <span id="gettingStartedToggleText">▸ Welcome &amp; Guide</span>
             </button>
 
             <div class="getting-started-panel" id="gettingStartedPanel" hidden>
@@ -2943,44 +3098,62 @@
 
                 <div class="getting-started-sections">
                   <section class="getting-started-section" id="gettingStartedProjectStep">
-                    <div class="getting-started-section-head">
-                      <span class="getting-started-check" aria-hidden="true">○</span>
-                      <h3>🌸 Start a Project</h3>
-                    </div>
-                    <p>Create a project to keep your hook size, materials, notes, rows, timer, pattern sources, and pattern tracker together.</p>
-                    <p class="quick-mode-note"><strong>Quick Mode:</strong> Need to count rows or time a quick project? Use Quick Mode without creating a project. Quick Mode is great for small projects, practice swatches, or one-off tracking.</p>
+                    <h3>🌸 Start a Project</h3>
+                    <p>Create a project to keep everything together while you crochet.</p>
+                    <ul class="guide-check-list" aria-label="Project items kept together">
+                      <li>✓ Pattern sources</li>
+                      <li>✓ Pattern tracker</li>
+                      <li>✓ Notes</li>
+                      <li>✓ Timer</li>
+                      <li>✓ Row counter</li>
+                      <li>✓ Hook &amp; materials</li>
+                    </ul>
+                    <p class="guide-tip"><strong>💡 Quick Tip</strong>Just counting rows or timing a small project? Use Quick Mode without creating a project.</p>
                   </section>
 
                   <section class="getting-started-section" id="gettingStartedPatternStep">
-                    <div class="getting-started-section-head">
-                      <span class="getting-started-check" aria-hidden="true">○</span>
-                      <h3>📚 Add Your Pattern</h3>
-                    </div>
-                    <p>Keep the original video, webpage, or PDF you are following beside your project while you crochet.</p>
-                    <ul>
-                      <li><strong>Video Tutorial:</strong> keep a YouTube tutorial nearby.</li>
-                      <li><strong>Web Pattern:</strong> keep an online pattern open without switching tabs.</li>
-                      <li><strong>PDF Pattern:</strong> view a PDF pattern while you work.</li>
+                    <h3>📚 Add Your Pattern</h3>
+                    <p>Crochet Workspace gives you two ways to work with patterns.</p>
+
+                    <h4>Pattern Sources</h4>
+                    <p>Keep the original video, webpage, or PDF you're following beside your project while you crochet.</p>
+                    <ul class="guide-line-list">
+                      <li>🎥 <strong>Video Tutorial</strong> — keep a YouTube tutorial nearby.</li>
+                      <li>🌐 <strong>Web Pattern</strong> — keep an online pattern open while you work.</li>
+                      <li>📄 <strong>PDF Pattern</strong> — view a PDF pattern beside your project.</li>
                     </ul>
-                    <p><strong>Pattern Tracker:</strong> Paste row-by-row instructions into the Pattern Tracker, then check off each row as you complete it. Your place is saved with your project.</p>
+                    <div class="guide-tag-row" aria-label="Pattern Sources work best with">
+                      <span class="guide-tag">✓ Row Counter</span>
+                      <span class="guide-tag">✓ Project Timer</span>
+                      <span class="guide-tag">✓ Tutorial Notes</span>
+                    </div>
+
+                    <h4>Pattern Tracker</h4>
+                    <p>Paste row-by-row instructions into the Pattern Tracker, then check off each row as you complete it.</p>
+                    <p>Your place is saved with your project.</p>
+                    <div class="guide-tag-row" aria-label="Pattern Tracker works best with">
+                      <span class="guide-tag">✓ Project Timer</span>
+                      <span class="guide-tag">✓ Stitch Reference</span>
+                      <span class="guide-tag">✓ Project Notes</span>
+                    </div>
                   </section>
 
                   <section class="getting-started-section" id="gettingStartedCrochetStep">
-                    <div class="getting-started-section-head">
-                      <span class="getting-started-check" aria-hidden="true">○</span>
-                      <h3>🧶 Start Crocheting</h3>
-                    </div>
-                    <p>Use the tools while you work: Row Counter, Project Timer, Tutorial Notes, Stitch Reference, and Crochet Toolbox.</p>
+                    <h3>🧶 Start Crocheting</h3>
+                    <p>Use the tools that fit how you're working today.</p>
+                    <ul class="guide-line-list">
+                      <li><strong>Counting rows manually?</strong> Use the Row Counter.</li>
+                      <li><strong>Following pasted row instructions?</strong> Use the Pattern Tracker.</li>
+                      <li><strong>Want to know how long your project took?</strong> Start the Project Timer.</li>
+                      <li><strong>Need a quick reminder?</strong> Open the Stitch Reference or Crochet Toolbox.</li>
+                    </ul>
                   </section>
 
                   <section class="getting-started-section" id="gettingStartedSaveStep">
-                    <div class="getting-started-section-head">
-                      <span class="getting-started-check" aria-hidden="true">○</span>
-                      <h3>☁️ Save Your Work</h3>
-                    </div>
-                    <p><strong>Local Storage:</strong> No account required. Your workspace saves in this browser on this device.</p>
-                    <p><strong>Cloud Sync:</strong> Create an account to sign in and sync your projects across devices.</p>
-                    <p>You can start locally today and switch to Cloud Sync later whenever you’re ready.</p>
+                    <h3>☁ Save Your Work</h3>
+                    <p><span class="guide-save-label">This Device</span>No account required. Your workspace saves in this browser on this device.</p>
+                    <p><span class="guide-save-label">Cloud Sync</span>Create an account to sign in and sync your projects across devices.</p>
+                    <p>You can start locally today and switch to Cloud Sync later whenever you're ready.</p>
                   </section>
                 </div>
               </div>
@@ -4380,7 +4553,7 @@
       if (!openGettingStarted || !gettingStartedPanel || !gettingStartedToggleText) return;
 
       openGettingStarted.setAttribute("aria-expanded", String(isOpen));
-      gettingStartedToggleText.textContent = isOpen ? "Hide Getting Started" : "🌸 Getting Started";
+      gettingStartedToggleText.textContent = isOpen ? "▾ Welcome & Guide" : "▸ Welcome & Guide";
       gettingStartedPanel.hidden = !isOpen;
 
       if (persist) {
