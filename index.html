@@ -3419,6 +3419,7 @@
           <option value="">Select hook size</option>
           <option value="2.0 mm (B)">2.0 mm (B)</option>
           <option value="2.25 mm (B/1)">2.25 mm (B/1)</option>
+          <option value="2.5 mm">2.5 mm</option>
           <option value="2.75 mm (C)">2.75 mm (C)</option>
           <option value="3.0 mm (D)">3.0 mm (D)</option>
           <option value="3.25 mm (D)">3.25 mm (D)</option>
@@ -5504,11 +5505,18 @@
       }
     }
 
+    function normalizeHookValue(...values) {
+      const matchingValue = values.find(value => typeof value === "string" && value.trim());
+
+      return matchingValue ? matchingValue.trim() : "";
+    }
+
     function normalizeProjectRecord(project) {
       if (!project || typeof project !== "object") return null;
 
       return {
         ...project,
+        hook: normalizeHookValue(project.hook, project.customHookSize),
         timerData: normalizeTimerData(project?.timerData)
       };
     }
@@ -5786,19 +5794,26 @@
         return projectHookCustomInput.value.trim();
       }
 
-      return projectHookSelect.value;
+      return projectHookSelect.value.trim();
+    }
+
+    function findPredefinedHookOption(hookValue) {
+      return Array.from(projectHookSelect.options).find(option => (
+        option.value !== "custom" && option.value === hookValue
+      ));
     }
 
     function setHookValue(hookValue) {
-      const matchingOption = Array.from(projectHookSelect.options).find(option => option.value === hookValue);
+      const storedHook = typeof hookValue === "string" ? hookValue.trim() : "";
+      const matchingOption = findPredefinedHookOption(storedHook);
 
       if (matchingOption) {
-        projectHookSelect.value = hookValue;
+        projectHookSelect.value = storedHook;
         projectHookCustomInput.value = "";
         customHookLabel.hidden = true;
-      } else if (hookValue) {
+      } else if (storedHook) {
         projectHookSelect.value = "custom";
-        projectHookCustomInput.value = hookValue;
+        projectHookCustomInput.value = storedHook;
         customHookLabel.hidden = false;
       } else {
         projectHookSelect.value = "";
@@ -5841,7 +5856,7 @@
 
         const projectData = {
           name: projectNameInput.value.trim() || "Untitled Project",
-          hook: getHookValue(),
+          hook: normalizeHookValue(getHookValue()),
           materials: projectMaterialsInput.value.trim(),
           started: projectStartedInput.value,
           status: projectStatusSelect.value || "In Progress"
@@ -6016,6 +6031,7 @@
     function projectBackupPayload(project) {
       return {
         ...project,
+        hook: normalizeHookValue(project.hook, project.customHookSize),
         materials: getProjectMaterials(project),
         rowCount: Number(project.rowCount) || 0,
         sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
@@ -6074,7 +6090,7 @@
         backupVersion: 2,
         exportedAt: new Date().toISOString(),
         activeProjectId,
-        projects,
+        projects: projects.map(normalizeProjectRecord).filter(Boolean),
         currentDashboardState: {
           rowCount: row,
           sources: {
@@ -6139,6 +6155,7 @@
               return {
                 ...project,
                 id: newId,
+                hook: normalizeHookValue(project.hook, project.customHookSize),
                 materials: project.materials || project.yarn || "",
                 rowCount: Number(project.rowCount) || 0,
                 sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
@@ -6190,7 +6207,7 @@
             createdAt: backup.createdAt || new Date().toISOString(),
             importedAt: new Date().toISOString(),
             name: backup.name || "Imported Project",
-            hook: backup.hook || "",
+            hook: normalizeHookValue(backup.hook, backup.customHookSize),
             materials: backup.materials || backup.yarn || "",
             started: backup.started || "",
             status: backup.status || "Imported",
