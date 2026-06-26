@@ -4636,8 +4636,8 @@
   counterModeToggle.hidden = false;
 
   if (counterMode === "project") {
-    counterModeText.innerHTML =
-      `Rows are saving to this project: <strong>${activeProject.name || "Untitled Project"}</strong>`;
+   counterModeText.innerHTML =
+  `Rows are saving to this project:<br><strong>${activeProject.name || "Untitled Project"}</strong>`;
     counterModeToggle.textContent = "Switch to Quick Counter";
   } else {
     counterModeText.textContent = "Rows are not currently linked to a project.";
@@ -4959,8 +4959,8 @@
   timerModeToggle.hidden = false;
 
   if (timerMode === "project") {
-    timerModeText.innerHTML =
-      `Time is saving to this project: <strong>${activeProject.name || "Untitled Project"}</strong>`;
+   timerModeText.innerHTML =
+  `Time is saving to this project:<br><strong>${activeProject.name || "Untitled Project"}</strong>`;
     timerModeToggle.textContent = "Switch to Quick Timer";
     if (timerTotalLabel) timerTotalLabel.textContent = "Project Time";
   } else {
