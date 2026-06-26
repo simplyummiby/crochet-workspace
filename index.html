@@ -1389,36 +1389,44 @@
     .help-btn:hover::before { opacity: 1; }
 
 
-    .counter-mode-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin: -4px 0 12px;
-      padding: 9px 10px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--accent-light);
-    }
+   .counter-mode-row,
+.timer-mode-row {
+  display: grid;
+  gap: 8px;
+  margin: 2px 0 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
 
-    .counter-mode-text {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 800;
-      line-height: 1.25;
-    }
+.counter-mode-text,
+.timer-mode-text {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
 
-    .counter-mode-btn {
-      background: var(--accent-soft);
-      color: var(--cranberry-dark);
-      border: 1px solid var(--line);
-      padding: 7px 9px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      white-space: nowrap;
-      box-shadow: none;
-    }
+.counter-mode-text strong,
+.timer-mode-text strong {
+  color: var(--cranberry-dark);
+  font-weight: 900;
+}
+
+.counter-mode-btn,
+.timer-mode-btn {
+  justify-self: start;
+  width: auto;
+  background: var(--accent-soft);
+  color: var(--cranberry-dark);
+  border: 1px solid var(--line);
+  padding: 9px 13px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  white-space: normal;
+  box-shadow: none;
+}
 
     .counter-mode-btn[hidden] {
       display: none;
