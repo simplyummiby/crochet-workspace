@@ -5508,6 +5508,9 @@
     function normalizeProjectRecord(project) {
       if (!project || typeof project !== "object") return null;
 
+      const hook = typeof project.hook === "string" ? project.hook : "";
+      const customHookSize = typeof project.customHookSize === "string" ? project.customHookSize : "";
+
       return {
         ...project,
         hook: typeof project.hook === "string" ? project.hook.trim() : "",
@@ -5783,9 +5786,14 @@
       `;
     }
 
-    function getHookValue() {
+    function getHookFormValue() {
       if (projectHookSelect.value === "custom") {
-        return projectHookCustomInput.value.trim();
+        const customHookSize = projectHookCustomInput.value.trim();
+
+        return {
+          hook: customHookSize,
+          customHookSize
+        };
       }
 
       return projectHookSelect.value.trim();
@@ -5830,7 +5838,7 @@
       deleteProjectBtn.hidden = mode !== "edit";
 
       projectNameInput.value = project?.name || "";
-      setHookValue(project?.hook || "");
+      setHookValue(project?.hook || "", project?.customHookSize || "");
       projectStartedInput.value = project?.started || "";
       projectStatusSelect.value = project?.status || "In Progress";
       projectMaterialsInput.value = getProjectMaterials(project || {});
@@ -5848,9 +5856,11 @@
       try {
         saveWorkspaceToActiveProject();
 
+        const hookFormValue = getHookFormValue();
         const projectData = {
           name: projectNameInput.value.trim() || "Untitled Project",
-          hook: getHookValue(),
+          hook: hookFormValue.hook,
+          customHookSize: hookFormValue.customHookSize,
           materials: projectMaterialsInput.value.trim(),
           started: projectStartedInput.value,
           status: projectStatusSelect.value || "In Progress"
