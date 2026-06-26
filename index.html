@@ -3419,6 +3419,7 @@
           <option value="">Select hook size</option>
           <option value="2.0 mm (B)">2.0 mm (B)</option>
           <option value="2.25 mm (B/1)">2.25 mm (B/1)</option>
+          <option value="2.5 mm">2.5 mm</option>
           <option value="2.75 mm (C)">2.75 mm (C)</option>
           <option value="3.0 mm (D)">3.0 mm (D)</option>
           <option value="3.25 mm (D)">3.25 mm (D)</option>
@@ -5509,6 +5510,7 @@
 
       return {
         ...project,
+        hook: typeof project.hook === "string" ? project.hook.trim() : "",
         timerData: normalizeTimerData(project?.timerData)
       };
     }
@@ -5786,19 +5788,26 @@
         return projectHookCustomInput.value.trim();
       }
 
-      return projectHookSelect.value;
+      return projectHookSelect.value.trim();
+    }
+
+    function findPredefinedHookOption(hookValue) {
+      return Array.from(projectHookSelect.options).find(option => (
+        option.value !== "custom" && option.value === hookValue
+      ));
     }
 
     function setHookValue(hookValue) {
-      const matchingOption = Array.from(projectHookSelect.options).find(option => option.value === hookValue);
+      const storedHook = typeof hookValue === "string" ? hookValue.trim() : "";
+      const matchingOption = findPredefinedHookOption(storedHook);
 
       if (matchingOption) {
-        projectHookSelect.value = hookValue;
+        projectHookSelect.value = storedHook;
         projectHookCustomInput.value = "";
         customHookLabel.hidden = true;
-      } else if (hookValue) {
+      } else if (storedHook) {
         projectHookSelect.value = "custom";
-        projectHookCustomInput.value = hookValue;
+        projectHookCustomInput.value = storedHook;
         customHookLabel.hidden = false;
       } else {
         projectHookSelect.value = "";
@@ -6139,6 +6148,7 @@
               return {
                 ...project,
                 id: newId,
+                hook: typeof project.hook === "string" ? project.hook.trim() : "",
                 materials: project.materials || project.yarn || "",
                 rowCount: Number(project.rowCount) || 0,
                 sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
@@ -6190,7 +6200,7 @@
             createdAt: backup.createdAt || new Date().toISOString(),
             importedAt: new Date().toISOString(),
             name: backup.name || "Imported Project",
-            hook: backup.hook || "",
+            hook: typeof backup.hook === "string" ? backup.hook.trim() : "",
             materials: backup.materials || backup.yarn || "",
             started: backup.started || "",
             status: backup.status || "Imported",
