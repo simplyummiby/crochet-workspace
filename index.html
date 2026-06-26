@@ -5866,8 +5866,7 @@
         const hookFormValue = getHookFormValue();
         const projectData = {
           name: projectNameInput.value.trim() || "Untitled Project",
-          hook: hookFormValue.hook,
-          customHookSize: hookFormValue.customHookSize,
+          hook: normalizeHookValue(getHookValue()),
           materials: projectMaterialsInput.value.trim(),
           started: projectStartedInput.value,
           status: projectStatusSelect.value || "In Progress"
