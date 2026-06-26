@@ -4576,28 +4576,31 @@
       updateCounterModeDisplay();
     }
 
-    function updateCounterModeDisplay() {
-      if (!counterModeText || !counterModeToggle) return;
+   function updateCounterModeDisplay() {
+  if (!counterModeText || !counterModeToggle) return;
 
-      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+  const activeProject = typeof getActiveProject === "function"
+    ? getActiveProject()
+    : null;
 
-      if (!activeProject) {
-        counterMode = "quick";
-        counterModeText.textContent = "Quick Counter: one-off row count";
-        counterModeToggle.hidden = true;
-        return;
-      }
+  if (!activeProject) {
+    counterMode = "quick";
+    counterModeText.textContent = "Rows are not currently linked to a project.";
+    counterModeToggle.hidden = true;
+    return;
+  }
 
-      counterModeToggle.hidden = false;
+  counterModeToggle.hidden = false;
 
-      if (counterMode === "project") {
-        counterModeText.textContent = `Project Counter: saving rows to ${activeProject.name || "Untitled Project"}`;
-        counterModeToggle.textContent = "Switch to Quick";
-      } else {
-        counterModeText.textContent = "Quick Counter: one-off row count";
-        counterModeToggle.textContent = "Switch to project";
-      }
-    }
+  if (counterMode === "project") {
+    counterModeText.innerHTML =
+      `Rows are saving to this project: <strong>${activeProject.name || "Untitled Project"}</strong>`;
+    counterModeToggle.textContent = "Switch to Quick Counter";
+  } else {
+    counterModeText.textContent = "Rows are not currently linked to a project.";
+    counterModeToggle.textContent = "Save Rows to Project";
+  }
+}
 
     function switchCounterMode() {
       const activeProject = getActiveProject();
@@ -4895,31 +4898,34 @@
       };
     }
 
-    function updateTimerModeDisplay() {
-      if (!timerModeText || !timerModeToggle) return;
+   function updateTimerModeDisplay() {
+  if (!timerModeText || !timerModeToggle) return;
 
-      const activeProject = typeof getActiveProject === "function" ? getActiveProject() : null;
+  const activeProject = typeof getActiveProject === "function"
+    ? getActiveProject()
+    : null;
 
-      if (!activeProject) {
-        timerMode = "quick";
-        timerModeText.textContent = "Quick Timer: general crochet time";
-        timerModeToggle.hidden = true;
-        if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
-        return;
-      }
+  if (!activeProject) {
+    timerMode = "quick";
+    timerModeText.textContent = "Time is not currently linked to a project.";
+    timerModeToggle.hidden = true;
+    if (timerTotalLabel) timerTotalLabel.textContent = "Total Time";
+    return;
+  }
 
-      timerModeToggle.hidden = false;
+  timerModeToggle.hidden = false;
 
-      if (timerMode === "project") {
-        timerModeText.textContent = `Project Timer: saving time to ${activeProject.name || "Untitled Project"}`;
-        timerModeToggle.textContent = "Switch to Quick";
-        if (timerTotalLabel) timerTotalLabel.textContent = "Total Project Time";
-      } else {
-        timerModeText.textContent = "Quick Timer: general crochet time";
-        timerModeToggle.textContent = "Switch to project";
-        if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
-      }
-    }
+  if (timerMode === "project") {
+    timerModeText.innerHTML =
+      `Time is saving to this project: <strong>${activeProject.name || "Untitled Project"}</strong>`;
+    timerModeToggle.textContent = "Switch to Quick Timer";
+    if (timerTotalLabel) timerTotalLabel.textContent = "Project Time";
+  } else {
+    timerModeText.textContent = "Time is not currently linked to a project.";
+    timerModeToggle.textContent = "Save Time to Project";
+    if (timerTotalLabel) timerTotalLabel.textContent = "Unlinked Time";
+  }
+}
 
     function renderTimer() {
       timerData = normalizeTimerData(timerData);
