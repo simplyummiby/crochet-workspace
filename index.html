@@ -5511,18 +5511,19 @@
       return matchingValue ? matchingValue.trim() : "";
     }
 
-    function normalizeProjectRecord(project) {
-      if (!project || typeof project !== "object") return null;
+   function normalizeProjectRecord(project) {
+  if (!project || typeof project !== "object") return null;
 
-      const hook = typeof project.hook === "string" ? project.hook : "";
-      const customHookSize = typeof project.customHookSize === "string" ? project.customHookSize : "";
+  const hook = normalizeHookValue(project.hook, project.customHookSize);
+  const customHookSize = normalizeHookValue(project.customHookSize);
 
-      return {
-        ...project,
-        hook: normalizeHookValue(project.hook, project.customHookSize),
-        timerData: normalizeTimerData(project?.timerData)
-      };
-    }
+  return {
+    ...project,
+    hook: hook,
+    customHookSize: customHookSize,
+    timerData: normalizeTimerData(project?.timerData)
+  };
+}
 
     let projects = parseStoredProjects().map(normalizeProjectRecord).filter(Boolean);
     let activeProjectId = localStorage.getItem(ACTIVE_PROJECT_KEY) || "";
@@ -5849,7 +5850,7 @@
       deleteProjectBtn.hidden = mode !== "edit";
 
       projectNameInput.value = project?.name || "";
-      setHookValue(project?.hook || "", project?.customHookSize || "");
+      setHookValue(normalizeHookValue(project?.hook, project?.customHookSize));
       projectStartedInput.value = project?.started || "";
       projectStatusSelect.value = project?.status || "In Progress";
       projectMaterialsInput.value = getProjectMaterials(project || {});
