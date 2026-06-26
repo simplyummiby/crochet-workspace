@@ -4438,7 +4438,32 @@
       return data || null;
     }
 
+    function getLastSuccessfulSyncTimestamp() {
+      return localStorage.getItem(CLOUD_LAST_SYNCED_AT_KEY) || "";
+    }
+
+    function didCloudChangeAfterLastSync(cloudUpdatedAt) {
+      const lastSyncedAt = getLastSuccessfulSyncTimestamp();
+      return Boolean(cloudUpdatedAt && (!lastSyncedAt || cloudUpdatedAt > lastSyncedAt));
+    }
+
+    function hasGenuineSyncConflict(cloudUpdatedAt) {
+      return hasUnsyncedLocalChanges() && didCloudChangeAfterLastSync(cloudUpdatedAt);
+    }
+
+    function saveWorkspaceSnapshotForCloudSync() {
+      const wasSuppressingCloudSync = suppressCloudSync;
+      suppressCloudSync = true;
+      try {
+        saveWorkspaceToActiveProject();
+      } finally {
+        suppressCloudSync = wasSuppressingCloudSync;
+      }
+    }
+
     function markCloudSyncSuccess(timestamp = new Date().toISOString(), message = "✓ Synced just now") {
+      window.clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = null;
       localStorage.setItem(CLOUD_LAST_SYNCED_AT_KEY, timestamp);
       localStorage.setItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY, "false");
       setSyncStatus(message);
@@ -4448,13 +4473,12 @@
       const client = getSupabaseClient();
       if (!client || !currentCloudUser) return false;
 
-      saveWorkspaceToActiveProject();
-      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || new Date().toISOString();
+      saveWorkspaceSnapshotForCloudSync();
 
       if (!skipConflictCheck) {
         const cloudRecord = await fetchCloudWorkspace();
         const cloudUpdatedAt = getCloudTimestamp(cloudRecord);
-        if (cloudRecord?.payload && cloudUpdatedAt && cloudUpdatedAt > localUpdatedAt && hasUnsyncedLocalChanges()) {
+        if (cloudRecord?.payload && hasGenuineSyncConflict(cloudUpdatedAt)) {
           showSyncConflict({ ...cloudRecord.payload, savedAt: cloudUpdatedAt, deviceUpdatedAt: cloudUpdatedAt });
           setSyncStatus("Cloud has newer changes");
           return false;
@@ -4513,18 +4537,18 @@
       const cloudRecord = await fetchCloudWorkspace();
       const remotePayload = cloudRecord?.payload || null;
       const remoteUpdatedAt = getCloudTimestamp(cloudRecord);
-      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || "";
 
       if (!remotePayload) {
         return uploadWorkspaceToCloud({ skipConflictCheck: true });
       }
 
-      if (remoteUpdatedAt && (!localUpdatedAt || remoteUpdatedAt > localUpdatedAt)) {
-        if (hasUnsyncedLocalChanges()) {
-          showSyncConflict({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
-          setSyncStatus("Cloud has newer changes");
-          return false;
-        }
+      if (hasGenuineSyncConflict(remoteUpdatedAt)) {
+        showSyncConflict({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
+        setSyncStatus("Cloud has newer changes");
+        return false;
+      }
+
+      if (didCloudChangeAfterLastSync(remoteUpdatedAt)) {
         applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
         markCloudSyncSuccess(remoteUpdatedAt, force ? "Cloud version loaded" : "Cloud changes loaded");
         return true;
