@@ -5505,6 +5505,12 @@
       }
     }
 
+    function normalizeHookValue(...values) {
+      const matchingValue = values.find(value => typeof value === "string" && value.trim());
+
+      return matchingValue ? matchingValue.trim() : "";
+    }
+
     function normalizeProjectRecord(project) {
       if (!project || typeof project !== "object") return null;
 
@@ -5513,7 +5519,7 @@
 
       return {
         ...project,
-        hook: typeof project.hook === "string" ? project.hook.trim() : "",
+        hook: normalizeHookValue(project.hook, project.customHookSize),
         timerData: normalizeTimerData(project?.timerData)
       };
     }
@@ -5531,6 +5537,7 @@
     timerData = getTimerDataForCurrentMode();
 
     function saveProjects() {
+      projects = projects.map(normalizeProjectRecord).filter(Boolean);
       localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
       localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
       markWorkspaceDirty();
@@ -6035,6 +6042,7 @@
     function projectBackupPayload(project) {
       return {
         ...project,
+        hook: normalizeHookValue(project.hook, project.customHookSize),
         materials: getProjectMaterials(project),
         rowCount: Number(project.rowCount) || 0,
         sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
@@ -6093,7 +6101,7 @@
         backupVersion: 2,
         exportedAt: new Date().toISOString(),
         activeProjectId,
-        projects,
+        projects: projects.map(normalizeProjectRecord).filter(Boolean),
         currentDashboardState: {
           rowCount: row,
           sources: {
@@ -6158,7 +6166,7 @@
               return {
                 ...project,
                 id: newId,
-                hook: typeof project.hook === "string" ? project.hook.trim() : "",
+                hook: normalizeHookValue(project.hook, project.customHookSize),
                 materials: project.materials || project.yarn || "",
                 rowCount: Number(project.rowCount) || 0,
                 sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
@@ -6210,7 +6218,7 @@
             createdAt: backup.createdAt || new Date().toISOString(),
             importedAt: new Date().toISOString(),
             name: backup.name || "Imported Project",
-            hook: typeof backup.hook === "string" ? backup.hook.trim() : "",
+            hook: normalizeHookValue(backup.hook, backup.customHookSize),
             materials: backup.materials || backup.yarn || "",
             started: backup.started || "",
             status: backup.status || "Imported",
