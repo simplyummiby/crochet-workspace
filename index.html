@@ -5513,8 +5513,7 @@
 
       return {
         ...project,
-        hook: hook || customHookSize,
-        customHookSize,
+        hook: typeof project.hook === "string" ? project.hook.trim() : "",
         timerData: normalizeTimerData(project?.timerData)
       };
     }
@@ -5797,28 +5796,20 @@
         };
       }
 
-      return {
-        hook: projectHookSelect.value,
-        customHookSize: ""
-      };
+      return projectHookSelect.value.trim();
     }
 
-    function getHookValue() {
-      return getHookFormValue().hook;
-    }
-
-    function setHookValue(hookValue, customHookSize = "") {
-      const storedCustomHook = typeof customHookSize === "string" ? customHookSize.trim() : "";
-      const storedHook = typeof hookValue === "string" ? hookValue.trim() : "";
-      const matchingOption = Array.from(projectHookSelect.options).find(option => (
-        option.value !== "custom" && option.value === storedHook
+    function findPredefinedHookOption(hookValue) {
+      return Array.from(projectHookSelect.options).find(option => (
+        option.value !== "custom" && option.value === hookValue
       ));
+    }
 
-      if (storedCustomHook) {
-        projectHookSelect.value = "custom";
-        projectHookCustomInput.value = storedCustomHook;
-        customHookLabel.hidden = false;
-      } else if (matchingOption) {
+    function setHookValue(hookValue) {
+      const storedHook = typeof hookValue === "string" ? hookValue.trim() : "";
+      const matchingOption = findPredefinedHookOption(storedHook);
+
+      if (matchingOption) {
         projectHookSelect.value = storedHook;
         projectHookCustomInput.value = "";
         customHookLabel.hidden = true;
@@ -6167,8 +6158,7 @@
               return {
                 ...project,
                 id: newId,
-                hook: typeof project.hook === "string" ? project.hook : (project.customHookSize || ""),
-                customHookSize: typeof project.customHookSize === "string" ? project.customHookSize : "",
+                hook: typeof project.hook === "string" ? project.hook.trim() : "",
                 materials: project.materials || project.yarn || "",
                 rowCount: Number(project.rowCount) || 0,
                 sources: project.sources || { videoUrl: "", webPatternUrl: "", pdfPatternUrl: "" },
@@ -6220,8 +6210,7 @@
             createdAt: backup.createdAt || new Date().toISOString(),
             importedAt: new Date().toISOString(),
             name: backup.name || "Imported Project",
-            hook: backup.hook || backup.customHookSize || "",
-            customHookSize: backup.customHookSize || "",
+            hook: typeof backup.hook === "string" ? backup.hook.trim() : "",
             materials: backup.materials || backup.yarn || "",
             started: backup.started || "",
             status: backup.status || "Imported",
