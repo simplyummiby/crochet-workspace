@@ -3635,7 +3635,7 @@
             <button class="soft-btn" id="accountPasswordSignUpBtn" type="button">Create Password Account</button>
           </div>
           <div class="account-actions account-sync-actions">
-            <button class="soft-btn" id="syncNowBtn" type="button">Sync Now</button>
+            <button class="soft-btn" id="syncNowBtn" type="button">Force Sync</button>
             <button class="soft-btn" id="accountSignOutBtn" type="button">Sign Out</button>
           </div>
         </section>
@@ -3653,6 +3653,22 @@
       <p class="account-note" id="accountSyncNote">
         <strong>Cloud sync is optional.</strong> Configure Supabase, then email yourself a magic link to sync projects across devices.
       </p>
+    </div>
+  </dialog>
+
+  <dialog class="project-dialog getting-started-dialog" id="syncConflictDialog">
+    <div class="getting-started-header">
+      <div>
+        <h2>Cloud sync conflict</h2>
+        <p>This workspace was updated on another device.</p>
+      </div>
+    </div>
+    <div class="getting-started-content">
+      <p>Choose which version to keep. Crochet Workspace will never discard either version without your confirmation.</p>
+      <div class="account-actions">
+        <button class="primary-btn" id="useCloudVersionBtn" type="button">Use Cloud Version</button>
+        <button class="soft-btn" id="keepThisDeviceBtn" type="button">Keep This Device</button>
+      </div>
     </div>
   </dialog>
 
@@ -3933,6 +3949,9 @@
     const accountSignOutBtn = document.getElementById("accountSignOutBtn");
     const accountCloudLabel = document.getElementById("accountCloudLabel");
     const accountSyncNote = document.getElementById("accountSyncNote");
+    const syncConflictDialog = document.getElementById("syncConflictDialog");
+    const useCloudVersionBtn = document.getElementById("useCloudVersionBtn");
+    const keepThisDeviceBtn = document.getElementById("keepThisDeviceBtn");
     const openSettingsNav = document.getElementById("openSettingsNav");
     const settingsDialog = document.getElementById("settingsDialog");
     const closeSettings = document.getElementById("closeSettings");
@@ -4126,6 +4145,8 @@
       blue: "Blue"
     };
     const CLOUD_UPDATED_AT_KEY = "crochetWorkspaceCloudUpdatedAt";
+    const CLOUD_LAST_SYNCED_AT_KEY = "crochetWorkspaceLastSyncedAt";
+    const CLOUD_HAS_UNSYNCED_CHANGES_KEY = "crochetWorkspaceHasUnsyncedChanges";
     const SUPABASE_SYNC_TABLE = "crochet_workspaces";
     const SUPABASE_URL = window.CROCHET_SUPABASE_URL || "https://reokevjoihiizzbolqsd.supabase.co";
     const SUPABASE_ANON_KEY = window.CROCHET_SUPABASE_ANON_KEY || "sb_publishable_dV3c7VTkMZ5azft_W3a1hg_KPnlQsNT";
@@ -4135,6 +4156,8 @@
     let currentCloudUser = null;
     let cloudSyncTimer = null;
     let suppressCloudSync = false;
+    let pendingConflictPayload = null;
+    let syncStatusMessage = "";
 
     function isSupabaseConfigured() {
       return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase?.createClient);
@@ -4155,13 +4178,34 @@
       return supabaseClient;
     }
 
+    function hasUnsyncedLocalChanges() {
+      return localStorage.getItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY) === "true";
+    }
+
+    function formatSyncTime(value) {
+      if (!value) return "never";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "unknown";
+      return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+
+    function setSyncStatus(message) {
+      syncStatusMessage = message || "";
+      if (accountSyncNote) {
+        accountSyncNote.innerHTML = `<strong>Cloud sync status:</strong> ${syncStatusMessage || getCloudStatusMessage()}`;
+      }
+    }
+
     function getCloudStatusMessage() {
       if (!isSupabaseConfigured()) {
         return "Supabase is not configured yet. Add your project URL and publishable anon key in index.html, then run the SQL setup in Supabase.";
       }
 
       if (currentCloudUser?.email) {
-        return `Signed in as ${currentCloudUser.email}. Projects sync whenever you save changes.`;
+        const lastSyncedAt = localStorage.getItem(CLOUD_LAST_SYNCED_AT_KEY);
+        if (syncStatusMessage) return syncStatusMessage;
+        if (lastSyncedAt) return `Last synced: ${formatSyncTime(lastSyncedAt)}`;
+        return `Signed in as ${currentCloudUser.email}. Changes sync automatically.`;
       }
 
       return "Enter your email and click Email Magic Link to sign in and sync projects.";
@@ -4180,7 +4224,7 @@
 
       if (accountModeDescription) {
         accountModeDescription.textContent = isSynced
-          ? "Your projects are saved to Supabase and can sync across signed-in devices."
+          ? "Your projects save instantly in this browser and sync to Supabase automatically."
           : "Your projects are saved in this browser. Sign in with email to sync them across devices.";
       }
 
@@ -4270,8 +4314,8 @@
         return;
       }
 
-      accountSyncNote.innerHTML = "<strong>Signed in:</strong> Syncing your workspace now.";
-      await syncWorkspaceNow();
+      setSyncStatus("Saving...");
+      await checkCloudWorkspace();
     }
 
     async function signUpWithPassword() {
@@ -4292,8 +4336,8 @@
       }
 
       if (data.session) {
-        accountSyncNote.innerHTML = "<strong>Account created:</strong> Syncing your workspace now.";
-        await syncWorkspaceNow();
+        setSyncStatus("Saving...");
+        await checkCloudWorkspace();
       } else {
         accountSyncNote.innerHTML = "<strong>Check your email:</strong> Confirm your email address, then return here to sign in.";
       }
@@ -4307,6 +4351,7 @@
         activeProjectId,
         counterMode,
         timerMode,
+        theme: localStorage.getItem(THEME_KEY) || "rose",
         quickRow: localStorage.getItem(QUICK_ROW_KEY) || "0",
         quickTimerData: JSON.parse(localStorage.getItem(QUICK_TIMER_KEY) || "null"),
         trackerRows,
@@ -4333,6 +4378,7 @@
       counterMode = payload.counterMode || "quick";
       timerMode = payload.timerMode || "quick";
       trackerRows = Array.isArray(payload.trackerRows) ? payload.trackerRows : [];
+      if (payload.theme) applyTheme(payload.theme, false);
       trackerCurrentRow = Number(payload.trackerCurrentRow) || 0;
       tutorialNotesRows = Array.isArray(payload.tutorialNotesRows) ? payload.tutorialNotesRows : [];
 
@@ -4342,6 +4388,7 @@
       localStorage.setItem(TIMER_MODE_KEY, timerMode);
       localStorage.setItem(QUICK_ROW_KEY, String(payload.quickRow || "0"));
       if (payload.quickTimerData) localStorage.setItem(QUICK_TIMER_KEY, JSON.stringify(payload.quickTimerData));
+      else localStorage.removeItem(QUICK_TIMER_KEY);
       localStorage.setItem(TRACKER_KEY, JSON.stringify(trackerRows));
       localStorage.setItem(TRACKER_CURRENT_ROW_KEY, String(trackerCurrentRow || 0));
 
@@ -4373,45 +4420,13 @@
       suppressCloudSync = false;
     }
 
-    async function pushWorkspaceToCloud() {
+    function getCloudTimestamp(record) {
+      return record?.updated_at || record?.payload?.deviceUpdatedAt || record?.payload?.savedAt || "";
+    }
+
+    async function fetchCloudWorkspace() {
       const client = getSupabaseClient();
-      if (!client || !currentCloudUser) return;
-
-      saveWorkspaceToActiveProject();
-      const payload = buildCloudWorkspacePayload();
-      const { error } = await client
-        .from(SUPABASE_SYNC_TABLE)
-        .upsert({
-          user_id: currentCloudUser.id,
-          payload,
-          updated_at: payload.savedAt
-        }, { onConflict: "user_id" });
-
-      if (error) throw error;
-      accountMode = "synced";
-      localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
-      renderAccountStatus();
-    }
-
-    function scheduleCloudSync() {
-      if (suppressCloudSync || !currentCloudUser) return;
-      window.clearTimeout(cloudSyncTimer);
-      cloudSyncTimer = window.setTimeout(() => {
-        pushWorkspaceToCloud().catch(error => {
-          if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
-        });
-      }, 900);
-    }
-
-    function markWorkspaceDirty() {
-      if (suppressCloudSync) return;
-      localStorage.setItem(CLOUD_UPDATED_AT_KEY, new Date().toISOString());
-      scheduleCloudSync();
-    }
-
-    async function pullWorkspaceFromCloud() {
-      const client = getSupabaseClient();
-      if (!client || !currentCloudUser) return;
+      if (!client || !currentCloudUser) return null;
 
       const { data, error } = await client
         .from(SUPABASE_SYNC_TABLE)
@@ -4420,23 +4435,138 @@
         .maybeSingle();
 
       if (error) throw error;
+      return data || null;
+    }
 
-      const remotePayload = data?.payload || null;
-      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || "";
-      const remoteUpdatedAt = data?.updated_at || remotePayload?.savedAt || "";
+    function markCloudSyncSuccess(timestamp = new Date().toISOString(), message = "✓ Synced just now") {
+      localStorage.setItem(CLOUD_LAST_SYNCED_AT_KEY, timestamp);
+      localStorage.setItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY, "false");
+      setSyncStatus(message);
+    }
 
-      if (remotePayload && (!localUpdatedAt || remoteUpdatedAt > localUpdatedAt)) {
-        applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt });
-      } else {
-        await pushWorkspaceToCloud();
+    async function uploadWorkspaceToCloud({ skipConflictCheck = false } = {}) {
+      const client = getSupabaseClient();
+      if (!client || !currentCloudUser) return false;
+
+      saveWorkspaceToActiveProject();
+      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || new Date().toISOString();
+
+      if (!skipConflictCheck) {
+        const cloudRecord = await fetchCloudWorkspace();
+        const cloudUpdatedAt = getCloudTimestamp(cloudRecord);
+        if (cloudRecord?.payload && cloudUpdatedAt && cloudUpdatedAt > localUpdatedAt && hasUnsyncedLocalChanges()) {
+          showSyncConflict({ ...cloudRecord.payload, savedAt: cloudUpdatedAt, deviceUpdatedAt: cloudUpdatedAt });
+          setSyncStatus("Cloud has newer changes");
+          return false;
+        }
       }
+
+      const savedAt = new Date().toISOString();
+      localStorage.setItem(CLOUD_UPDATED_AT_KEY, savedAt);
+      const payload = {
+        ...buildCloudWorkspacePayload(),
+        savedAt,
+        deviceUpdatedAt: savedAt,
+        lastSyncedAt: savedAt,
+        syncVersion: 2
+      };
+      const { error } = await client
+        .from(SUPABASE_SYNC_TABLE)
+        .upsert({
+          user_id: currentCloudUser.id,
+          payload,
+          updated_at: savedAt
+        }, { onConflict: "user_id" });
+
+      if (error) throw error;
+      accountMode = "synced";
+      localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
+      markCloudSyncSuccess(savedAt);
+      renderAccountStatus();
+      return true;
+    }
+
+    function scheduleCloudSync() {
+      if (suppressCloudSync || !currentCloudUser) return;
+      window.clearTimeout(cloudSyncTimer);
+      setSyncStatus(navigator.onLine === false ? "Offline — changes will sync automatically" : "Saving...");
+      cloudSyncTimer = window.setTimeout(() => {
+        if (navigator.onLine === false) {
+          setSyncStatus("Offline — changes will sync automatically");
+          return;
+        }
+        uploadWorkspaceToCloud().catch(error => {
+          setSyncStatus("Sync error");
+          if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
+        });
+      }, 2500);
+    }
+
+    function markWorkspaceDirty() {
+      if (suppressCloudSync) return;
+      localStorage.setItem(CLOUD_UPDATED_AT_KEY, new Date().toISOString());
+      localStorage.setItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY, "true");
+      scheduleCloudSync();
+    }
+
+    async function checkCloudWorkspace({ force = false } = {}) {
+      const cloudRecord = await fetchCloudWorkspace();
+      const remotePayload = cloudRecord?.payload || null;
+      const remoteUpdatedAt = getCloudTimestamp(cloudRecord);
+      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || "";
+
+      if (!remotePayload) {
+        return uploadWorkspaceToCloud({ skipConflictCheck: true });
+      }
+
+      if (remoteUpdatedAt && (!localUpdatedAt || remoteUpdatedAt > localUpdatedAt)) {
+        if (hasUnsyncedLocalChanges()) {
+          showSyncConflict({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
+          setSyncStatus("Cloud has newer changes");
+          return false;
+        }
+        applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
+        markCloudSyncSuccess(remoteUpdatedAt, force ? "Cloud version loaded" : "Cloud changes loaded");
+        return true;
+      }
+
+      if (hasUnsyncedLocalChanges() || force) return uploadWorkspaceToCloud({ skipConflictCheck: true });
+      markCloudSyncSuccess(localStorage.getItem(CLOUD_LAST_SYNCED_AT_KEY) || new Date().toISOString());
+      return true;
     }
 
     async function syncWorkspaceNow() {
       try {
-        await pullWorkspaceFromCloud();
-        if (accountSyncNote) accountSyncNote.innerHTML = "<strong>Synced:</strong> Your projects are up to date.";
+        if (!currentCloudUser) return;
+        setSyncStatus("Saving...");
+        await checkCloudWorkspace({ force: true });
       } catch (error) {
+        setSyncStatus("Sync error");
+        if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
+      }
+    }
+
+    function showSyncConflict(remotePayload) {
+      pendingConflictPayload = remotePayload;
+      if (syncConflictDialog && !syncConflictDialog.open) syncConflictDialog.showModal();
+    }
+
+    async function useCloudConflictVersion() {
+      if (!pendingConflictPayload) return;
+      applyCloudWorkspacePayload(pendingConflictPayload);
+      markCloudSyncSuccess(pendingConflictPayload.deviceUpdatedAt || pendingConflictPayload.savedAt || new Date().toISOString(), "Cloud version loaded");
+      pendingConflictPayload = null;
+      syncConflictDialog?.close();
+    }
+
+    async function keepThisDeviceConflictVersion() {
+      try {
+        await uploadWorkspaceToCloud({ skipConflictCheck: true });
+        setSyncStatus("This device saved to cloud");
+        pendingConflictPayload = null;
+        syncConflictDialog?.close();
+      } catch (error) {
+        setSyncStatus("Sync error");
         if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
       }
     }
@@ -4464,7 +4594,7 @@
       if (currentCloudUser) {
         accountMode = "synced";
         localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
-        syncWorkspaceNow();
+        checkCloudWorkspace().catch(error => setSyncStatus("Sync error"));
       }
 
       client.auth.onAuthStateChange((_event, session) => {
@@ -4472,7 +4602,7 @@
         accountMode = currentCloudUser ? "synced" : "local";
         localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
         renderAccountStatus();
-        if (currentCloudUser) syncWorkspaceNow();
+        if (currentCloudUser) checkCloudWorkspace().catch(error => setSyncStatus("Sync error"));
       });
 
       renderAccountStatus();
@@ -4487,13 +4617,14 @@
       });
     }
 
-    function applyTheme(themeName) {
+    function applyTheme(themeName, markDirty = true) {
       const safeTheme = Object.keys(THEME_OPTIONS).includes(themeName)
         ? themeName
         : "rose";
 
       document.body.dataset.theme = safeTheme;
       localStorage.setItem(THEME_KEY, safeTheme);
+      if (markDirty) markWorkspaceDirty();
 
       if (themeSelect) {
         themeSelect.value = safeTheme;
@@ -5346,15 +5477,32 @@
         accountSyncNote.innerHTML = `<strong>Account creation error:</strong> ${error.message}`;
       });
     });
-   syncNowBtn.addEventListener("click", async () => {
-  accountSyncNote.innerHTML = "<strong>Syncing:</strong> Checking cloud data...";
-  await syncWorkspaceNow();
-});
+    syncNowBtn.addEventListener("click", async () => {
+      setSyncStatus("Saving...");
+      await syncWorkspaceNow();
+    });
     accountSignOutBtn.addEventListener("click", () => {
       signOutOfCloudSync().catch(error => {
         accountSyncNote.innerHTML = `<strong>Sign-out error:</strong> ${error.message}`;
       });
     });
+    useCloudVersionBtn?.addEventListener("click", () => {
+      useCloudConflictVersion().catch(error => {
+        accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
+      });
+    });
+    keepThisDeviceBtn?.addEventListener("click", () => {
+      keepThisDeviceConflictVersion();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && currentCloudUser) {
+        checkCloudWorkspace().catch(() => setSyncStatus("Sync error"));
+      }
+    });
+    window.addEventListener("online", () => {
+      if (currentCloudUser && hasUnsyncedLocalChanges()) scheduleCloudSync();
+    });
+
 
     openSettingsNav.addEventListener("click", () => {
       settingsDialog.showModal();
@@ -7192,7 +7340,7 @@ const projectData = {
 
     initializeCloudSync();
     renderAccountStatus();
-    applyTheme(localStorage.getItem(THEME_KEY) || "rose");
+    applyTheme(localStorage.getItem(THEME_KEY) || "rose", false);
 
     initializeGettingStartedAccordion();
     renderProjectSnapshot();
