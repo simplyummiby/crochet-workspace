@@ -3660,14 +3660,14 @@
     <div class="getting-started-header">
       <div>
         <h2>Cloud sync conflict</h2>
-        <p>This workspace was updated on another device.</p>
+        <p>This workspace changed on another device before this device finished syncing.</p>
       </div>
     </div>
     <div class="getting-started-content">
-      <p>Choose which version to keep. Crochet Workspace will never discard either version without your confirmation.</p>
+      <p>Choose whether to load the newer cloud copy or keep this device’s unsynced copy.</p>
       <div class="account-actions">
-        <button class="primary-btn" id="useCloudVersionBtn" type="button">Use Cloud Version</button>
-        <button class="soft-btn" id="keepThisDeviceBtn" type="button">Keep This Device</button>
+        <button class="primary-btn" id="useCloudVersionBtn" type="button">Load Newer Cloud Copy</button>
+        <button class="soft-btn" id="keepThisDeviceBtn" type="button">Keep This Device’s Copy</button>
       </div>
     </div>
   </dialog>
@@ -4442,9 +4442,22 @@
       return localStorage.getItem(CLOUD_LAST_SYNCED_AT_KEY) || "";
     }
 
+    function compareSyncTimestamps(left, right) {
+      const leftTime = Date.parse(left || "");
+      const rightTime = Date.parse(right || "");
+      if (Number.isNaN(leftTime) || Number.isNaN(rightTime)) return 0;
+      return leftTime - rightTime;
+    }
+
     function didCloudChangeAfterLastSync(cloudUpdatedAt) {
       const lastSyncedAt = getLastSuccessfulSyncTimestamp();
-      return Boolean(cloudUpdatedAt && (!lastSyncedAt || cloudUpdatedAt > lastSyncedAt));
+      if (!cloudUpdatedAt || !lastSyncedAt) return false;
+      return compareSyncTimestamps(cloudUpdatedAt, lastSyncedAt) > 0;
+    }
+
+    function isCloudNewerThanLocal(cloudUpdatedAt) {
+      const localUpdatedAt = localStorage.getItem(CLOUD_UPDATED_AT_KEY) || "";
+      return Boolean(cloudUpdatedAt && (!localUpdatedAt || compareSyncTimestamps(cloudUpdatedAt, localUpdatedAt) > 0));
     }
 
     function hasGenuineSyncConflict(cloudUpdatedAt) {
@@ -4548,14 +4561,13 @@
         return false;
       }
 
-      if (didCloudChangeAfterLastSync(remoteUpdatedAt)) {
+      if (!hasUnsyncedLocalChanges() && (didCloudChangeAfterLastSync(remoteUpdatedAt) || isCloudNewerThanLocal(remoteUpdatedAt))) {
         applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
-        markCloudSyncSuccess(remoteUpdatedAt, force ? "Cloud version loaded" : "Cloud changes loaded");
+        markCloudSyncSuccess(remoteUpdatedAt, "Cloud changes loaded");
         return true;
       }
 
-      if (hasUnsyncedLocalChanges() || force) return uploadWorkspaceToCloud({ skipConflictCheck: true });
-      markCloudSyncSuccess(localStorage.getItem(CLOUD_LAST_SYNCED_AT_KEY) || new Date().toISOString());
+      if (hasUnsyncedLocalChanges() || force) return uploadWorkspaceToCloud();
       return true;
     }
 
@@ -4577,8 +4589,15 @@
 
     async function useCloudConflictVersion() {
       if (!pendingConflictPayload) return;
+      const cloudUpdatedAt = pendingConflictPayload.deviceUpdatedAt || pendingConflictPayload.savedAt || "";
+      if (hasUnsyncedLocalChanges() && !didCloudChangeAfterLastSync(cloudUpdatedAt)) {
+        pendingConflictPayload = null;
+        syncConflictDialog?.close();
+        await uploadWorkspaceToCloud();
+        return;
+      }
       applyCloudWorkspacePayload(pendingConflictPayload);
-      markCloudSyncSuccess(pendingConflictPayload.deviceUpdatedAt || pendingConflictPayload.savedAt || new Date().toISOString(), "Cloud version loaded");
+      markCloudSyncSuccess(cloudUpdatedAt || new Date().toISOString(), "Cloud changes loaded");
       pendingConflictPayload = null;
       syncConflictDialog?.close();
     }
