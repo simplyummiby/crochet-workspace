@@ -4155,9 +4155,14 @@
     let supabaseClient = null;
     let currentCloudUser = null;
     let cloudSyncTimer = null;
+    let cloudApplyTimer = null;
     let suppressCloudSync = false;
     let pendingConflictPayload = null;
+    let pendingCloudHandoffPayload = null;
     let syncStatusMessage = "";
+    let lastLocalEditAt = 0;
+    const CLOUD_UPLOAD_DEBOUNCE_MS = 2500;
+    const CLOUD_SAFE_APPLY_IDLE_MS = 5000;
 
     function isSupabaseConfigured() {
       return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase?.createClient);
@@ -4180,6 +4185,19 @@
 
     function hasUnsyncedLocalChanges() {
       return localStorage.getItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY) === "true";
+    }
+
+    function isUserActivelyEditing() {
+      return Boolean(lastLocalEditAt && Date.now() - lastLocalEditAt < CLOUD_SAFE_APPLY_IDLE_MS);
+    }
+
+    function scheduleCloudHandoffCheck() {
+      window.clearTimeout(cloudApplyTimer);
+      cloudApplyTimer = window.setTimeout(() => {
+        cloudApplyTimer = null;
+        if (!currentCloudUser || hasUnsyncedLocalChanges() || isUserActivelyEditing()) return;
+        checkCloudWorkspace({ reason: "idle" }).catch(() => setSyncStatus("Sync error"));
+      }, CLOUD_SAFE_APPLY_IDLE_MS);
     }
 
     function formatSyncTime(value) {
@@ -4474,12 +4492,13 @@
       }
     }
 
-    function markCloudSyncSuccess(timestamp = new Date().toISOString(), message = "✓ Synced just now") {
+    function markCloudSyncSuccess(timestamp = new Date().toISOString(), message = "Synced just now") {
       window.clearTimeout(cloudSyncTimer);
       cloudSyncTimer = null;
       localStorage.setItem(CLOUD_LAST_SYNCED_AT_KEY, timestamp);
       localStorage.setItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY, "false");
       setSyncStatus(message);
+      scheduleCloudHandoffCheck();
     }
 
     async function uploadWorkspaceToCloud({ skipConflictCheck = false } = {}) {
@@ -4526,27 +4545,43 @@
     function scheduleCloudSync() {
       if (suppressCloudSync || !currentCloudUser) return;
       window.clearTimeout(cloudSyncTimer);
-      setSyncStatus(navigator.onLine === false ? "Offline — changes will sync automatically" : "Saving...");
+      setSyncStatus(navigator.onLine === false ? "Offline — changes will sync later" : "Saving...");
       cloudSyncTimer = window.setTimeout(() => {
         if (navigator.onLine === false) {
-          setSyncStatus("Offline — changes will sync automatically");
+          setSyncStatus("Offline — changes will sync later");
           return;
         }
         uploadWorkspaceToCloud().catch(error => {
           setSyncStatus("Sync error");
           if (accountSyncNote) accountSyncNote.innerHTML = `<strong>Sync error:</strong> ${error.message}`;
         });
-      }, 2500);
+      }, CLOUD_UPLOAD_DEBOUNCE_MS);
     }
 
     function markWorkspaceDirty() {
       if (suppressCloudSync) return;
+      lastLocalEditAt = Date.now();
       localStorage.setItem(CLOUD_UPDATED_AT_KEY, new Date().toISOString());
       localStorage.setItem(CLOUD_HAS_UNSYNCED_CHANGES_KEY, "true");
       scheduleCloudSync();
     }
 
-    async function checkCloudWorkspace({ force = false } = {}) {
+    function canApplyCloudHandoff(remoteUpdatedAt) {
+      return Boolean(
+        remoteUpdatedAt
+        && !hasUnsyncedLocalChanges()
+        && !isUserActivelyEditing()
+        && (didCloudChangeAfterLastSync(remoteUpdatedAt) || isCloudNewerThanLocal(remoteUpdatedAt))
+      );
+    }
+
+    function delayCloudHandoff(remotePayload, remoteUpdatedAt) {
+      pendingCloudHandoffPayload = { ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt };
+      setSyncStatus("Cloud update waiting until you finish editing");
+      scheduleCloudHandoffCheck();
+    }
+
+    async function checkCloudWorkspace({ force = false, reason = "auto" } = {}) {
       const cloudRecord = await fetchCloudWorkspace();
       const remotePayload = cloudRecord?.payload || null;
       const remoteUpdatedAt = getCloudTimestamp(cloudRecord);
@@ -4555,19 +4590,39 @@
         return uploadWorkspaceToCloud({ skipConflictCheck: true });
       }
 
+      if (force && isCloudNewerThanLocal(remoteUpdatedAt) && !hasUnsyncedLocalChanges() && !isUserActivelyEditing()) {
+        const replaceLocal = window.confirm("Cloud has newer workspace data. Load it on this device? Choose Cancel to keep this device and upload it instead.");
+        if (replaceLocal) {
+          applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
+          markCloudSyncSuccess(remoteUpdatedAt, "Cloud changes loaded");
+          return true;
+        }
+        return uploadWorkspaceToCloud({ skipConflictCheck: true });
+      }
+
       if (hasGenuineSyncConflict(remoteUpdatedAt)) {
         showSyncConflict({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
-        setSyncStatus("Cloud has newer changes");
+        setSyncStatus("Cloud update waiting until you finish editing");
         return false;
       }
 
-      if (!hasUnsyncedLocalChanges() && (didCloudChangeAfterLastSync(remoteUpdatedAt) || isCloudNewerThanLocal(remoteUpdatedAt))) {
-        applyCloudWorkspacePayload({ ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt });
+      if (canApplyCloudHandoff(remoteUpdatedAt)) {
+        const payloadToApply = pendingCloudHandoffPayload?.deviceUpdatedAt === remoteUpdatedAt
+          ? pendingCloudHandoffPayload
+          : { ...remotePayload, savedAt: remoteUpdatedAt, deviceUpdatedAt: remoteUpdatedAt };
+        pendingCloudHandoffPayload = null;
+        applyCloudWorkspacePayload(payloadToApply);
         markCloudSyncSuccess(remoteUpdatedAt, "Cloud changes loaded");
         return true;
       }
 
+      if ((didCloudChangeAfterLastSync(remoteUpdatedAt) || isCloudNewerThanLocal(remoteUpdatedAt)) && (hasUnsyncedLocalChanges() || isUserActivelyEditing())) {
+        delayCloudHandoff(remotePayload, remoteUpdatedAt);
+        return false;
+      }
+
       if (hasUnsyncedLocalChanges() || force) return uploadWorkspaceToCloud();
+      if (reason === "focus") setSyncStatus("Synced just now");
       return true;
     }
 
@@ -4637,7 +4692,7 @@
       if (currentCloudUser) {
         accountMode = "synced";
         localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
-        checkCloudWorkspace().catch(error => setSyncStatus("Sync error"));
+        checkCloudWorkspace({ reason: "load" }).catch(error => setSyncStatus("Sync error"));
       }
 
       client.auth.onAuthStateChange((_event, session) => {
@@ -4645,7 +4700,7 @@
         accountMode = currentCloudUser ? "synced" : "local";
         localStorage.setItem(ACCOUNT_MODE_KEY, accountMode);
         renderAccountStatus();
-        if (currentCloudUser) checkCloudWorkspace().catch(error => setSyncStatus("Sync error"));
+        if (currentCloudUser) checkCloudWorkspace({ reason: "signin" }).catch(error => setSyncStatus("Sync error"));
       });
 
       renderAccountStatus();
@@ -5539,7 +5594,7 @@
     });
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && currentCloudUser) {
-        checkCloudWorkspace().catch(() => setSyncStatus("Sync error"));
+        checkCloudWorkspace({ reason: "focus" }).catch(() => setSyncStatus("Sync error"));
       }
     });
     window.addEventListener("online", () => {
