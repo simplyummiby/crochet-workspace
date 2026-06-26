@@ -4592,10 +4592,10 @@
 
       if (counterMode === "project") {
         counterModeText.textContent = `Project Counter: saving rows to ${activeProject.name || "Untitled Project"}`;
-        counterModeToggle.textContent = "Use quick row count";
+        counterModeToggle.textContent = "Switch to Quick";
       } else {
         counterModeText.textContent = "Quick Counter: one-off row count";
-        counterModeToggle.textContent = "Save rows to project";
+        counterModeToggle.textContent = "Switch to project";
       }
     }
 
@@ -4912,11 +4912,11 @@
 
       if (timerMode === "project") {
         timerModeText.textContent = `Project Timer: saving time to ${activeProject.name || "Untitled Project"}`;
-        timerModeToggle.textContent = "Use quick timer";
+        timerModeToggle.textContent = "Switch to Quick";
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Project Time";
       } else {
         timerModeText.textContent = "Quick Timer: general crochet time";
-        timerModeToggle.textContent = "Save time to project";
+        timerModeToggle.textContent = "Switch to project";
         if (timerTotalLabel) timerTotalLabel.textContent = "Total Quick Time";
       }
     }
