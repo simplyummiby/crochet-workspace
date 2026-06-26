@@ -5514,6 +5514,9 @@
     function normalizeProjectRecord(project) {
       if (!project || typeof project !== "object") return null;
 
+      const hook = typeof project.hook === "string" ? project.hook : "";
+      const customHookSize = typeof project.customHookSize === "string" ? project.customHookSize : "";
+
       return {
         ...project,
         hook: normalizeHookValue(project.hook, project.customHookSize),
@@ -5534,6 +5537,7 @@
     timerData = getTimerDataForCurrentMode();
 
     function saveProjects() {
+      projects = projects.map(normalizeProjectRecord).filter(Boolean);
       localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
       localStorage.setItem(ACTIVE_PROJECT_KEY, activeProjectId || "");
       markWorkspaceDirty();
@@ -5789,9 +5793,14 @@
       `;
     }
 
-    function getHookValue() {
+    function getHookFormValue() {
       if (projectHookSelect.value === "custom") {
-        return projectHookCustomInput.value.trim();
+        const customHookSize = projectHookCustomInput.value.trim();
+
+        return {
+          hook: customHookSize,
+          customHookSize
+        };
       }
 
       return projectHookSelect.value.trim();
@@ -5836,7 +5845,7 @@
       deleteProjectBtn.hidden = mode !== "edit";
 
       projectNameInput.value = project?.name || "";
-      setHookValue(project?.hook || "");
+      setHookValue(project?.hook || "", project?.customHookSize || "");
       projectStartedInput.value = project?.started || "";
       projectStatusSelect.value = project?.status || "In Progress";
       projectMaterialsInput.value = getProjectMaterials(project || {});
@@ -5854,6 +5863,7 @@
       try {
         saveWorkspaceToActiveProject();
 
+        const hookFormValue = getHookFormValue();
         const projectData = {
           name: projectNameInput.value.trim() || "Untitled Project",
           hook: normalizeHookValue(getHookValue()),
