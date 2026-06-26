@@ -5793,15 +5793,21 @@
       `;
     }
 
-    function getHookFormValue() {
-      if (projectHookSelect.value === "custom") {
-        const customHookSize = projectHookCustomInput.value.trim();
+  function getHookFormValue() {
+  if (projectHookSelect.value === "custom") {
+    const customHookSize = projectHookCustomInput.value.trim();
 
-        return {
-          hook: customHookSize,
-          customHookSize
-        };
-      }
+    return {
+      hook: customHookSize,
+      customHookSize: customHookSize
+    };
+  }
+
+  return {
+    hook: projectHookSelect.value.trim(),
+    customHookSize: ""
+  };
+}
 
       return projectHookSelect.value.trim();
     }
@@ -5863,14 +5869,16 @@
       try {
         saveWorkspaceToActiveProject();
 
-        const hookFormValue = getHookFormValue();
-        const projectData = {
-          name: projectNameInput.value.trim() || "Untitled Project",
-          hook: normalizeHookValue(getHookValue()),
-          materials: projectMaterialsInput.value.trim(),
-          started: projectStartedInput.value,
-          status: projectStatusSelect.value || "In Progress"
-        };
+       const hookFormValue = getHookFormValue();
+
+const projectData = {
+  name: projectNameInput.value.trim() || "Untitled Project",
+  hook: normalizeHookValue(hookFormValue.hook),
+  customHookSize: normalizeHookValue(hookFormValue.customHookSize),
+  materials: projectMaterialsInput.value.trim(),
+  started: projectStartedInput.value,
+  status: projectStatusSelect.value || "In Progress"
+};
 
         if (editingProjectId) {
           projects = projects.map(project => (
